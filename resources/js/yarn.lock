@@ -398,7 +398,7 @@
     lodash "^4.17.15"
     tmp-promise "^3.0.2"
 
-"@nativephp/electron-plugin@^0.1.0":
+"@nativephp/electron-plugin@^0.1":
   version "0.1.0"
   resolved "git+ssh://git@github.com/chrisreedio/electron-plugin.git#08c9c4b1cc2cb292a5f2ac90993120e8861cc9a3"
   dependencies:
