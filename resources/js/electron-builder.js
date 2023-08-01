@@ -12,46 +12,47 @@ const appUrl = process.env.APP_URL;
 const appAuthor = process.env.NATIVEPHP_APP_AUTHOR;
 const phpBinaryPath = process.env.NATIVEPHP_PHP_BINARY_PATH;
 const certificatePath = process.env.NATIVEPHP_CERTIFICATE_FILE_PATH;
-const isArm64 = process.argv.includes('--arm64');
-const isWindows = process.argv.includes('--win');
-const isLinux = process.argv.includes('--linux');
-const isDarwin = process.argv.includes('--mac');
+
 let phpBinaryFilename = 'php';
+
+// Allows us to map the platform name to the directory name for development mode
+const platformDirectory = {
+    win32: 'win',
+    darwin: 'mac',
+    linux: 'linux',
+};
+
+// These are the available platforms we can build for
+const platforms = ['win', 'mac', 'linux'];
+
 // Default to the current platform for develop mode. Build will pass in an arg that overrides this
-let targetOs = process.platform;
+let targetOs = platformDirectory[process.platform];
 
-switch (targetOs) {
-    case 'win32':
-        targetOs = 'win';
-        break;
-    case 'darwin':
-        targetOs = 'mac';
-        break;
-    case 'linux':
-        targetOs = 'linux';
-        break;
-    default:
-        throw new Error('Unsupported platform: ' + targetOs);
-        break;
-}
-
-if (isWindows || targetOs == 'win') {
-    targetOs = 'win';
-    phpBinaryFilename += '.exe';
-} else if (isLinux) {
-    targetOs = 'linux';
-} else if (isDarwin) {
-    targetOs = 'mac';
-}
-
-// Default to the current arch for develop mode. Build will pass in an arg that overrides this
+// Default to the current arch for develop mode.
+// Build will default to x64 but can be set to arm64
 let binaryArch = process.arch;
-if (isArm64) {
-    binaryArch = 'arm64';
-} else if (isWindows || isLinux) {
-    binaryArch = 'x64';
-} else if (isDarwin) {
-    binaryArch = 'x86';
+
+// If we're building, we need to check for target overrides
+if (isBuilding) {
+    // Check for a target platform flag
+    for (const platform of platforms) {
+        if (process.argv.includes('--' + platform)) {
+            targetOs = platform;
+            break;
+        }
+    }
+
+	// Check for forced ARM build, else default to x64
+    if (process.argv.includes('--arm64')) {
+        binaryArch = 'arm64';
+    } else {
+        binaryArch = 'x64';
+    }
+}
+
+// Add .exe to the filename if we're on Windows
+if (targetOs == 'win') {
+    phpBinaryFilename += '.exe';
 }
 
 let updaterConfig = {};
