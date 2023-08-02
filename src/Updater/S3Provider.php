@@ -10,8 +10,22 @@ class S3Provider implements Updater
     {
     }
 
-    public function providedEnvironmentVariables(): array
+    public function environmentVariables(): array
     {
-        return [];
+        return [
+            'AWS_ACCESS_KEY_ID' => $this->config['key'],
+            'AWS_SECRET_ACCESS_KEY' => $this->config['secret'],
+        ];
+    }
+
+    public function builderOptions(): array
+    {
+        return [
+            'provider' => 's3',
+            'bucket' => $this->config['bucket'],
+            'region' => $this->config['region'],
+            'path' => $this->config['path'],
+            'endpoint' => $this->config['endpoint']
+        ];
     }
 }
