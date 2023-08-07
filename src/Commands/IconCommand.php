@@ -10,7 +10,7 @@ use function Laravel\Prompts\note;
 class IconCommand extends Command
 {
     protected $signature = 'native:icon {path=resources/icon.png : The path to your application\'s icon}';
-    
+
     protected $description = 'A command to set your app icon. By default, it will look for `resources/icon.png`.
         Make sure your icon is at least 1024px x 1024px';
 
@@ -18,6 +18,7 @@ class IconCommand extends Command
     {
         if (! file_exists($path = $this->argument('path'))) {
             error("No icon file exists at `{$path}`");
+
             return Command::INVALID;
         }
 
