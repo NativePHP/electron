@@ -19,6 +19,6 @@ trait LocatesPhpBinary
      */
     public function phpBinaryPath(): string
     {
-        return $this->binaryPackageDirectory().'bin/';
+        return config('nativephp.binary') ?? $this->binaryPackageDirectory().'bin/';
     }
 }
