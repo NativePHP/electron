@@ -16,7 +16,7 @@ if (isLinux) {
     os = 'linux';
 }
 
-let binaryArch = 'x64';
+let binaryArch = 'x86';
 if (isArm64) {
     binaryArch = 'arm64';
 }
