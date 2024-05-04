@@ -29,6 +29,7 @@ class BuildCommand extends Command
             $os = select(
                 label: 'Please select the operating system to build for',
                 options: ['win', 'linux', 'mac', 'all'],
+                default: $this->getDefaultOs(),
             );
         }
 
@@ -65,5 +66,15 @@ class BuildCommand extends Command
             ],
             Updater::environmentVariables(),
         );
+    }
+
+    protected function getDefaultOs(): string
+    {
+        return match (PHP_OS_FAMILY) {
+            'Windows' => 'win',
+            'Darwin' => 'mac',
+            'Linux' => 'linux',
+            default => 'all',
+        };
     }
 }
