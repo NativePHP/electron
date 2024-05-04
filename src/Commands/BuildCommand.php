@@ -25,9 +25,7 @@ class BuildCommand extends Command
                 echo $output;
             });
 
-        $os = $this->argument('os');
-
-        if ($os == null) {
+        if (! $os = $this->argument('os')) {
             $os = select(
                 label: 'Please select the operating system to build for',
                 options: ['win', 'linux', 'mac', 'all'],
