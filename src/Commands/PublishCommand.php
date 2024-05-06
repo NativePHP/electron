@@ -30,7 +30,6 @@ class PublishCommand extends Command
                 echo $output;
             });
 
-        
         if (! $os = $this->argument('os')) {
             $os = select(
                 label: 'Please select the operating system to build for',
