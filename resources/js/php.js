@@ -14,15 +14,16 @@ const isWindows = isBuilding ?  process.argv.includes('--win') : process.platfor
 const isLinux = isBuilding ?  process.argv.includes('--linux') : process.platform.includes('linux');
 const isDarwin = isBuilding ?  process.argv.includes('--mac') : process.platform.includes('darwin');
 
-let arch = false;
+let buildArch = false;
 if (isBuilding) {
-    arch = process.argv.includes('--x64') ? 'x64' : '';
-    arch = process.argv.includes('--x86') ? 'x86' : '';
-    arch = process.argv.includes('--arm64') ? 'arm64' : '';
+    // Only one will be used by the configured build commands in package.json
+    buildArch = process.argv.includes('--x64') ? 'x64' : buildArch;
+    buildArch = process.argv.includes('--x86') ? 'x86' : buildArch;
+    buildArch = process.argv.includes('--arm64') ? 'arm64' : buildArch;
 }
 
 let targetOs;
-let binaryArch = 'x64';
+let serveArch = 'x64';
 let phpBinaryFilename = 'php';
 
 if (isWindows) {
@@ -35,14 +36,17 @@ if (isLinux) {
 // Use of isDarwin
 if (isDarwin) {
     targetOs = 'mac';
-    binaryArch = 'x86';
+    serveArch = 'x86';
 }
 if (isArm64) {
-    binaryArch = 'arm64';
+    serveArch = 'arm64';
 }
 
+// select correct arch
+let arch = isBuilding ? buildArch : serveArch;
+
 const phpVersionZip = 'php-' + phpVersion + '.zip';
-const binarySrcDir = join(phpBinaryPath, targetOs, arch ? arch : binaryArch, phpVersionZip);
+const binarySrcDir = join(phpBinaryPath, targetOs, arch, phpVersionZip);
 const binaryDestDir = join(__dirname, 'resources/php');
 
 console.log('Binary Source: ', binarySrcDir);
