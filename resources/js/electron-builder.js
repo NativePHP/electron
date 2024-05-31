@@ -108,9 +108,9 @@ if (isBuilding) {
         console.log('=====================');
 
         // We'll use the default PHP binary here, as we can cross-compile for all platforms
-        const phpBinary = join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'resources', 'js', 'resources', 'php', 'php');
+        // const phpBinary = join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'resources', 'js', 'resources', 'php', 'php');
         const artisanPath = join(appPath, 'artisan');
-        execSync(`${phpBinary} ${artisanPath} native:minify ${appPath}`);
+        execSync(`php ${artisanPath} native:minify ${appPath}`);
     } catch (e) {
         console.error('=====================');
         console.error('Error copying app to resources');
