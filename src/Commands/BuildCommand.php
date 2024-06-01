@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\OsAndArch;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
@@ -14,10 +15,11 @@ use function Laravel\Prompts\select;
 class BuildCommand extends Command
 {
     use LocatesPhpBinary;
+    use OsAndArch;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
-        {arch? : The Processor Architecture to build for (x64, x86, arm64)}
+        {arch? : The Processor Architecture to build for (-x64, -x86, -arm64)}
         {pub? : Publish the app (false, true)}';
 
     public function handle(): void
@@ -46,7 +48,7 @@ class BuildCommand extends Command
 
         // Default params to "build:all" command
         $arch = '';
-        $publish = 'build';
+        $publish = false;
         if ($os != 'all') {
             // Depends on the currenty available php executables
             if (! $arch = $this->argument('arch')) {
@@ -65,11 +67,12 @@ class BuildCommand extends Command
                 $publish = confirm(
                     label: 'Should the App be published?',
                     default: false
-                )
-                ? 'publish'
-                : 'build' ;
+                );
             }
         }
+
+        // Transform $publish from bool to string
+        $publish = $publish ? 'publish' : 'build';
 
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
@@ -101,21 +104,4 @@ class BuildCommand extends Command
         );
     }
 
-    protected function getDefaultOs(): string
-    {
-        return match (PHP_OS_FAMILY) {
-            'Windows' => 'win',
-            'Darwin' => 'mac',
-            'Linux' => 'linux',
-            default => 'all',
-        };
-    }
-
-    protected function getArchForOs(string $os): array {
-        return match ($os) {
-            'win' => ['-x64'],
-            'mac' => ['-x86', '-arm', 'all'],
-            'linux' => ['-x64']
-        };
-    }
 }
