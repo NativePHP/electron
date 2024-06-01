@@ -44,24 +44,23 @@ class BuildCommand extends Command
             );
         }
 
+        // Default params to "build:all" command
         $arch = '';
         $publish = 'build';
         if ($os != 'all') {
+            // Depends on the currenty available php executables
             if (! $arch = $this->argument('arch')) {
-                $availOsArch = [
-                    'win' => ['-x64'],
-                    'mac' => ['-x86', '-arm', 'all'],
-                    'linux' => ['-x64']
-                ];
                 $arch = select(
                     label: 'Please select Processor Architecture',
-                    options: $availOsArch[$os],
-                    default: $availOsArch[$os][0]
+                    options: ($a = $this->getArchForOs($os)),
+                    default: $a[0]
                 );
                 if ($arch == 'all') {
                     $arch = '';
                 }
             }
+
+            // Wether to publish the app or not
             if (! $publish = $this->argument('pub')) {
                 $publish = confirm(
                     label: 'Should the App be published?',
@@ -109,6 +108,14 @@ class BuildCommand extends Command
             'Darwin' => 'mac',
             'Linux' => 'linux',
             default => 'all',
+        };
+    }
+
+    protected function getArchForOs(string $os): array {
+        return match ($os) {
+            'win' => ['-x64'],
+            'mac' => ['-x86', '-arm', 'all'],
+            'linux' => ['-x64']
         };
     }
 }
