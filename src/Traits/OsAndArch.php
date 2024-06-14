@@ -1,6 +1,8 @@
 <?php
 namespace Native\Electron\Traits;
 
+use Illuminate\Support\Facades\Storage;
+
 trait OsAndArch {
     protected function getDefaultOs(): string
     {
@@ -14,9 +16,9 @@ trait OsAndArch {
 
     protected function getArchForOs(string $os): array {
         return match ($os) {
-            'win' => ['-x64'],
-            'mac' => ['-x86', '-arm', 'all'],
-            'linux' => ['-x64']
+            'win' => ['x64'],
+            'mac' => ['x86', 'arm64', 'all'],
+            'linux' => ['x64']
         };
     }
 }

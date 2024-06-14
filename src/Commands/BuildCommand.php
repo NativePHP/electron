@@ -19,7 +19,7 @@ class BuildCommand extends Command
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
-        {arch? : The Processor Architecture to build for (-x64, -x86, -arm64)}
+        {arch? : The Processor Architecture to build for (x64, x86, arm64)}
         {pub? : Publish the app (false, true)}';
 
     public function handle(): void
@@ -61,6 +61,7 @@ class BuildCommand extends Command
                     $arch = '';
                 }
             }
+            $arch = !empty($arch) ? "-{$arch}": $arch;
 
             // Wether to publish the app or not
             if (! $publish = $this->argument('pub')) {
