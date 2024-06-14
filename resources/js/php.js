@@ -24,7 +24,7 @@ const platform = {
 
 if (isWindows) {
     platform.os = 'win';
-    platform.php += '.exe';
+    platform.phpBinary += '.exe';
 }
 
 if (isLinux) {
@@ -42,17 +42,10 @@ if (isArm64) {
 
 if (isBuilding) {
     // Only one will be used by the configured build commands in package.json
-    platform.arch = process.argv.includes('--x64') ? 'x64' : false;
-    platform.arch = process.argv.includes('--x86') ? 'x86' : false;
-    platform.arch = process.argv.includes('--arm64') ? 'arm64' : false;
+    platform.arch = process.argv.includes('--x64') ? 'x64' : platform.arch;
+    platform.arch = process.argv.includes('--x86') ? 'x86' : platform.arch;
+    platform.arch = process.argv.includes('--arm64') ? 'arm64' : platform.arch;
 }
-
-if (!platform.arch) {
-    console.log('Platform Architecture not set', isBuilding, isWindows, platform);
-    exit(1);
-}
-
-// select correct arch
 
 const phpVersionZip = 'php-' + phpVersion + '.zip';
 const binarySrcDir = join(phpBinaryPath, platform.os, platform.arch, phpVersionZip);
