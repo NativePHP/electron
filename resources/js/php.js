@@ -16,6 +16,7 @@ const isWindows = isBuilding ?  process.argv.includes('--win') : process.platfor
 const isLinux = isBuilding ?  process.argv.includes('--linux') : process.platform.includes('linux');
 const isDarwin = isBuilding ?  process.argv.includes('--mac') : process.platform.includes('darwin');
 
+// false because string mapping is done in is{OS} checks
 const platform = {
     os: false,
     arch: false,
@@ -30,7 +31,7 @@ if (isWindows) {
 if (isLinux) {
     platform.os = 'linux';
 }
-// Use of isDarwin
+
 if (isDarwin) {
     platform.os = 'mac';
     platform.arch = 'x86';
@@ -40,6 +41,7 @@ if (isArm64) {
     platform.arch = 'arm64';
 }
 
+// isBuilding overwrites platform to the desired architecture
 if (isBuilding) {
     // Only one will be used by the configured build commands in package.json
     platform.arch = process.argv.includes('--x64') ? 'x64' : platform.arch;

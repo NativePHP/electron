@@ -32,6 +32,7 @@ if (isDarwin) {
 
 let updaterConfig = {};
 
+// We wouldn't need these since its not representing the target platform
 console.log("Arch: ", process.arch)
 console.log("Platform: ", process.platform)
 try {

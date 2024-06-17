@@ -9,9 +9,6 @@ use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\OsAndArch;
 
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\select;
-
 class BuildCommand extends Command
 {
     use LocatesPhpBinary;
@@ -20,7 +17,9 @@ class BuildCommand extends Command
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
         {arch? : The Processor Architecture to build for (x64, x86, arm64)}
-        {pub? : Publish the app (false, true)}';
+        {--publish : to publish the app}';
+
+    protected $availOs = ['win', 'linux', 'mac', 'all'];
 
     public function handle(): void
     {
@@ -38,48 +37,29 @@ class BuildCommand extends Command
                 echo $output;
             });
 
-        if (! $os = $this->argument('os')) {
-            $os = select(
-                label: 'Please select the operating system to build for',
-                options: ['win', 'linux', 'mac', 'all'],
-                default: $this->getDefaultOs(),
-            );
-        }
+        // Added checks for correct input for os and arch
+        $os = $this->selectOs($this->argument('os'));
 
         // Default params to "build:all" command
         $arch = '';
-        $publish = false;
+        $buildCommand = 'build';
         if ($os != 'all') {
-            // Depends on the currenty available php executables
-            if (! $arch = $this->argument('arch')) {
-                $arch = select(
-                    label: 'Please select Processor Architecture',
-                    options: ($a = $this->getArchForOs($os)),
-                    default: $a[0]
-                );
-                if ($arch == 'all') {
-                    $arch = '';
-                }
-            }
+            $arch = $this->selectArchForOs($os, $this->argument('arch'));
+
             $arch = !empty($arch) ? "-{$arch}": $arch;
 
             // Wether to publish the app or not
-            if (! $publish = $this->argument('pub')) {
-                $publish = confirm(
-                    label: 'Should the App be published?',
-                    default: false
-                );
+            if ($publish = ($this->option('publish'))){
+                $buildCommand = 'publish';
             }
         }
-
-        // Transform $publish from bool to string
-        $publish = $publish ? 'publish' : 'build';
+        $this->info((($publish ?? false) ? "Publishing" : 'Building') . " for {$os} {$arch}");
 
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
             ->tty(PHP_OS_FAMILY != 'Windows' && ! $this->option('no-interaction'))
-            ->run("npm run {$publish}:{$os}{$arch}", function (string $type, string $output) {
+            ->run("npm run {$buildCommand}:{$os}{$arch}", function (string $type, string $output) {
                 echo $output;
             });
     }
