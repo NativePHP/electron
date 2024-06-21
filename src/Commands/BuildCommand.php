@@ -40,26 +40,26 @@ class BuildCommand extends Command
         // Added checks for correct input for os and arch
         $os = $this->selectOs($this->argument('os'));
 
-        // Default params to "build:all" command
-        $arch = '';
         $buildCommand = 'build';
         if ($os != 'all') {
             $arch = $this->selectArchForOs($os, $this->argument('arch'));
 
-            $arch = !empty($arch) ? "-{$arch}": $arch;
+            $os .= $arch != 'all' ? "-{$arch}": '';
 
             // Wether to publish the app or not
             if ($publish = ($this->option('publish'))){
                 $buildCommand = 'publish';
             }
         }
-        $this->info((($publish ?? false) ? "Publishing" : 'Building') . " for {$os} {$arch}");
+        $this->info((($publish ?? false) ? "Publishing" : 'Building') . " for {$os}");
+
+        dd("npm run {$buildCommand}:{$os}");
 
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
             ->tty(PHP_OS_FAMILY != 'Windows' && ! $this->option('no-interaction'))
-            ->run("npm run {$buildCommand}:{$os}{$arch}", function (string $type, string $output) {
+            ->run("npm run {$buildCommand}:{$os}", function (string $type, string $output) {
                 echo $output;
             });
     }

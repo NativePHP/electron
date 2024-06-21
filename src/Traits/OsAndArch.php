@@ -39,11 +39,12 @@ trait OsAndArch {
      * Make this dynamic at some point
      */
     protected function getArchForOs(string $os): array {
-        return match ($os) {
+        $archs = match ($os) {
             'win' => ['x64'],
-            'mac' => ['x86', 'arm64', 'all'],
+            'mac' => ['x86', 'arm64'],
             'linux' => ['x64']
         };
+        return [...$archs, 'all'];
     }
 
     // Depends on the currenty available php executables
@@ -53,11 +54,8 @@ trait OsAndArch {
             $arch = select(
                 label: 'Please select Processor Architecture',
                 options: $a,
-                default: $a[0]
+                default: 'all'
             );
-            if ($arch == 'all') {
-                $arch = '';
-            }
         }
         return $arch;
     }
