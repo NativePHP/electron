@@ -17,7 +17,7 @@ class PublishCommand extends Command
         {arch? : The Processor Architecture to build for (x64, x86, arm64)}';
 
 
-    protected array $availOs = ['win', 'linux', 'mac'];
+    protected array $availableOs = ['win', 'linux', 'mac'];
 
     public function handle(): void
     {
@@ -25,7 +25,7 @@ class PublishCommand extends Command
 
         $os = $this->selectOs($this->argument('os'));
 
-        $arch = $this->selectArchForOs($os, $this->argument('arch'));
+        $arch = $this->selectArchitectureForOs($os, $this->argument('arch'));
 
         Artisan::call("native:build", ['os'=>$os, 'arch' => $arch, '--publish' => true], $this->output);
     }

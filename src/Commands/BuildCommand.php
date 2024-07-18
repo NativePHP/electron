@@ -19,7 +19,7 @@ class BuildCommand extends Command
         {arch? : The Processor Architecture to build for (x64, x86, arm64)}
         {--publish : to publish the app}';
 
-    protected $availOs = ['win', 'linux', 'mac', 'all'];
+    protected $availableOs = ['win', 'linux', 'mac', 'all'];
 
     public function handle(): void
     {
@@ -42,7 +42,7 @@ class BuildCommand extends Command
 
         $buildCommand = 'build';
         if ($os != 'all') {
-            $arch = $this->selectArchForOs($os, $this->argument('arch'));
+            $arch = $this->selectArchitectureForOs($os, $this->argument('arch'));
 
             $os .= $arch != 'all' ? "-{$arch}": '';
 
@@ -53,7 +53,6 @@ class BuildCommand extends Command
         }
         $this->info((($publish ?? false) ? "Publishing" : 'Building') . " for {$os}");
 
-        dd("npm run {$buildCommand}:{$os}");
 
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
