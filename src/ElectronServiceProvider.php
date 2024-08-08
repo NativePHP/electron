@@ -4,6 +4,7 @@ namespace Native\Electron;
 
 use Native\Electron\Commands\BuildCommand;
 use Native\Electron\Commands\DevelopCommand;
+use Native\Electron\Commands\IconCommand;
 use Native\Electron\Commands\InstallCommand;
 use Native\Electron\Commands\PublishCommand;
 use Native\Electron\Commands\QueueWorkerCommand;
@@ -24,6 +25,7 @@ class ElectronServiceProvider extends PackageServiceProvider
                 BuildCommand::class,
                 PublishCommand::class,
                 QueueWorkerCommand::class,
+                IconCommand::class,
             ]);
     }
 
