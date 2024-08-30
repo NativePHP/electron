@@ -12,9 +12,9 @@ use Native\Electron\Traits\OsAndArch;
 
 class BuildCommand extends Command
 {
+    use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
-    use InstallsAppIcon;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
