@@ -2,9 +2,6 @@
 
 namespace Native\Electron\Traits;
 
-use function Laravel\Prompts\intro;
-use function Laravel\Prompts\note;
-
 trait SetsAppName
 {
     protected function setAppName(bool $slugify = false): void
