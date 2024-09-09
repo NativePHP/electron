@@ -9,7 +9,7 @@ trait LocatesPhpBinary
      */
     protected function binaryPackageDirectory(): string
     {
-        return env('NATIVEPHP_PHP_BINARY_PACKAGE_DIR', 'vendor/nativephp/php-bin/');
+        return env('NATIVEPHP_PHP_BINARY_PATH', 'vendor/nativephp/php-bin/');
     }
 
     /**
