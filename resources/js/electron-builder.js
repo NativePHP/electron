@@ -55,14 +55,14 @@ if (isBuilding) {
 
         removeSync(appPath);
 
-        // As we can't copy into a subdirectory of ourself we need to copy to a temp directory
-        let tmpDir = mkdtempSync(join(os.tmpdir(), 'nativephp'));
-
         let bundle = join(process.env.APP_PATH, 'build', '__nativephp_app_bundle');
 
         if (existsSync(bundle)) {
-            copySync(bundle, appPath);
+            copySync(bundle, join(appPath, 'bundle', '__nativephp_app_bundle'));
         } else {
+            // As we can't copy into a subdirectory of ourself we need to copy to a temp directory
+            let tmpDir = mkdtempSync(join(os.tmpdir(), 'nativephp'));
+
             console.warn('=====================');
             console.warn('* * * INSECURE BUILD * * *');
             console.warn('Secure app bundle not found! Building with exposed source files.');
