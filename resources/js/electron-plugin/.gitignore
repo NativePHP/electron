@@ -5,6 +5,7 @@ node_modules
 build
 dist-ssr
 *.local
+*.tgz
 
 # logs
 logs

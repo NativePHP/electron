@@ -45,7 +45,7 @@ trait ExecuteCommand
     {
         $commands = [
             'install' => [
-                'npm' => 'npm install',
+                'npm' => 'npm ci',
                 'yarn' => 'yarn',
                 'pnpm' => 'pnpm install',
             ],
