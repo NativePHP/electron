@@ -34,6 +34,19 @@ class BuildCommand extends Command
                 echo $output;
             });
 
+        // Install electron plugin as a tarball (avoid bundling symlinks)
+        Process::path(__DIR__.'/../../resources/js/electron-plugin')
+            ->run('npm pack', function (string $type, string $output) {
+                echo $output;
+            });
+
+        Process::path(__DIR__.'/../../resources/js')
+            ->env($this->getEnvironmentVariables())
+            ->forever()
+            ->run('npm ci ./electron-plugin/nativephp-electron-plugin-tarball.tgz', function (string $type, string $output) {
+                echo $output;
+            });
+
         Process::path(base_path())
             ->run('composer install --no-dev', function (string $type, string $output) {
                 echo $output;
