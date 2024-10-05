@@ -6,12 +6,12 @@
     "esModuleInterop": true,
     "outDir": "./dist",
     "sourceMap": false,
-    "target": "es6",
+    "target": "ES6",
     "noImplicitAny": false,
     "preserveConstEnums": true,
     "removeComments": true,
     "typeRoots": [
-      "node_modules/@types"
+      "../node_modules/@types"
     ],
     "lib": [
       "es2019",
@@ -25,8 +25,5 @@
   },
   "include": [
     "./src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }

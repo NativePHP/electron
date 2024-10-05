@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: 18.x
       - name: Install dependencies
-        working-directory: ./resources/js/electron-plugin
+        working-directory: ./resources/js/
         run: npm install
       - name: Run tests
-        working-directory: ./resources/js/electron-plugin
-        run: npm test
+        working-directory: ./resources/js/
+        run: npm run plugin:test

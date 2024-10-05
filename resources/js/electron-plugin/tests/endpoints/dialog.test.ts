@@ -1,7 +1,6 @@
 import startAPIServer, { APIProcess } from "../../src/server/api";
 import axios, { AxiosError } from "axios";
 import electron from "electron";
-import exp = require("constants");
 
 let apiServer: APIProcess;
 
@@ -32,7 +31,6 @@ describe('Dialog test', () => {
   });
 
   it('can open a dialog', async () => {
-    const electron = require('electron');
     const options = {
       title: 'Open Dialog',
       defaultPath: '/home/user/Desktop',
@@ -52,7 +50,6 @@ describe('Dialog test', () => {
   });
 
   it('can open a save dialog', async () => {
-    const electron = require('electron');
     const options = {
       title: 'Open Dialog',
       defaultPath: '/home/user/Desktop',
@@ -72,7 +69,6 @@ describe('Dialog test', () => {
   });
 
   it('can open a message dialog', async () => {
-    const electron = require('electron');
     const options = {
       title: 'Open Dialog',
       message: 'Select an image',
@@ -87,7 +83,6 @@ describe('Dialog test', () => {
   });
 
   it('can open an error dialog', async () => {
-    const electron = require('electron');
     const options = {
       title: 'Error Dialog',
       message: 'Uh oh!',

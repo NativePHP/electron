@@ -42,8 +42,6 @@ describe('Clipboard test', () => {
   });
 
   it('can write clipboard contents as text', async () => {
-    const electron = require('electron');
-
     const response = await axios.post('/clipboard/text', {
       text: 'new clipboard text',
     });
@@ -52,8 +50,6 @@ describe('Clipboard test', () => {
   });
 
   it('can write clipboard contents as HTML', async () => {
-    const electron = require('electron');
-
     const response = await axios.post('/clipboard/html', {
       html: 'new clipboard HTML',
     });
@@ -78,8 +74,6 @@ describe('Clipboard test', () => {
   });
 
   it('can write new images to clipboard', async () => {
-    const electron = require('electron');
-
     const exampleImage = 'example image url';
 
     const response = await axios.post('/clipboard/image', {
@@ -103,8 +97,6 @@ describe('Clipboard test', () => {
   });
 
   it('can clear clipboard contents', async () => {
-    const electron = require('electron');
-
     const response = await axios.delete('/clipboard');
     expect(electron.clipboard.clear).toHaveBeenCalledWith('clipboard');
     expect(response.status).toBe(200);
