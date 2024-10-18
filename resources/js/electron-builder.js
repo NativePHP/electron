@@ -164,6 +164,8 @@ module.exports = {
                 "Application requests access to the user's Documents folder.",
             NSDownloadsFolderUsageDescription:
                 "Application requests access to the user's Downloads folder.",
+            NSScreenCaptureUsageDescription:
+                "Application requests access to the user's screen capture and system audio",
         },
     },
     dmg: {
