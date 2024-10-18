@@ -111,7 +111,7 @@ if (isBuilding) {
 
         const artisanPath = join(appPath, 'artisan');
         // We'll use the default PATH PHP binary here, as we can cross-compile for all platforms. This shouldn't be changed.
-        execSync(`php ${artisanPath} native:minify ${appPath}`);
+        execSync(`php ${artisanPath} native:minify ${appPath}`, { cwd: appPath });
     } catch (e) {
         console.error('=====================');
         console.error('Error copying app to resources');
