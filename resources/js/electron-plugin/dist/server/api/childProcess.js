@@ -2,37 +2,37 @@ import express from 'express';
 import { utilityProcess } from 'electron';
 import state from '../state';
 import { notifyLaravel } from "../utils";
+import { join } from 'path';
 const router = express.Router();
 router.post('/start', (req, res) => {
     const { alias, cmd, args, cwd, env } = req.body;
-    console.log(req.body);
-    if (state.processes[alias] !== null) {
+    if (state.processes[alias] !== undefined) {
         res.sendStatus(409);
         return;
     }
-    const proc = utilityProcess.fork(cmd, args || null, {
-        env: env || null,
-        cwd: cwd || null,
+    const proc = utilityProcess.fork(join(__dirname, '../../electron-plugin/dist/server/childProcess.js'), cmd, {
+        cwd,
         serviceName: alias,
+        stdio: 'pipe',
+        env: Object.assign(Object.assign({}, process.env), env)
     });
-    console.log(proc);
     proc.stdout.on('data', (data) => {
-        console.log('Message received from process [' + alias + ']:', data);
+        console.log('Message received from process [' + alias + ']:', data.toString());
         notifyLaravel('events', {
             event: 'Native\\Laravel\\Events\\ChildProcess\\MessageReceived',
             payload: {
                 alias,
-                data,
+                data: data.toString(),
             }
         });
     });
     proc.stderr.on('data', (data) => {
-        console.log('Error received from process [' + alias + ']:', data);
+        console.log('Error received from process [' + alias + ']:', data.toString());
         notifyLaravel('events', {
             event: 'Native\\Laravel\\Events\\ChildProcess\\ErrorReceived',
             payload: {
                 alias,
-                data,
+                data: data.toString(),
             }
         });
     });
@@ -44,7 +44,7 @@ router.post('/start', (req, res) => {
         });
     });
     proc.on('exit', (code) => {
-        console.log('Process [' + alias + '] exited!');
+        console.log('Process [' + alias + '] exited with code [' + code + ']!');
         notifyLaravel('events', {
             event: 'Native\\Laravel\\Events\\ChildProcess\\ProcessExited',
             payload: {
@@ -52,6 +52,7 @@ router.post('/start', (req, res) => {
                 code,
             }
         });
+        delete state.processes[alias];
     });
     state.processes[alias] = proc;
     res.json(proc);
@@ -59,7 +60,7 @@ router.post('/start', (req, res) => {
 router.post('/stop', (req, res) => {
     const { alias } = req.body;
     const proc = state.processes[alias];
-    if (proc === null) {
+    if (proc === undefined) {
         res.sendStatus(200);
         return;
     }
