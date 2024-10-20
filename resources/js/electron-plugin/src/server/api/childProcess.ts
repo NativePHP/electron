@@ -97,7 +97,7 @@ router.post('/message', (req, res) => {
 
     const proc = state.processes[alias]
 
-    if (proc === null) {
+    if (proc === undefined) {
         res.sendStatus(200)
         return
     }

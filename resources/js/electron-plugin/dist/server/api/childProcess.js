@@ -72,7 +72,7 @@ router.post('/stop', (req, res) => {
 router.post('/message', (req, res) => {
     const { alias, message } = req.body;
     const proc = state.processes[alias];
-    if (proc === null) {
+    if (proc === undefined) {
         res.sendStatus(200);
         return;
     }
