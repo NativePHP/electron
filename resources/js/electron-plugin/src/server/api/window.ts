@@ -244,6 +244,7 @@ router.post('/open', (req, res) => {
         })
     })
 
+    // @ts-ignore
     window.on('hide', (evt) => {
         notifyLaravel('events', {
             event: 'Native\\Laravel\\Events\\Windows\\WindowHidden',
