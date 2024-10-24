@@ -16,8 +16,7 @@ trait ExecuteCommand
         bool $skip_queue = false,
         string $type = 'install',
         bool $withoutInteraction = false
-    ): void
-    {
+    ): void {
         $envs = [
             'install' => [
                 'NATIVEPHP_PHP_BINARY_VERSION' => PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION,
