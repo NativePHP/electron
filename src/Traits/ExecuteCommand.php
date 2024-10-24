@@ -11,7 +11,12 @@ trait ExecuteCommand
 {
     use LocatesPhpBinary;
 
-    protected function executeCommand(string $command, bool $skip_queue = false, string $type = 'install', bool $withoutInteraction = false): void
+    protected function executeCommand(
+        string $command,
+        bool $skip_queue = false,
+        string $type = 'install',
+        bool $withoutInteraction = false
+    ): void
     {
         $envs = [
             'install' => [
@@ -30,6 +35,7 @@ trait ExecuteCommand
         ];
 
         note('Fetching latest dependencies…');
+
         Process::path(__DIR__.'/../../resources/js/')
             ->env($envs[$type])
             ->forever()

@@ -39,7 +39,11 @@ class DevelopCommand extends Command
 
         $this->installIcon();
 
-        $this->runDeveloper(installer: $this->option('installer'), skip_queue: $this->option('no-queue'), withoutInteraction: $this->option('no-interaction'));
+        $this->runDeveloper(
+            installer: $this->option('installer'),
+            skip_queue: $this->option('no-queue'),
+            withoutInteraction: $this->option('no-interaction')
+        );
     }
 
     /**
