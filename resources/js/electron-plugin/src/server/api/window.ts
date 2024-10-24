@@ -219,14 +219,14 @@ router.post('/open', (req, res) => {
         kiosk,
     })
 
-  if ((process.env.NODE_ENV === 'development' || showDevTools === true) && showDevTools !== false) {
-    window.webContents.openDevTools();
-  }
+    if ((process.env.NODE_ENV === 'development' || showDevTools === true) && showDevTools !== false) {
+        window.webContents.openDevTools();
+    }
 
     require("@electron/remote/main").enable(window.webContents)
 
     if (req.body.rememberState === true) {
-      windowState.manage(window)
+        windowState.manage(window)
     }
 
     window.on('blur', () => {
