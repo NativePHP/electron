@@ -23,6 +23,18 @@ router.post('/resize', (req, res) => {
     (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setSize(parseInt(width), parseInt(height));
     res.sendStatus(200);
 });
+router.post('/title', (req, res) => {
+    var _a;
+    const { id, title } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setTitle(title);
+    res.sendStatus(200);
+});
+router.post('/url', (req, res) => {
+    var _a;
+    const { id, url } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.loadURL(url);
+    res.sendStatus(200);
+});
 router.post('/position', (req, res) => {
     var _a;
     const { id, x, y, animate } = req.body;
@@ -50,10 +62,31 @@ router.post('/hide', (req, res) => {
     }
     return res.sendStatus(200);
 });
+router.post('/always-on-top', (req, res) => {
+    var _a;
+    const { id, alwaysOnTop } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setAlwaysOnTop(alwaysOnTop);
+    res.sendStatus(200);
+});
 router.get('/current', (req, res) => {
     const currentWindow = Object.values(state.windows).find(window => window.id === BrowserWindow.getFocusedWindow().id);
     const id = Object.keys(state.windows).find(key => state.windows[key] === currentWindow);
-    res.json({
+    res.json(getWindowData(id));
+});
+router.get('/get/:id', (req, res) => {
+    const { id } = req.params;
+    if (state.windows[id] === undefined) {
+        res.sendStatus(404);
+        return;
+    }
+    res.json(getWindowData(id));
+});
+function getWindowData(id) {
+    const currentWindow = state.windows[id];
+    if (state.windows[id] === undefined) {
+        throw `Window [${id}] not found`;
+    }
+    return {
         id: id,
         x: currentWindow.getPosition()[0],
         y: currentWindow.getPosition()[1],
@@ -61,14 +94,22 @@ router.get('/current', (req, res) => {
         height: currentWindow.getSize()[1],
         title: currentWindow.getTitle(),
         alwaysOnTop: currentWindow.isAlwaysOnTop(),
-    });
-});
-router.post('/always-on-top', (req, res) => {
-    var _a;
-    const { id, alwaysOnTop } = req.body;
-    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setAlwaysOnTop(alwaysOnTop);
-    res.sendStatus(200);
-});
+        url: currentWindow.webContents.getURL(),
+        autoHideMenuBar: currentWindow.isMenuBarAutoHide(),
+        fullscreen: currentWindow.isFullScreen(),
+        fullscreenable: currentWindow.isFullScreenable(),
+        kiosk: currentWindow.isKiosk(),
+        showDevTools: currentWindow.webContents.isDevToolsOpened(),
+        resizable: currentWindow.isResizable(),
+        movable: currentWindow.isMovable(),
+        minimizable: currentWindow.isMinimizable(),
+        maximizable: currentWindow.isMaximizable(),
+        closable: currentWindow.isClosable(),
+        focusable: currentWindow.isFocusable(),
+        focused: currentWindow.isFocused(),
+        hasShadow: currentWindow.hasShadow(),
+    };
+}
 router.post('/open', (req, res) => {
     let { id, x, y, frame, width, height, minWidth, minHeight, maxWidth, maxHeight, focusable, hasShadow, url, resizable, movable, minimizable, maximizable, closable, title, alwaysOnTop, titleBarStyle, trafficLightPosition, vibrancy, backgroundColor, transparency, showDevTools, fullscreen, fullscreenable, kiosk, autoHideMenuBar, } = req.body;
     if (state.windows[id]) {
