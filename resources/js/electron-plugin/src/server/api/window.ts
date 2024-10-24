@@ -64,11 +64,34 @@ router.post('/hide', (req, res) => {
 })
 
 router.get('/current', (req, res) => {
-    const currentWindow = Object.values(state.windows).find(window => window.id === BrowserWindow.getFocusedWindow().id)
-    // Find object key with matching value
-    const id = Object.keys(state.windows).find(key => state.windows[key] === currentWindow)
+    // Find the current window object
+    const currentWindow = Object.values(state.windows).find(window => window.id === BrowserWindow.getFocusedWindow().id);
 
-    res.json({
+    // Get the developer-assigned id for that window
+    const id = Object.keys(state.windows).find(key => state.windows[key] === currentWindow);
+
+    res.json(getWindowData(id));
+});
+
+router.get('/get/:id', (req, res) => {
+    const {id} = req.params;
+
+    if (state.windows[id] === undefined) {
+        res.sendStatus(404);
+        return;
+    }
+
+    res.json(getWindowData(id));
+});
+
+function getWindowData(id) {
+    const currentWindow = state.windows[id];
+
+    if (state.windows[id] === undefined) {
+        throw `Window [${id}] not found`;
+    }
+
+    return {
         id: id,
         x: currentWindow.getPosition()[0],
         y: currentWindow.getPosition()[1],
@@ -76,7 +99,25 @@ router.get('/current', (req, res) => {
         height: currentWindow.getSize()[1],
         title: currentWindow.getTitle(),
         alwaysOnTop: currentWindow.isAlwaysOnTop(),
-    })
+        url: currentWindow.webContents.getURL(),
+        autoHideMenuBar: currentWindow.isMenuBarAutoHide(),
+        fullscreen: currentWindow.isFullScreen(),
+        fullscreenable: currentWindow.isFullScreenable(),
+        kiosk: currentWindow.isKiosk(),
+        showDevTools: currentWindow.webContents.isDevToolsOpened(),
+        resizable: currentWindow.isResizable(),
+        movable: currentWindow.isMovable(),
+        minimizable: currentWindow.isMinimizable(),
+        maximizable: currentWindow.isMaximizable(),
+        closable: currentWindow.isClosable(),
+        focusable: currentWindow.isFocusable(),
+        focused: currentWindow.isFocused(),
+        hasShadow: currentWindow.hasShadow(),
+        // frame: currentWindow.frame(),
+        // titleBarStyle: currentWindow.getTitleBarStyle(),
+        // trafficLightPosition: currentWindow.getTrafficLightPosition(),
+    };
+}
 });
 
 router.post('/always-on-top', (req, res) => {
