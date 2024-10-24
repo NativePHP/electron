@@ -7,7 +7,7 @@ const Native = {
             event = event.replace(/^(\\)+/, '');
             data.event = data.event.replace(/^(\\)+/, '');
 
-            if(event === data.event) {
+            if (event === data.event) {
                 return callback(data.payload, event);
             }
         })
