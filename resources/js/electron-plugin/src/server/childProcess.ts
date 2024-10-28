@@ -14,7 +14,6 @@ const proc = spawn(
 
 process.parentPort.on('message', (message) => {
     proc.stdin.write(message.data)
-    proc.stdin.end();
 });
 
 // Handle normal output
