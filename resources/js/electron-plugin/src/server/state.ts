@@ -28,7 +28,7 @@ interface State {
   phpIni: any;
   caCert: string | null;
   icon: string | null;
-  processes: Record<string, UtilityProcess>;
+  processes: Record<string, {pid: any, proc: UtilityProcess, settings: Record<string, any>}>;
   windows: Record<string, BrowserWindow>;
   randomSecret: string;
   store: Store;
