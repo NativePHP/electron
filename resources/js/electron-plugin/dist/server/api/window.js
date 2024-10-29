@@ -215,7 +215,7 @@ router.post('/open', (req, res) => {
         window.show();
     });
     window.webContents.on('did-fail-load', (event) => {
-        console.log('failed to open window...', event);
+        console.error('failed to open window...', event);
     });
     state.windows[id] = window;
     res.sendStatus(200);
