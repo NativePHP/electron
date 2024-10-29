@@ -60,7 +60,7 @@ function startProcess(settings) {
 
         notifyLaravel('events', {
             event: 'Native\\Laravel\\Events\\ChildProcess\\ProcessSpawned',
-            payload: [alias]
+            payload: [alias, proc.pid]
         });
     });
 
