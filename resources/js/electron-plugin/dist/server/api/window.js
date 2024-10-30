@@ -35,6 +35,12 @@ router.post('/url', (req, res) => {
     (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.loadURL(url);
     res.sendStatus(200);
 });
+router.post('/closable', (req, res) => {
+    var _a;
+    const { id, closable } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setClosable(closable);
+    res.sendStatus(200);
+});
 router.post('/position', (req, res) => {
     var _a;
     const { id, x, y, animate } = req.body;

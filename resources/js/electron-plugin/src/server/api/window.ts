@@ -46,6 +46,14 @@ router.post('/url', (req, res) => {
     res.sendStatus(200);
 });
 
+router.post('/closable', (req, res) => {
+    const {id, closable} = req.body;
+
+    state.windows[id]?.setClosable(closable);
+
+    res.sendStatus(200);
+});
+
 router.post('/position', (req, res) => {
     const {id, x, y, animate} = req.body;
 
