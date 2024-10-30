@@ -187,6 +187,7 @@ router.post('/open', (req, res) => {
         fullscreenable,
         kiosk,
         autoHideMenuBar,
+        webPreferences,
     } = req.body;
 
     if (state.windows[id]) {
@@ -195,7 +196,16 @@ router.post('/open', (req, res) => {
         return res.sendStatus(200);
     }
 
-    let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js')
+    let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js');
+
+    const defaultWebPreferences = {
+        backgroundThrottling: false,
+        spellcheck: false,
+        preload: preloadPath,
+        sandbox: false,
+        contextIsolation: false,
+        nodeIntegration: true,
+    };
 
     let windowState: windowStateKeeper.State | undefined = undefined;
 
@@ -235,12 +245,8 @@ router.post('/open', (req, res) => {
         autoHideMenuBar,
         ...(process.platform === 'linux' ? {icon: state.icon} : {}),
         webPreferences: {
-            backgroundThrottling: false,
-            spellcheck: false,
-            preload: preloadPath,
-            sandbox: false,
-            contextIsolation: false,
-            nodeIntegration: true,
+            ...webPreferences,
+            ...defaultWebPreferences
         },
         fullscreen,
         fullscreenable,

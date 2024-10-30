@@ -117,13 +117,21 @@ function getWindowData(id) {
     };
 }
 router.post('/open', (req, res) => {
-    let { id, x, y, frame, width, height, minWidth, minHeight, maxWidth, maxHeight, focusable, hasShadow, url, resizable, movable, minimizable, maximizable, closable, title, alwaysOnTop, titleBarStyle, trafficLightPosition, vibrancy, backgroundColor, transparency, showDevTools, fullscreen, fullscreenable, kiosk, autoHideMenuBar, } = req.body;
+    let { id, x, y, frame, width, height, minWidth, minHeight, maxWidth, maxHeight, focusable, hasShadow, url, resizable, movable, minimizable, maximizable, closable, title, alwaysOnTop, titleBarStyle, trafficLightPosition, vibrancy, backgroundColor, transparency, showDevTools, fullscreen, fullscreenable, kiosk, autoHideMenuBar, webPreferences, } = req.body;
     if (state.windows[id]) {
         state.windows[id].show();
         state.windows[id].focus();
         return res.sendStatus(200);
     }
     let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js');
+    const defaultWebPreferences = {
+        backgroundThrottling: false,
+        spellcheck: false,
+        preload: preloadPath,
+        sandbox: false,
+        contextIsolation: false,
+        nodeIntegration: true,
+    };
     let windowState = undefined;
     if (req.body.rememberState === true) {
         windowState = windowStateKeeper({
@@ -144,14 +152,7 @@ router.post('/open', (req, res) => {
         trafficLightPosition,
         vibrancy,
         focusable,
-        autoHideMenuBar }, (process.platform === 'linux' ? { icon: state.icon } : {})), { webPreferences: {
-            backgroundThrottling: false,
-            spellcheck: false,
-            preload: preloadPath,
-            sandbox: false,
-            contextIsolation: false,
-            nodeIntegration: true,
-        }, fullscreen,
+        autoHideMenuBar }, (process.platform === 'linux' ? { icon: state.icon } : {})), { webPreferences: Object.assign(Object.assign({}, webPreferences), defaultWebPreferences), fullscreen,
         fullscreenable,
         kiosk }));
     if ((process.env.NODE_ENV === 'development' || showDevTools === true) && showDevTools !== false) {
