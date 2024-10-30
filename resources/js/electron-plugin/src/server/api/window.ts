@@ -41,7 +41,7 @@ router.post('/title', (req, res) => {
 router.post('/url', (req, res) => {
     const {id, url} = req.body;
 
-    state.windows[id]?.loadURL(url);
+    state.windows[id]?.loadURL(appendWindowIdToUrl(url, id));
 
     res.sendStatus(200);
 });
@@ -135,6 +135,10 @@ router.get('/get/:id', (req, res) => {
 
     res.json(getWindowData(id));
 });
+
+function appendWindowIdToUrl(url, id) {
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + '_windowId=' + id;
+}
 
 function getWindowData(id) {
     const currentWindow = state.windows[id];
@@ -344,8 +348,7 @@ router.post('/open', (req, res) => {
         });
     });
 
-    // Append the window id to the url
-    url += (url.indexOf('?') === -1 ? '?' : '&') + '_windowId=' + id;
+    url = appendWindowIdToUrl(url, id);
 
     window.loadURL(url);
 

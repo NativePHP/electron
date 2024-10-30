@@ -32,7 +32,7 @@ router.post('/title', (req, res) => {
 router.post('/url', (req, res) => {
     var _a;
     const { id, url } = req.body;
-    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.loadURL(url);
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.loadURL(appendWindowIdToUrl(url, id));
     res.sendStatus(200);
 });
 router.post('/closable', (req, res) => {
@@ -99,6 +99,9 @@ router.get('/get/:id', (req, res) => {
     }
     res.json(getWindowData(id));
 });
+function appendWindowIdToUrl(url, id) {
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + '_windowId=' + id;
+}
 function getWindowData(id) {
     const currentWindow = state.windows[id];
     if (state.windows[id] === undefined) {
@@ -228,7 +231,7 @@ router.post('/open', (req, res) => {
             payload: [id]
         });
     });
-    url += (url.indexOf('?') === -1 ? '?' : '&') + '_windowId=' + id;
+    url = appendWindowIdToUrl(url, id);
     window.loadURL(url);
     window.webContents.on('did-finish-load', () => {
         window.show();
