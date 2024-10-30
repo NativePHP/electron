@@ -41,6 +41,18 @@ router.post('/closable', (req, res) => {
     (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setClosable(closable);
     res.sendStatus(200);
 });
+router.post('/show-dev-tools', (req, res) => {
+    var _a;
+    const { id } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.webContents.openDevTools();
+    res.sendStatus(200);
+});
+router.post('/hide-dev-tools', (req, res) => {
+    var _a;
+    const { id } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.webContents.closeDevTools();
+    res.sendStatus(200);
+});
 router.post('/position', (req, res) => {
     var _a;
     const { id, x, y, animate } = req.body;
@@ -105,7 +117,7 @@ function getWindowData(id) {
         fullscreen: currentWindow.isFullScreen(),
         fullscreenable: currentWindow.isFullScreenable(),
         kiosk: currentWindow.isKiosk(),
-        showDevTools: currentWindow.webContents.isDevToolsOpened(),
+        devToolsOpen: currentWindow.webContents.isDevToolsOpened(),
         resizable: currentWindow.isResizable(),
         movable: currentWindow.isMovable(),
         minimizable: currentWindow.isMinimizable(),
