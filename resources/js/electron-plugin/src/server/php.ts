@@ -256,6 +256,7 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
                     console.error('  ' + error.slice(47));
                     console.log('Please check your log file:');
                     console.log('  ' + join(appPath, 'storage', 'logs', 'laravel.log'));
+                    console.log();
                 }
             }
         });
