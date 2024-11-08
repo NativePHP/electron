@@ -4,6 +4,7 @@ import state from '../state';
 import { notifyLaravel } from "../utils";
 import { join } from 'path';
 const router = express.Router();
+const killSync = require('kill-sync');
 function startProcess(settings) {
     const { alias, cmd, cwd, env, persistent } = settings;
     if (getProcess(alias) !== undefined) {
@@ -71,7 +72,7 @@ function stopProcess(alias) {
     if (proc === undefined) {
         return;
     }
-    if (proc.kill()) {
+    if (killSync(proc.pid, "SIGTERM", true) === false) {
         delete state.processes[alias];
     }
 }
