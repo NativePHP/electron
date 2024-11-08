@@ -97,9 +97,9 @@ function stopProcess(alias) {
         return;
     }
 
-    if (killSync(proc.pid, "SIGTERM", true) === false) {
-        delete state.processes[alias];
-    }
+    killSync(proc.pid, "SIGTERM", true);
+
+    delete state.processes[alias];
 }
 
 function getProcess(alias) {
