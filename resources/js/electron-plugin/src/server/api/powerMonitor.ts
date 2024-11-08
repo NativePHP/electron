@@ -60,7 +60,7 @@ powerMonitor.addListener('speed-limit-change', (limit: number) => {
     notifyLaravel("events", {
         event: `\\Native\\Laravel\\Events\\PowerMonitor\\SpeedLimitChanged`,
         payload: {
-            limit: limit,
+            limit: limit
         }
     });
 })

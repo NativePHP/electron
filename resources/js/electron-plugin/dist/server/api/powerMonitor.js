@@ -42,7 +42,7 @@ powerMonitor.addListener('thermal-state-change', (state) => {
     notifyLaravel("events", {
         event: `\\Native\\Laravel\\Events\\PowerMonitor\\ThermalStateChanged`,
         payload: {
-            state
+            state: state
         }
     });
 });
@@ -50,7 +50,7 @@ powerMonitor.addListener('speed-limit-change', (limit) => {
     notifyLaravel("events", {
         event: `\\Native\\Laravel\\Events\\PowerMonitor\\SpeedLimitChanged`,
         payload: {
-            limit
+            limit: limit
         }
     });
 });
