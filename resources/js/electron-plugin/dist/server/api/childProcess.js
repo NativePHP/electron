@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import express from 'express';
 import { utilityProcess } from 'electron';
 import state from '../state';
@@ -56,8 +65,10 @@ function startProcess(settings) {
                 code,
             }
         });
+        const settings = Object.assign({}, getSettings(alias));
         delete state.processes[alias];
-        if (persistent) {
+        if (settings.persistent) {
+            console.log('Process [' + alias + '] wathchdog restarting...');
             startProcess(settings);
         }
     });
@@ -72,9 +83,10 @@ function stopProcess(alias) {
     if (proc === undefined) {
         return;
     }
-    if (killSync(proc.pid, "SIGTERM", true) === false) {
-        delete state.processes[alias];
-    }
+    state.processes[alias].settings.persistent = false;
+    console.log('Process [' + alias + '] stopping with PID [' + proc.pid + '].');
+    killSync(proc.pid, 'SIGTERM', true);
+    proc.kill();
 }
 function getProcess(alias) {
     var _a;
@@ -93,17 +105,28 @@ router.post('/stop', (req, res) => {
     stopProcess(alias);
     res.sendStatus(200);
 });
-router.post('/restart', (req, res) => {
+router.post('/restart', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { alias } = req.body;
-    const settings = getSettings(alias);
+    const settings = Object.assign({}, getSettings(alias));
     stopProcess(alias);
     if (settings === undefined) {
         res.sendStatus(410);
         return;
     }
+    const waitForProcessDeletion = (timeout, retry) => __awaiter(void 0, void 0, void 0, function* () {
+        const start = Date.now();
+        while (state.processes[alias] !== undefined) {
+            if (Date.now() - start > timeout) {
+                return;
+            }
+            yield new Promise(resolve => setTimeout(resolve, retry));
+        }
+    });
+    yield waitForProcessDeletion(5000, 100);
+    console.log('Process [' + alias + '] restarting...');
     const proc = startProcess(settings);
     res.json(proc);
-});
+}));
 router.get('/get/:alias', (req, res) => {
     const { alias } = req.params;
     const proc = state.processes[alias];
