@@ -88,6 +88,11 @@ function stopProcess(alias) {
     killSync(proc.pid, 'SIGTERM', true);
     proc.kill();
 }
+export function stopAllProcesses() {
+    for (const alias in state.processes) {
+        stopProcess(alias);
+    }
+}
 function getProcess(alias) {
     var _a;
     return (_a = state.processes[alias]) === null || _a === void 0 ? void 0 : _a.proc;

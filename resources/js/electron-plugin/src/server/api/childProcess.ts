@@ -109,6 +109,12 @@ function stopProcess(alias) {
     proc.kill(); // Does not work but just in case. (do not put before killSync)
 }
 
+export function stopAllProcesses() {
+    for (const alias in state.processes) {
+        stopProcess(alias);
+    }
+}
+
 function getProcess(alias) {
     return state.processes[alias]?.proc;
 }
