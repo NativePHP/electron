@@ -3,6 +3,8 @@ import { utilityProcess } from 'electron';
 import state from '../state';
 import { notifyLaravel } from "../utils";
 import { join } from 'path';
+import { getDefaultEnvironmentVariables } from "../php";
+
 
 const router = express.Router();
 const killSync = require('kill-sync');
@@ -14,16 +16,22 @@ function startProcess(settings) {
         return state.processes[alias];
     }
 
+    const defaultEnv = getDefaultEnvironmentVariables(
+        state.randomSecret,
+        state.electronApiPort
+    );
+
     const proc = utilityProcess.fork(
         join(__dirname, '../../electron-plugin/dist/server/childProcess.js'),
         cmd,
         {
             cwd,
-            serviceName: alias,
             stdio: 'pipe',
+            serviceName: alias,
             env: {
                 ...process.env,
-                ...env,
+                ...defaultEnv,
+                ...env
             }
         }
     );
