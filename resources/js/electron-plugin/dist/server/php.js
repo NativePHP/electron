@@ -139,7 +139,7 @@ function getDefaultEnvironmentVariables(secret, apiPort) {
         NATIVEPHP_STORAGE_PATH: storagePath,
         NATIVEPHP_DATABASE_PATH: databaseFile,
         NATIVEPHP_API_URL: `http://localhost:${apiPort}/api/`,
-        NATIVEPHP_RUNNING: true,
+        NATIVEPHP_RUNNING: 'true',
         NATIVEPHP_SECRET: secret,
         NATIVEPHP_USER_HOME_PATH: getPath('home'),
         NATIVEPHP_APP_DATA_PATH: getPath('appData'),
@@ -220,4 +220,4 @@ function serveApp(secret, apiPort, phpIniSettings) {
         });
     }));
 }
-export { startQueueWorker, startScheduler, serveApp, getAppPath, retrieveNativePHPConfig, retrievePhpIniSettings };
+export { startQueueWorker, startScheduler, serveApp, getAppPath, retrieveNativePHPConfig, retrievePhpIniSettings, getDefaultEnvironmentVariables };

@@ -12,6 +12,7 @@ import { utilityProcess } from 'electron';
 import state from '../state';
 import { notifyLaravel } from "../utils";
 import { join } from 'path';
+import { getDefaultEnvironmentVariables } from "../php";
 const router = express.Router();
 const killSync = require('kill-sync');
 function startProcess(settings) {
@@ -19,11 +20,12 @@ function startProcess(settings) {
     if (getProcess(alias) !== undefined) {
         return state.processes[alias];
     }
+    const defaultEnv = getDefaultEnvironmentVariables(state.randomSecret, state.electronApiPort);
     const proc = utilityProcess.fork(join(__dirname, '../../electron-plugin/dist/server/childProcess.js'), cmd, {
         cwd,
-        serviceName: alias,
         stdio: 'pipe',
-        env: Object.assign(Object.assign({}, process.env), env)
+        serviceName: alias,
+        env: Object.assign(Object.assign(Object.assign({}, process.env), defaultEnv), env)
     });
     proc.stdout.on('data', (data) => {
         notifyLaravel('events', {
@@ -68,7 +70,7 @@ function startProcess(settings) {
         const settings = Object.assign({}, getSettings(alias));
         delete state.processes[alias];
         if (settings.persistent) {
-            console.log('Process [' + alias + '] wathchdog restarting...');
+            console.log('Process [' + alias + '] watchdog restarting...');
             startProcess(settings);
         }
     });
