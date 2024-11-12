@@ -81,7 +81,7 @@ function startProcess(settings) {
         delete state.processes[alias];
 
         if (settings.persistent) {
-            console.log('Process [' + alias + '] wathchdog restarting...');
+            console.log('Process [' + alias + '] watchdog restarting...');
             startProcess(settings);
         }
     });
