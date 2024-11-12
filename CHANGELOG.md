@@ -2,6 +2,97 @@
 
 All notable changes to `nativephp-laravel` will be documented in this file.
 
+## 0.8.4 - 2024-11-11
+
+### What's Changed
+
+* Fix the relative path to PHP by @JCombee in https://github.com/NativePHP/electron/pull/125
+* Improve child process by @SRWieZ in https://github.com/NativePHP/electron/pull/123
+* Fix powerMonitor events by @SRWieZ in https://github.com/NativePHP/electron/pull/122
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.8.3...0.8.4
+
+## 0.8.3 - 2024-11-05
+
+Hotfix
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.8.2...0.8.3
+
+## 0.8.2 - 2024-11-05
+
+### `composer native:dev` 🔥
+
+To get the command, run `php artisan native:install` after updating to this version
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.8.1...0.8.2
+
+## 0.8.1 - 2024-11-04
+
+### What's Changed
+
+* Add endpoint for listing all windows by @JCombee in https://github.com/NativePHP/electron/pull/120
+* Add PHP server exception reporting by @simonhamp in https://github.com/NativePHP/electron/pull/121
+
+### New Contributors
+
+* @JCombee made their first contribution in https://github.com/NativePHP/electron/pull/120
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.8.0...0.8.1
+
+## 0.8.0 - 2024-11-01
+
+### What's Changed
+
+* Integrate Plugin by @RobertWesner in https://github.com/NativePHP/electron/pull/109
+* Add active screen endpoint by @simonhamp in https://github.com/NativePHP/electron/pull/112
+* Support `--no-interaction` in `native:serve` command by @simonhamp in https://github.com/NativePHP/electron/pull/119
+* Child processes by @simonhamp in https://github.com/NativePHP/electron/pull/115
+* Improved window management by @simonhamp in https://github.com/NativePHP/electron/pull/118
+* Add support for custom events fired by clicking on notifications by @LukeTowers in https://github.com/NativePHP/electron/pull/114
+* Fix windows php path for native:minify by @kritish-dhaubanjar in https://github.com/NativePHP/electron/pull/111
+* Bump actions/checkout from 2 to 4 by @dependabot in https://github.com/NativePHP/electron/pull/116
+* Bump actions/setup-node from 1 to 4 by @dependabot in https://github.com/NativePHP/electron/pull/117
+
+### New Contributors
+
+* @LukeTowers made their first contribution in https://github.com/NativePHP/electron/pull/114
+* @kritish-dhaubanjar made their first contribution in https://github.com/NativePHP/electron/pull/111
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.7.4...0.8.0
+
+## 0.7.4 - 2024-10-16
+
+### What's Changed
+
+* Fix for Laravel Prompts version by @sarukomine in https://github.com/NativePHP/electron/pull/110
+
+### New Contributors
+
+* @sarukomine made their first contribution in https://github.com/NativePHP/electron/pull/110
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.7.3...0.7.4
+
+## 0.7.3 - 2024-09-27
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.7.2...0.7.3
+
+## 0.7.2 - 2024-09-09
+
+### What's Changed
+
+* Updated php-bin dependencies to ^0.5 by @SRWieZ in https://github.com/NativePHP/electron/pull/107
+* Fixed Tests by @RobertWesner in https://github.com/NativePHP/electron/pull/104
+* Customizable deeplink scheme by @simonhamp in https://github.com/NativePHP/electron/pull/105
+* Add environment variable for php bin directory. by @kisuka in https://github.com/NativePHP/electron/pull/101
+
+### New Contributors
+
+* @SRWieZ made their first contribution in https://github.com/NativePHP/electron/pull/107
+* @RobertWesner made their first contribution in https://github.com/NativePHP/electron/pull/104
+* @kisuka made their first contribution in https://github.com/NativePHP/electron/pull/101
+
+**Full Changelog**: https://github.com/NativePHP/electron/compare/0.7.1...0.7.2
+
 ## 0.7.1 - 2024-09-02
 
 ### What's Changed
