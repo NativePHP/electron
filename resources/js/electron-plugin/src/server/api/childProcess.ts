@@ -30,8 +30,8 @@ function startProcess(settings) {
             serviceName: alias,
             env: {
                 ...process.env,
+                ...env,
                 ...defaultEnv,
-                ...env
             }
         }
     );
