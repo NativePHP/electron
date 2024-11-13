@@ -25,7 +25,7 @@ function startProcess(settings) {
         cwd,
         stdio: 'pipe',
         serviceName: alias,
-        env: Object.assign(Object.assign(Object.assign({}, process.env), defaultEnv), env)
+        env: Object.assign(Object.assign(Object.assign({}, process.env), env), defaultEnv)
     });
     proc.stdout.on('data', (data) => {
         notifyLaravel('events', {
