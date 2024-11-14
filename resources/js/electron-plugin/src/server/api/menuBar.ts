@@ -50,12 +50,12 @@ router.post("/create", (req, res) => {
         transparency,
         icon,
         showDockIcon,
-        onlyShowContextWindow,
+        onlyShowContextMenu,
         windowPosition,
         contextMenu,
     } = req.body;
 
-    if (onlyShowContextWindow) {
+    if (onlyShowContextMenu) {
         const tray = new Tray(icon || state.icon.replace("icon.png", "IconTemplate.png"));
         tray.setContextMenu(buildMenu(contextMenu));
 
@@ -121,7 +121,7 @@ router.post("/create", (req, res) => {
             });
         });
 
-        if (! onlyShowContextWindow) {
+        if (! onlyShowContextMenu) {
             state.activeMenuBar.tray.on("right-click", () => {
                 notifyLaravel("events", {
                     event: "\\Native\\Laravel\\Events\\MenuBar\\MenuBarContextMenuOpened"
