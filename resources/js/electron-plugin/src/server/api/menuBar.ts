@@ -62,6 +62,7 @@ router.post("/create", (req, res) => {
         windowPosition,
         contextMenu,
         tooltip,
+        resizable,
     } = req.body;
 
     if (onlyShowContextMenu) {
@@ -91,6 +92,7 @@ router.post("/create", (req, res) => {
             browserWindow: {
                 width,
                 height,
+                resizable,
                 alwaysOnTop,
                 vibrancy,
                 backgroundColor,
