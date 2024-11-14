@@ -71,11 +71,22 @@ router.post("/create", (req, res) => {
         contextMenu,
         tooltip,
         resizable,
+        event,
     } = req.body;
 
     if (onlyShowContextMenu) {
         const tray = new Tray(icon || state.icon.replace("icon.png", "IconTemplate.png"));
+
         tray.setContextMenu(buildMenu(contextMenu));
+
+        if (event) {
+            tray.on('click', (e) => {
+                notifyLaravel('events', {
+                    event,
+                    payload: e,
+                });
+            });
+        }
 
         state.activeMenuBar = menubar({
             tray,
