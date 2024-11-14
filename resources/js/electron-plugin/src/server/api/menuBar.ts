@@ -24,6 +24,14 @@ router.post("/tooltip", (req, res) => {
     state.activeMenuBar.tray.setToolTip(tooltip);
 });
 
+router.post("/icon", (req, res) => {
+    res.sendStatus(200);
+
+    const { icon } = req.body;
+
+    state.activeMenuBar.tray.setImage(icon);
+});
+
 router.post("/context-menu", (req, res) => {
     res.sendStatus(200);
 
