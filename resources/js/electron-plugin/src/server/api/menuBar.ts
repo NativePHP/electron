@@ -107,6 +107,7 @@ router.post("/create", (req, res) => {
                 backgroundColor,
                 transparent: transparency,
                 webPreferences: {
+                    preload: join(__dirname, '../../electron-plugin/dist/preload/index.js'),
                     nodeIntegration: true,
                     sandbox: false,
                     contextIsolation: false,
