@@ -92,6 +92,7 @@ router.post("/create", (req, res) => {
     } else {
         state.activeMenuBar = menubar({
             icon: icon || state.icon.replace("icon.png", "IconTemplate.png"),
+            preloadWindow: true,
             tooltip,
             index: url,
             showDockIcon,
