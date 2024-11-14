@@ -16,6 +16,14 @@ router.post("/label", (req, res) => {
     state.activeMenuBar.tray.setTitle(label);
 });
 
+router.post("/tooltip", (req, res) => {
+    res.sendStatus(200);
+
+    const { tooltip } = req.body;
+
+    state.activeMenuBar.tray.setToolTip(tooltip);
+});
+
 router.post("/context-menu", (req, res) => {
     res.sendStatus(200);
 
@@ -53,6 +61,7 @@ router.post("/create", (req, res) => {
         onlyShowContextMenu,
         windowPosition,
         contextMenu,
+        tooltip,
     } = req.body;
 
     if (onlyShowContextMenu) {
@@ -61,6 +70,7 @@ router.post("/create", (req, res) => {
 
         state.activeMenuBar = menubar({
             tray,
+            tooltip,
             index: false,
             showDockIcon,
             showOnAllWorkspaces: false,
@@ -73,6 +83,7 @@ router.post("/create", (req, res) => {
     } else {
         state.activeMenuBar = menubar({
             icon: icon || state.icon.replace("icon.png", "IconTemplate.png"),
+            tooltip,
             index: url,
             showDockIcon,
             showOnAllWorkspaces: false,
