@@ -16,11 +16,6 @@ function startProcess(settings) {
         return state.processes[alias];
     }
 
-    const defaultEnv = getDefaultEnvironmentVariables(
-        state.randomSecret,
-        state.electronApiPort
-    );
-
     const proc = utilityProcess.fork(
         join(__dirname, '../../electron-plugin/dist/server/childProcess.js'),
         cmd,
@@ -31,7 +26,6 @@ function startProcess(settings) {
             env: {
                 ...process.env,
                 ...env,
-                ...defaultEnv,
             }
         }
     );
@@ -133,6 +127,27 @@ function getSettings(alias) {
 
 router.post('/start', (req, res) => {
     const proc = startProcess(req.body);
+
+    res.json(proc);
+});
+
+router.post('/start-php', (req, res) => {
+
+    const defaultEnv = getDefaultEnvironmentVariables(
+        state.randomSecret,
+        state.electronApiPort
+    );
+
+    let settings = {
+        ...req.body,
+        cmd: [state.php].push(req.body.cmd),
+        env: {
+            ...req.body.env,
+            ...defaultEnv
+        }
+    }
+
+    const proc = startProcess(settings);
 
     res.json(proc);
 });
