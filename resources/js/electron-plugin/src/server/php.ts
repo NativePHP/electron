@@ -53,13 +53,8 @@ async function retrieveNativePHPConfig() {
 }
 
 function callPhp(args, options, phpIniSettings = {}) {
-    let defaultIniSettings = {
-      'memory_limit': '512M',
-      'curl.cainfo': state.caCert,
-      'openssl.cafile': state.caCert
-    }
 
-    let iniSettings = Object.assign(defaultIniSettings, phpIniSettings);
+    let iniSettings = Object.assign(getDefaultPhpIniSettings(), phpIniSettings);
 
     Object.keys(iniSettings).forEach(key => {
       args.unshift('-d', `${key}=${iniSettings[key]}`);
@@ -180,6 +175,14 @@ function getDefaultEnvironmentVariables(secret, apiPort) {
   };
 }
 
+function getDefaultPhpIniSettings() {
+    return {
+        'memory_limit': '512M',
+        'curl.cainfo': state.caCert,
+        'openssl.cafile': state.caCert
+    }
+}
+
 function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
     return new Promise(async (resolve, reject) => {
         const appPath = getAppPath();
@@ -267,4 +270,4 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
     })
 }
 
-export {startQueueWorker, startScheduler, serveApp, getAppPath, retrieveNativePHPConfig, retrievePhpIniSettings, getDefaultEnvironmentVariables}
+export {startQueueWorker, startScheduler, serveApp, getAppPath, retrieveNativePHPConfig, retrievePhpIniSettings, getDefaultEnvironmentVariables, getDefaultPhpIniSettings}
