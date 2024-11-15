@@ -160,15 +160,15 @@ router.post("/create", (req, res) => {
             });
         });
 
-        if (! onlyShowContextMenu) {
-            state.activeMenuBar.tray.on("right-click", () => {
-                notifyLaravel("events", {
-                    event: "\\Native\\Laravel\\Events\\MenuBar\\MenuBarContextMenuOpened"
-                });
-
-                state.activeMenuBar.tray.popUpContextMenu(buildMenu(contextMenu));
+        state.activeMenuBar.tray.on("right-click", () => {
+            notifyLaravel("events", {
+                event: "\\Native\\Laravel\\Events\\MenuBar\\MenuBarContextMenuOpened"
             });
-        }
+
+            if (! onlyShowContextMenu) {
+                state.activeMenuBar.tray.popUpContextMenu(buildMenu(contextMenu));
+            }
+        });
     });
 });
 
