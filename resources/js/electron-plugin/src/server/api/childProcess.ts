@@ -132,7 +132,6 @@ router.post('/start', (req, res) => {
 });
 
 router.post('/start-php', (req, res) => {
-
     const defaultEnv = getDefaultEnvironmentVariables(
         state.randomSecret,
         state.electronApiPort
