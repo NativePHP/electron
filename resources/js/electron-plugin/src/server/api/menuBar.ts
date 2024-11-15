@@ -113,6 +113,7 @@ router.post("/create", (req, res) => {
             showDockIcon,
             showOnAllWorkspaces: false,
             windowPosition: windowPosition ?? "trayCenter",
+            activateWithApp: false,
             browserWindow: {
                 width,
                 height,
