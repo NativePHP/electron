@@ -3,7 +3,7 @@ import { utilityProcess } from 'electron';
 import state from '../state';
 import { notifyLaravel } from "../utils";
 import { join } from 'path';
-import { getDefaultEnvironmentVariables } from "../php";
+import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php";
 
 
 const router = express.Router();
@@ -138,14 +138,20 @@ router.post('/start-php', (req, res) => {
         state.electronApiPort
     );
 
+    // Construct command args from ini settings
+    const iniSettings = getDefaultPhpIniSettings();
+    const iniArgs = Object.keys(iniSettings).map(key => {
+        return ['-d', `${key}=${iniSettings[key]}`];
+    }).flat();
+
+
     let settings = {
         ...req.body,
-        cmd: [state.php].push(req.body.cmd),
-        env: {
-            ...req.body.env,
-            ...defaultEnv
-        }
-    }
+        // Prepend cmd with php executable path & ini settings
+        cmd: [ state.php, ...iniArgs, ...req.body.cmd ],
+        // Mix in the internal NativePHP env
+        env: { ...req.body.env, ...defaultEnv }
+    };
 
     const proc = startProcess(settings);
 
