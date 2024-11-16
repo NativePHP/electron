@@ -12,7 +12,7 @@ import { utilityProcess } from 'electron';
 import state from '../state';
 import { notifyLaravel } from "../utils";
 import { join } from 'path';
-import { getDefaultEnvironmentVariables } from "../php";
+import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php";
 const router = express.Router();
 const killSync = require('kill-sync');
 function startProcess(settings) {
@@ -20,12 +20,11 @@ function startProcess(settings) {
     if (getProcess(alias) !== undefined) {
         return state.processes[alias];
     }
-    const defaultEnv = getDefaultEnvironmentVariables(state.randomSecret, state.electronApiPort);
     const proc = utilityProcess.fork(join(__dirname, '../../electron-plugin/dist/server/childProcess.js'), cmd, {
         cwd,
         stdio: 'pipe',
         serviceName: alias,
-        env: Object.assign(Object.assign(Object.assign({}, process.env), env), defaultEnv)
+        env: Object.assign(Object.assign({}, process.env), env)
     });
     proc.stdout.on('data', (data) => {
         notifyLaravel('events', {
@@ -105,6 +104,16 @@ function getSettings(alias) {
 }
 router.post('/start', (req, res) => {
     const proc = startProcess(req.body);
+    res.json(proc);
+});
+router.post('/start-php', (req, res) => {
+    const defaultEnv = getDefaultEnvironmentVariables(state.randomSecret, state.electronApiPort);
+    const iniSettings = getDefaultPhpIniSettings();
+    const iniArgs = Object.keys(iniSettings).map(key => {
+        return ['-d', `${key}=${iniSettings[key]}`];
+    }).flat();
+    let settings = Object.assign(Object.assign({}, req.body), { cmd: [state.php, ...iniArgs, ...req.body.cmd], env: Object.assign(Object.assign({}, req.body.env), defaultEnv) });
+    const proc = startProcess(settings);
     res.json(proc);
 });
 router.post('/stop', (req, res) => {
