@@ -95,6 +95,30 @@ function startProcess(settings) {
     };
 }
 
+function startPhpProcess(settings) {
+    const defaultEnv = getDefaultEnvironmentVariables(
+        state.randomSecret,
+        state.electronApiPort
+    );
+
+    // Construct command args from ini settings
+    const iniSettings = { ...getDefaultPhpIniSettings(), ...state.phpIni };
+    const iniArgs = Object.keys(iniSettings).map(key => {
+        return ['-d', `${key}=${iniSettings[key]}`];
+    }).flat();
+
+
+    settings = {
+        ...settings,
+        // Prepend cmd with php executable path & ini settings
+        cmd: [ state.php, ...iniArgs, ...settings.cmd ],
+        // Mix in the internal NativePHP env
+        env: { ...settings.env, ...defaultEnv }
+    };
+
+    return startProcess(settings);
+}
+
 function stopProcess(alias) {
     const proc = getProcess(alias);
 
@@ -132,27 +156,7 @@ router.post('/start', (req, res) => {
 });
 
 router.post('/start-php', (req, res) => {
-    const defaultEnv = getDefaultEnvironmentVariables(
-        state.randomSecret,
-        state.electronApiPort
-    );
-
-    // Construct command args from ini settings
-    const iniSettings = { ...getDefaultPhpIniSettings(), ...state.phpIni };
-    const iniArgs = Object.keys(iniSettings).map(key => {
-        return ['-d', `${key}=${iniSettings[key]}`];
-    }).flat();
-
-
-    let settings = {
-        ...req.body,
-        // Prepend cmd with php executable path & ini settings
-        cmd: [ state.php, ...iniArgs, ...req.body.cmd ],
-        // Mix in the internal NativePHP env
-        env: { ...req.body.env, ...defaultEnv }
-    };
-
-    const proc = startProcess(settings);
+    const proc = startPhpProcess(req.body);
 
     res.json(proc);
 });
