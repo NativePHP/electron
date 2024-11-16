@@ -79,6 +79,15 @@ function startProcess(settings) {
         settings
     };
 }
+function startPhpProcess(settings) {
+    const defaultEnv = getDefaultEnvironmentVariables(state.randomSecret, state.electronApiPort);
+    const iniSettings = Object.assign(Object.assign({}, getDefaultPhpIniSettings()), state.phpIni);
+    const iniArgs = Object.keys(iniSettings).map(key => {
+        return ['-d', `${key}=${iniSettings[key]}`];
+    }).flat();
+    settings = Object.assign(Object.assign({}, settings), { cmd: [state.php, ...iniArgs, ...settings.cmd], env: Object.assign(Object.assign({}, settings.env), defaultEnv) });
+    return startProcess(settings);
+}
 function stopProcess(alias) {
     const proc = getProcess(alias);
     if (proc === undefined) {
@@ -107,13 +116,7 @@ router.post('/start', (req, res) => {
     res.json(proc);
 });
 router.post('/start-php', (req, res) => {
-    const defaultEnv = getDefaultEnvironmentVariables(state.randomSecret, state.electronApiPort);
-    const iniSettings = Object.assign(Object.assign({}, getDefaultPhpIniSettings()), state.phpIni);
-    const iniArgs = Object.keys(iniSettings).map(key => {
-        return ['-d', `${key}=${iniSettings[key]}`];
-    }).flat();
-    let settings = Object.assign(Object.assign({}, req.body), { cmd: [state.php, ...iniArgs, ...req.body.cmd], env: Object.assign(Object.assign({}, req.body.env), defaultEnv) });
-    const proc = startProcess(settings);
+    const proc = startPhpProcess(req.body);
     res.json(proc);
 });
 router.post('/stop', (req, res) => {
