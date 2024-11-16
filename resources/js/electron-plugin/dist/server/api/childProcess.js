@@ -108,7 +108,7 @@ router.post('/start', (req, res) => {
 });
 router.post('/start-php', (req, res) => {
     const defaultEnv = getDefaultEnvironmentVariables(state.randomSecret, state.electronApiPort);
-    const iniSettings = getDefaultPhpIniSettings();
+    const iniSettings = Object.assign(Object.assign({}, getDefaultPhpIniSettings()), state.phpIni);
     const iniArgs = Object.keys(iniSettings).map(key => {
         return ['-d', `${key}=${iniSettings[key]}`];
     }).flat();
