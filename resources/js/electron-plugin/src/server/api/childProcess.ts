@@ -139,7 +139,7 @@ router.post('/start-php', (req, res) => {
     );
 
     // Construct command args from ini settings
-    const iniSettings = getDefaultPhpIniSettings();
+    const iniSettings = { ...getDefaultPhpIniSettings(), ...state.phpIni };
     const iniArgs = Object.keys(iniSettings).map(key => {
         return ['-d', `${key}=${iniSettings[key]}`];
     }).flat();
