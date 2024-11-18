@@ -26,50 +26,50 @@ import childProcessRoutes from "./api/childProcess";
 import { Server } from "net";
 
 export interface APIProcess {
-    server: Server;
-    port: number;
+  server: Server;
+  port: number;
 }
 
 async function startAPIServer(randomSecret: string): Promise<APIProcess> {
-    const port = await getPort({
-        port: getPort.makeRange(4000, 5000),
+  const port = await getPort({
+    port: getPort.makeRange(4000, 5000),
+  });
+
+  return new Promise((resolve, reject) => {
+    const httpServer = express();
+    httpServer.use(middleware(randomSecret));
+    httpServer.use(bodyParser.json());
+    httpServer.use("/api/clipboard", clipboardRoutes);
+    httpServer.use("/api/app", appRoutes);
+    httpServer.use("/api/screen", screenRoutes);
+    httpServer.use("/api/dialog", dialogRoutes);
+    httpServer.use("/api/system", systemRoutes);
+    httpServer.use("/api/global-shortcuts", globalShortcutRoutes);
+    httpServer.use("/api/notification", notificationRoutes);
+    httpServer.use("/api/dock", dockRoutes);
+    httpServer.use("/api/menu", menuRoutes);
+    httpServer.use("/api/window", windowRoutes);
+    httpServer.use("/api/process", processRoutes);
+//    httpServer.use("/api/settings", settingsRoutes);
+    httpServer.use("/api/shell", shellRoutes);
+    httpServer.use("/api/context", contextMenuRoutes);
+    httpServer.use("/api/menu-bar", menuBarRoutes);
+    httpServer.use("/api/progress-bar", progressBarRoutes);
+//    httpServer.use("/api/power-monitor", powerMonitorRoutes);
+    httpServer.use("/api/child-process", childProcessRoutes);
+    httpServer.use("/api/broadcast", broadcastingRoutes);
+
+    if (process.env.NODE_ENV === "development") {
+      httpServer.use("/api/debug", debugRoutes);
+    }
+
+    const server = httpServer.listen(port, () => {
+      resolve({
+        server,
+        port,
+      });
     });
-
-    return new Promise((resolve) => {
-        const httpServer = express();
-        httpServer.use(middleware(randomSecret));
-        httpServer.use(bodyParser.json());
-        httpServer.use("/api/clipboard", clipboardRoutes);
-        httpServer.use("/api/app", appRoutes);
-        httpServer.use("/api/screen", screenRoutes);
-        httpServer.use("/api/dialog", dialogRoutes);
-        httpServer.use("/api/system", systemRoutes);
-        httpServer.use("/api/global-shortcuts", globalShortcutRoutes);
-        httpServer.use("/api/notification", notificationRoutes);
-        httpServer.use("/api/dock", dockRoutes);
-        httpServer.use("/api/menu", menuRoutes);
-        httpServer.use("/api/window", windowRoutes);
-        httpServer.use("/api/process", processRoutes);
- //       httpServer.use("/api/settings", settingsRoutes);
-        httpServer.use("/api/shell", shellRoutes);
-        httpServer.use("/api/context", contextMenuRoutes);
-        httpServer.use("/api/menu-bar", menuBarRoutes);
-        httpServer.use("/api/progress-bar", progressBarRoutes);
-//        httpServer.use("/api/power-monitor", powerMonitorRoutes);
-        httpServer.use("/api/child-process", childProcessRoutes);
-        httpServer.use("/api/broadcast", broadcastingRoutes);
-
-        if (process.env.NODE_ENV === "development") {
-            httpServer.use("/api/debug", debugRoutes);
-        }
-
-        const server = httpServer.listen(port, () => {
-            resolve({
-                server,
-                port,
-            });
-        });
-    });
+  });
 }
 
 export default startAPIServer;
