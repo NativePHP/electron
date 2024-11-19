@@ -56,7 +56,7 @@ router.post("/create", (req, res) => {
     res.sendStatus(200);
 
     if (state.activeMenuBar) {
-        return;
+        state.activeMenuBar.tray.destroy();
     }
 
     const {
