@@ -1,7 +1,8 @@
 import express from 'express'
 import {app, Menu} from 'electron'
-import {mapMenu} from "./helper";
+import { compileMenu } from "./helper";
 import contextMenu from "electron-context-menu";
+
 const router = express.Router();
 
 let contextMenuDisposable = null
@@ -27,9 +28,9 @@ router.post('/', (req, res) => {
         showSearchWithGoogle: false,
         showInspectElement: false,
         prepend: (defaultActions, parameters, browserWindow) => {
-            return req.body.entries.map(mapMenu)
-        }
-    })
-})
+            return req.body.entries.map(compileMenu);
+        },
+    });
+});
 
 export default router;

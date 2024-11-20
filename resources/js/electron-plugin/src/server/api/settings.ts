@@ -1,6 +1,5 @@
 import express from 'express'
 import {app, Menu} from 'electron'
-import {mapMenu} from "./helper";
 import state from "../state";
 const router = express.Router();
 
