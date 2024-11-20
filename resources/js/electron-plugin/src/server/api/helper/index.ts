@@ -45,16 +45,6 @@ export function compileMenu (item) {
         return item;
     }
 
-    if (item.type === 'event') {
-        item.type = 'normal';
-
-        item.click = (menuItem, focusedWindow, combo) => {
-            triggerMenuItemEvent(item, combo);
-        };
-
-        return item;
-    }
-
     if (item.type === 'goto') {
         item.type = 'normal';
 
