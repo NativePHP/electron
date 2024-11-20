@@ -2,16 +2,17 @@ import { shell } from 'electron';
 import { notifyLaravel, goToUrl } from '../../utils';
 import state from '../../state';
 
-function triggerMenuItemEvent(menuItem) {
+function triggerMenuItemEvent(menuItem, combo) {
     notifyLaravel('events', {
-        event: '\\Native\\Laravel\\Events\\Menu\\MenuItemClicked',
-        payload: [
-            {
+        event: menuItem.event || '\\Native\\Laravel\\Events\\Menu\\MenuItemClicked',
+        payload: {
+            item: {
                 id: menuItem.id,
                 label: menuItem.label,
-                checked: menuItem.checked
-            }
-        ]
+                checked: menuItem.checked,
+            },
+            combo,
+        },
     });
 }
 
@@ -25,31 +26,53 @@ export function compileMenu (item) {
     }
 
     if (item.type === 'link') {
-        return {
-            click() {
-                triggerMenuItemEvent(item);
-                shell.openExternal(item.url);
-            }
-        };
+        item.type = 'normal';
+
+        item.click = (menuItem, focusedWindow, combo) => {
+            triggerMenuItemEvent(item, combo);
+            shell.openExternal(item.url);
+        }
+
+        return item;
     }
 
-    if (item.type === 'checkbox') {
-        item.click = () => {
+    if (item.type === 'checkbox' || item.type === 'radio') {
+        item.click = (menuItem, focusedWindow, combo) => {
             item.checked = !item.checked;
-            triggerMenuItemEvent(item);
+            triggerMenuItemEvent(item, combo);
         };
+
+        return item;
     }
 
     if (item.type === 'event') {
-        return {
-            label: item.label,
-            accelerator: item.accelerator,
-            click() {
-                notifyLaravel('events', {
-                    event: item.event
-                });
-            },
+        item.type = 'normal';
+
+        item.click = (menuItem, focusedWindow, combo) => {
+            triggerMenuItemEvent(item, combo);
         };
+
+        return item;
+    }
+
+    if (item.type === 'goto') {
+        item.type = 'normal';
+
+        item.click = (menuItem, focusedWindow, combo) => {
+            triggerMenuItemEvent(item, combo);
+
+            if (! focusedWindow) {
+                // TODO: Bring a window to the front?
+                return;
+            }
+
+            const id = Object.keys(state.windows)
+                .find(key => state.windows[key] === focusedWindow);
+
+            goToUrl(item.url, id);
+        };
+
+        return item;
     }
 
     if (item.type === 'role') {
@@ -66,8 +89,8 @@ export function compileMenu (item) {
 
     // Default click event
     if (! item.click) {
-        item.click = () => {
-            triggerMenuItemEvent(item);
+        item.click = (menuItem, focusedWindow, combo) => {
+            triggerMenuItemEvent(item, combo);
         }
     }
 
