@@ -5,6 +5,7 @@ import { compileMenu } from './helper';
 const router = express.Router();
 
 router.post('/', (req, res) => {
+    Menu.setApplicationMenu(null);
 
     const menuEntries = req.body.items.map(compileMenu);
 
