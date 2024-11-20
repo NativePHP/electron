@@ -30,26 +30,11 @@ export function compileMenu (item) {
 
         item.click = (menuItem, focusedWindow, combo) => {
             triggerMenuItemEvent(item, combo);
-            shell.openExternal(item.url);
-        }
 
-        return item;
-    }
-
-    if (item.type === 'checkbox' || item.type === 'radio') {
-        item.click = (menuItem, focusedWindow, combo) => {
-            item.checked = !item.checked;
-            triggerMenuItemEvent(item, combo);
-        };
-
-        return item;
-    }
-
-    if (item.type === 'goto') {
-        item.type = 'normal';
-
-        item.click = (menuItem, focusedWindow, combo) => {
-            triggerMenuItemEvent(item, combo);
+            if (item.openInBrowser) {
+                shell.openExternal(item.url);
+                return;
+            }
 
             if (! focusedWindow) {
                 // TODO: Bring a window to the front?
@@ -60,6 +45,15 @@ export function compileMenu (item) {
                 .find(key => state.windows[key] === focusedWindow);
 
             goToUrl(item.url, id);
+        }
+
+        return item;
+    }
+
+    if (item.type === 'checkbox' || item.type === 'radio') {
+        item.click = (menuItem, focusedWindow, combo) => {
+            item.checked = !item.checked;
+            triggerMenuItemEvent(item, combo);
         };
 
         return item;
