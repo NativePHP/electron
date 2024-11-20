@@ -1,5 +1,5 @@
-import express from 'express'
-import {Menu} from 'electron'
+import express from 'express';
+import { Menu } from 'electron';
 import { compileMenu } from './helper';
 
 const router = express.Router();

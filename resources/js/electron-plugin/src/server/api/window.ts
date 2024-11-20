@@ -1,10 +1,11 @@
 import express from 'express';
-import {BrowserWindow, clipboard, NativeImage} from 'electron';
+import { BrowserWindow, clipboard, NativeImage } from 'electron';
 import state from '../state';
-import {join} from "path";
+import { join } from 'path';
 import { notifyLaravel, goToUrl, appendWindowIdToUrl } from '../utils';
+import windowStateKeeper from 'electron-window-state';
+
 const router = express.Router();
-import windowStateKeeper from "electron-window-state";
 
 router.post('/maximize', (req, res) => {
     const {id} = req.body;
