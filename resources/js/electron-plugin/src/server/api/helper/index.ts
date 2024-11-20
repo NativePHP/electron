@@ -1,5 +1,6 @@
-import {shell} from "electron";
-import {notifyLaravel} from "../../utils";
+import { shell } from 'electron';
+import { notifyLaravel, goToUrl } from '../../utils';
+import state from '../../state';
 
 function triggerMenuItemEvent(menuItem) {
     notifyLaravel('events', {
@@ -11,63 +12,64 @@ function triggerMenuItemEvent(menuItem) {
                 checked: menuItem.checked
             }
         ]
-    })
+    });
 }
 
-const mapMenu = (menu) => {
-    if (menu.submenu) {
-        menu.submenu = menu.submenu.map(mapMenu)
-    }
-
-    if (menu.type === 'link') {
-        menu.type = 'normal'
-        menu.click = () => {
-            triggerMenuItemEvent(menu)
-            shell.openExternal(menu.url)
-        }
-        return menu
-    }
-
-    if (menu.type === 'checkbox') {
-        menu.click = () => {
-            menu.checked = !menu.checked
-            triggerMenuItemEvent(menu)
+export function compileMenu (item) {
+    if (item.submenu) {
+        if (Array.isArray(item.submenu)) {
+            item.submenu = item.submenu?.map(compileMenu);
+        } else {
+            item.submenu = item.submenu.submenu?.map(compileMenu);
         }
     }
 
-    if (menu.type === 'event') {
+    if (item.type === 'link') {
         return {
-            label: menu.label,
-            accelerator: menu.accelerator,
+            click() {
+                triggerMenuItemEvent(item);
+                shell.openExternal(item.url);
+            }
+        };
+    }
+
+    if (item.type === 'checkbox') {
+        item.click = () => {
+            item.checked = !item.checked;
+            triggerMenuItemEvent(item);
+        };
+    }
+
+    if (item.type === 'event') {
+        return {
+            label: item.label,
+            accelerator: item.accelerator,
             click() {
                 notifyLaravel('events', {
-                    event: menu.event
-                })
-            }
-        }
+                    event: item.event
+                });
+            },
+        };
     }
 
-    if (menu.type === 'role') {
+    if (item.type === 'role') {
         let menuItem = {
-          role: menu.role
+            role: item.role
         };
 
-        if (menu.label) {
-          menuItem['label'] = menu.label;
+        if (item.label) {
+            menuItem['label'] = item.label;
         }
 
         return menuItem;
     }
 
-    if (! menu.click) {
-        menu.click = () => {
-            triggerMenuItemEvent(menu)
+    // Default click event
+    if (! item.click) {
+        item.click = () => {
+            triggerMenuItemEvent(item);
         }
     }
 
-    return menu
-}
-
-export {
-    mapMenu,
+    return item;
 }
