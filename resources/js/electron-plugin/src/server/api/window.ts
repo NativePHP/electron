@@ -2,7 +2,7 @@ import express from 'express';
 import {BrowserWindow, clipboard, NativeImage} from 'electron';
 import state from '../state';
 import {join} from "path";
-import {notifyLaravel} from "../utils";
+import { notifyLaravel, goToUrl, appendWindowIdToUrl } from '../utils';
 const router = express.Router();
 import windowStateKeeper from "electron-window-state";
 
@@ -41,7 +41,7 @@ router.post('/title', (req, res) => {
 router.post('/url', (req, res) => {
     const {id, url} = req.body;
 
-    state.windows[id]?.loadURL(appendWindowIdToUrl(url, id));
+    goToUrl(url, id);
 
     res.sendStatus(200);
 });
@@ -141,10 +141,6 @@ router.get('/get/:id', (req, res) => {
 
     res.json(getWindowData(id));
 });
-
-function appendWindowIdToUrl(url, id) {
-    return url + (url.indexOf('?') === -1 ? '?' : '&') + '_windowId=' + id;
-}
 
 function getWindowData(id) {
     const currentWindow = state.windows[id];
@@ -360,7 +356,7 @@ router.post('/open', (req, res) => {
 
     window.webContents.on('did-finish-load', () => {
         window.show();
-    })
+    });
 
     window.webContents.on('did-fail-load', (event) => {
         console.error('failed to open window...', event);
