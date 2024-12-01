@@ -1,5 +1,4 @@
 import express from 'express';
-import { app, Menu } from 'electron';
 import state from '../state';
 
 const router = express.Router();
@@ -28,4 +27,11 @@ router.delete('/:key', (req, res) => {
 
   res.sendStatus(200)
 });
+
+router.delete('/', (req, res) => {
+  state.store.clear();
+
+  res.sendStatus(200)
+});
+
 export default router;
