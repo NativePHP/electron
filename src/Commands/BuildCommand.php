@@ -9,12 +9,14 @@ use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\OsAndArch;
+use Native\Electron\Traits\SetsAppName;
 
 class BuildCommand extends Command
 {
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
+    use SetsAppName;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
@@ -26,6 +28,8 @@ class BuildCommand extends Command
     public function handle(): void
     {
         $this->info('Build NativePHP app…');
+
+        $this->setAppName(slugify: true);
 
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
