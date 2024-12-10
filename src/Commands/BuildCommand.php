@@ -5,9 +5,9 @@ namespace Native\Electron\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
-use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\InstallsAppIcon;
+use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
 use Native\Electron\Traits\SetsAppName;
 
