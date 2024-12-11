@@ -4,8 +4,10 @@ import { notifyLaravel } from '../utils';
 const router = express.Router();
 
 router.get('/get-system-idle-state', (req, res) => {
+    let threshold = Number(req.query.threshold) || 60;
+
     res.json({
-        result: powerMonitor.getSystemIdleState(req.body.threshold),
+        result: powerMonitor.getSystemIdleState(threshold),
     })
 });
 
