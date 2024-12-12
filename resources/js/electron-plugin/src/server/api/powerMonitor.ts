@@ -67,4 +67,42 @@ powerMonitor.addListener('speed-limit-change', (details) => {
     });
 })
 
+// @ts-ignore
+powerMonitor.addListener('lock-screen', () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\PowerMonitor\\ScreenLocked`,
+    });
+})
+
+// @ts-ignore
+powerMonitor.addListener('unlock-screen', () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\PowerMonitor\\ScreenUnlocked`,
+    });
+})
+
+
+// @ts-ignore
+powerMonitor.addListener('shutdown', () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\PowerMonitor\\Shutdown`,
+    });
+})
+
+
+// @ts-ignore
+powerMonitor.addListener('user-did-become-active', () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\PowerMonitor\\UserDidBecomeActive`,
+    });
+})
+
+
+// @ts-ignore
+powerMonitor.addListener('user-did-resign-active', () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\PowerMonitor\\UserDidResignActive`,
+    });
+})
+
 export default router;
