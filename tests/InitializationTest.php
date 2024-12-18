@@ -3,16 +3,14 @@
 use PHPUnit\Framework\ExpectationFailedException;
 use function Orchestra\Testbench\remote;
 
-it('has the sauce', function () {
-    stopIfConditionFails(is_null('This is not null.'), 'Required condition is missing. Stopping tests.');
-});
     
 it('can boot up the app', function () {
-    $output = '';
+    stopIfConditionFails(false && 'this os is not okay', 'Required condition is missing. Stopping tests.');   $output = '';
 
     $process = remote('native:serve --no-dependencies --no-interaction');
     $process->start(function ($type, $line) use (&$output) {
         $output .= $line;
+
     });
 
     try {
