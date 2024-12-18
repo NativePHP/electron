@@ -4,7 +4,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 use function Orchestra\Testbench\remote;
 
 it('has the sauce', function () {
-    stopIfConditionFails(!is_null('This is not null.'), 'Required condition is missing. Stopping tests.');
+    stopIfConditionFails(is_null('This is not null.'), 'Required condition is missing. Stopping tests.');
 });
     
 it('can boot up the app', function () {
