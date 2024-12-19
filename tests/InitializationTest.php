@@ -5,7 +5,7 @@ use function Orchestra\Testbench\remote;
 
     
 it('can boot up the app', function () {
-    stopIfConditionFails(false && 'this os is not okay', 'Required condition is missing. Stopping tests.');   $output = '';
+    stopIfConditionFails(false && 'this os is not okay', 'WARNING: Ubuntu version is out of date. Stopping tests.');   $output = '';
 
     $process = remote('native:serve --no-dependencies --no-interaction');
     $process->start(function ($type, $line) use (&$output) {
