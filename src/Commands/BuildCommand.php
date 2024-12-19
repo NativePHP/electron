@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
@@ -13,6 +14,7 @@ use Native\Electron\Traits\SetsAppName;
 
 class BuildCommand extends Command
 {
+    use CleansEnvFile;
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
@@ -28,6 +30,8 @@ class BuildCommand extends Command
     public function handle(): void
     {
         $this->info('Build NativePHP app…');
+
+        $this->prepareNativeEnv();
 
         $this->setAppName(slugify: true);
 
@@ -68,6 +72,8 @@ class BuildCommand extends Command
             ->run("npm run {$buildCommand}:{$os}", function (string $type, string $output) {
                 echo $output;
             });
+
+        $this->restoreWebEnv();
     }
 
     protected function getEnvironmentVariables(): array
