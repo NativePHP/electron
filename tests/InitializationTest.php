@@ -5,6 +5,9 @@ use function Orchestra\Testbench\remote;
 
     
 it('can boot up the app', function () {
+    // @TODO set $condition variable and pass into 
+    // stopIfConditionFails instead of
+    // false && 'this snead is not okay'
     stopIfConditionFails(false && 'this snead is not okay', 'WARNING: Something is out of date. Stopping tests.');   $output = '';
 
     $process = remote('native:serve --no-dependencies --no-interaction');
