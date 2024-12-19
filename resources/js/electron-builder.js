@@ -30,12 +30,8 @@ if (isDarwin) {
     targetOs = 'mac';
 }
 
-
 let updaterConfig = {};
 
-// We wouldn't need these since its not representing the target platform
-console.log("Arch: ", process.arch)
-console.log("Platform: ", process.platform)
 try {
     updaterConfig = process.env.NATIVEPHP_UPDATER_CONFIG;
     updaterConfig = JSON.parse(updaterConfig);
@@ -44,6 +40,8 @@ try {
 }
 
 if (isBuilding) {
+    console.log("Current platform: ", process.platform)
+    console.log("Current arch: ", process.arch)
 
     console.log();
     console.log('===================================================================');
@@ -58,53 +56,69 @@ if (isBuilding) {
 
         removeSync(appPath);
 
-        // As we can't copy into a subdirectory of ourself we need to copy to a temp directory
-        let tmpDir = mkdtempSync(join(os.tmpdir(), 'nativephp'));
+        let bundle = join(process.env.APP_PATH, 'build', '__nativephp_app_bundle');
 
-        copySync(process.env.APP_PATH, tmpDir, {
-            overwrite: true,
-            dereference: true,
-            filter: (src, dest) => {
-                let skip = [
-                    // Skip .git and Dev directories
-                    join(process.env.APP_PATH, '.git'),
-                    join(process.env.APP_PATH, 'docker'),
-                    join(process.env.APP_PATH, 'packages'),
+        if (existsSync(bundle)) {
+            copySync(bundle, join(appPath, 'bundle', '__nativephp_app_bundle'));
+        } else {
+            // As we can't copy into a subdirectory of ourself we need to copy to a temp directory
+            let tmpDir = mkdtempSync(join(os.tmpdir(), 'nativephp'));
 
-                    // Only needed for local testing
-                    join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'vendor'),
-                    join(process.env.APP_PATH, 'vendor', 'nativephp', 'laravel', 'vendor'),
+            console.warn('=====================');
+            console.warn('* * * INSECURE BUILD * * *');
+            console.warn('Secure app bundle not found! Building with exposed source files.');
+            console.warn('See https://nativephp.com/docs/publishing/building#security for more details');
+            console.warn('=====================');
 
-                    join(process.env.APP_PATH, 'vendor', 'nativephp', 'php-bin'),
-                    join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'bin'),
-                    join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'resources'),
-                    join(process.env.APP_PATH, 'node_modules'),
-                    join(process.env.APP_PATH, 'dist'),
-                ];
+            copySync(process.env.APP_PATH, tmpDir, {
+                overwrite: true,
+                dereference: true,
+                filter: (src, dest) => {
+                    let skip = [
+                        // Skip .git and Dev directories
+                        join(process.env.APP_PATH, '.git'),
+                        join(process.env.APP_PATH, 'docker'),
+                        join(process.env.APP_PATH, 'packages'),
 
-                let shouldSkip = false;
-                skip.forEach((path) => {
-                    if (src.indexOf(path) === 0) {
-                        shouldSkip = true;
-                    }
-                });
+                        // Only needed for local testing
+                        join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'vendor'),
+                        join(process.env.APP_PATH, 'vendor', 'nativephp', 'laravel', 'vendor'),
 
-                return !shouldSkip;
-            }
-        });
+                        join(process.env.APP_PATH, 'vendor', 'nativephp', 'php-bin'),
+                        join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'bin'),
+                        join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'resources'),
+                        join(process.env.APP_PATH, 'node_modules'),
+                        join(process.env.APP_PATH, 'dist'),
+                        join(process.env.APP_PATH, 'build'),
 
-        copySync(tmpDir, appPath);
+                        join(process.env.APP_PATH, 'storage', 'framework'),
+                        join(process.env.APP_PATH, 'storage', 'logs'),
+                    ];
 
-        // Electron build removes empty folders, so we have to create dummy files
-        // dotfiles unfortunately don't work.
-        writeJsonSync(join(appPath, 'storage', 'framework', 'cache', '_native.json'), {})
-        writeJsonSync(join(appPath, 'storage', 'framework', 'sessions', '_native.json'), {})
-        writeJsonSync(join(appPath, 'storage', 'framework', 'testing', '_native.json'), {})
-        writeJsonSync(join(appPath, 'storage', 'framework', 'views', '_native.json'), {})
-        writeJsonSync(join(appPath, 'storage', 'app', 'public', '_native.json'), {})
-        writeJsonSync(join(appPath, 'storage', 'logs', '_native.json'), {})
+                    let shouldSkip = false;
+                    skip.forEach((path) => {
+                        if (src.indexOf(path) === 0) {
+                            shouldSkip = true;
+                        }
+                    });
 
-        removeSync(tmpDir);
+                    return !shouldSkip;
+                }
+            });
+
+            copySync(tmpDir, appPath);
+
+            // Electron build removes empty folders, so we have to create dummy files
+            // dotfiles unfortunately don't work.
+            writeJsonSync(join(appPath, 'storage', 'framework', 'cache', '_native.json'), {})
+            writeJsonSync(join(appPath, 'storage', 'framework', 'sessions', '_native.json'), {})
+            writeJsonSync(join(appPath, 'storage', 'framework', 'testing', '_native.json'), {})
+            writeJsonSync(join(appPath, 'storage', 'framework', 'views', '_native.json'), {})
+            writeJsonSync(join(appPath, 'storage', 'app', 'public', '_native.json'), {})
+            writeJsonSync(join(appPath, 'storage', 'logs', '_native.json'), {})
+
+            removeSync(tmpDir);
+        }
 
         console.log();
         console.log('Copied app to resources');
