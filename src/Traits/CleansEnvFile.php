@@ -2,8 +2,6 @@
 
 namespace Native\Electron\Traits;
 
-use function Laravel\Prompts\note;
-
 trait CleansEnvFile
 {
     protected function prepareNativeEnv(): void
