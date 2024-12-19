@@ -30,12 +30,8 @@ if (isDarwin) {
     targetOs = 'mac';
 }
 
-
 let updaterConfig = {};
 
-// We wouldn't need these since its not representing the target platform
-console.log("Arch: ", process.arch)
-console.log("Platform: ", process.platform)
 try {
     updaterConfig = process.env.NATIVEPHP_UPDATER_CONFIG;
     updaterConfig = JSON.parse(updaterConfig);
@@ -44,6 +40,8 @@ try {
 }
 
 if (isBuilding) {
+    console.log("Current platform: ", process.platform)
+    console.log("Current arch: ", process.arch)
 
     console.log();
     console.log('===================================================================');
@@ -91,6 +89,10 @@ if (isBuilding) {
                         join(process.env.APP_PATH, 'vendor', 'nativephp', 'electron', 'resources'),
                         join(process.env.APP_PATH, 'node_modules'),
                         join(process.env.APP_PATH, 'dist'),
+                        join(process.env.APP_PATH, 'build'),
+
+                        join(process.env.APP_PATH, 'storage', 'framework'),
+                        join(process.env.APP_PATH, 'storage', 'logs'),
                     ];
 
                     let shouldSkip = false;
