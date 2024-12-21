@@ -52,3 +52,4 @@ ipcRenderer.on('native-event', (event, data) => {
         });
     }
 });
+export {};

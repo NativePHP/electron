@@ -1,13 +1,14 @@
 import express from 'express';
 import { utilityProcess } from 'electron';
-import state from '../state';
-import { notifyLaravel } from "../utils";
+import state from '../state.js';
+import { notifyLaravel } from "../utils.js";
 import { join } from 'path';
-import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php";
+import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php.js";
 
+
+import killSync from "kill-sync";
 
 const router = express.Router();
-const killSync = require('kill-sync');
 
 function startProcess(settings) {
     const {alias, cmd, cwd, env, persistent} = settings;
@@ -126,11 +127,12 @@ function stopProcess(alias) {
         return;
     }
 
-    // Set persistent to false to prevent the process from restarting.
+    // Set persistent to false and prevent the process from restarting.
     state.processes[alias].settings.persistent = false;
 
     console.log('Process [' + alias + '] stopping with PID [' + proc.pid + '].');
 
+    // @ts-ignore
     killSync(proc.pid, 'SIGTERM', true); // Kill tree
     proc.kill(); // Does not work but just in case. (do not put before killSync)
 }

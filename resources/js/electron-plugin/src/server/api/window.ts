@@ -1,8 +1,8 @@
 import express from 'express';
-import { BrowserWindow, clipboard, NativeImage } from 'electron';
-import state from '../state';
+import { BrowserWindow } from 'electron';
+import state from '../state.js';
 import { join } from 'path';
-import { notifyLaravel, goToUrl, appendWindowIdToUrl } from '../utils';
+import { notifyLaravel, goToUrl, appendWindowIdToUrl } from '../utils.js';
 import windowStateKeeper from 'electron-window-state';
 
 const router = express.Router();

@@ -1,9 +1,9 @@
 import express from "express";
 import { Menu, Tray } from "electron";
-import { compileMenu } from "./helper";
-import state from "../state";
+import { compileMenu } from "./helper/index.js";
+import state from "../state.js";
 import { menubar } from "menubar";
-import { notifyLaravel } from "../utils";
+import { notifyLaravel } from "../utils.js";
 import { join } from "path";
 const router = express.Router();
 router.post("/label", (req, res) => {

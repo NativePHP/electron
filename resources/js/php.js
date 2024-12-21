@@ -1,9 +1,13 @@
-const { log } = require("console");
-const fs = require("fs");
-const {copySync, removeSync, existsSync, ensureDirSync} = require("fs-extra");
-const {join} = require("path");
-const { exit } = require("process");
-const unzip = require("yauzl");
+import fs from "fs";
+import fs_extra from 'fs-extra';
+const { copySync, removeSync, ensureDirSync } = fs_extra;
+import { join } from "path";
+import unzip from "yauzl";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const isBuilding = Boolean(process.env.NATIVEPHP_BUILDING);
 const phpBinaryPath = process.env.NATIVEPHP_PHP_BINARY_PATH;

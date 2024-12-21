@@ -8,13 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { app } from "electron";
-import { autoUpdater } from "electron-updater";
-import state from "./server/state";
+import electron_updater from 'electron-updater';
+const { autoUpdater } = electron_updater;
+import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
-import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, } from "./server";
-import { notifyLaravel } from "./server/utils";
+import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, startQueue, } from "./server/index.js";
+import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
-import { stopAllProcesses } from "./server/api/childProcess";
+import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
 class NativePHP {
     constructor() {
@@ -75,6 +76,7 @@ class NativePHP {
             yield this.startElectronApi();
             state.phpIni = yield this.loadPhpIni();
             yield this.startPhpApp();
+            yield this.startQueueWorker();
             this.startScheduler();
             yield notifyLaravel("booted");
         });
@@ -145,6 +147,11 @@ class NativePHP {
     startPhpApp() {
         return __awaiter(this, void 0, void 0, function* () {
             this.processes.push(yield startPhpApp());
+        });
+    }
+    startQueueWorker() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.processes.push(yield startQueue());
         });
     }
     startScheduler() {

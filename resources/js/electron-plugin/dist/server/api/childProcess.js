@@ -9,12 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import express from 'express';
 import { utilityProcess } from 'electron';
-import state from '../state';
-import { notifyLaravel } from "../utils";
+import state from '../state.js';
+import { notifyLaravel } from "../utils.js";
 import { join } from 'path';
-import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php";
+import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php.js";
+import killSync from "kill-sync";
 const router = express.Router();
-const killSync = require('kill-sync');
 function startProcess(settings) {
     const { alias, cmd, cwd, env, persistent } = settings;
     if (getProcess(alias) !== undefined) {

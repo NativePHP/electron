@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { session } from 'electron';
-import state from './state';
+import state from './state.js';
 import axios from 'axios';
 export function appendCookie() {
     return __awaiter(this, void 0, void 0, function* () {

@@ -5,6 +5,10 @@
     "main": "./out/main/index.js",
     "author": "NativePHP",
     "homepage": "https://nativephp.com",
+    "type": "module",
+    "engines": {
+        "node": ">=18.0.0"
+    },
     "scripts": {
         "format": "prettier --write .",
         "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -29,7 +33,7 @@
         "build:linux-x64": "cross-env node php.js --linux --x64 && cross-env npm run build && cross-env node ./node_modules/electron-builder/cli.js -p never --linux --config --x64",
         "plugin:build": "rimraf electron-plugin/dist/ && node node_modules/typescript/bin/tsc --project electron-plugin",
         "plugin:build:watch": "npm run plugin:build -- -W",
-        "plugin:test": "jest --rootDir=electron-plugin --config=electron-plugin/jest.config.js --forceExit --verbose --detectOpenHandles --coverage"
+        "plugin:test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --rootDir=electron-plugin --config=electron-plugin/jest.config.js --forceExit --verbose --detectOpenHandles --coverage"
     },
     "dependencies": {
         "@electron-toolkit/preload": "^3.0.1",
@@ -45,7 +49,7 @@
         "electron-window-state": "^5.0.3",
         "express": "^4.21.2",
         "fs-extra": "^11.2.0",
-        "get-port": "^5.1.0",
+        "get-port": "^7.1.0",
         "kill-sync": "^1.0.3",
         "menubar": "^9.5.1",
         "ps-node": "^0.1.6",

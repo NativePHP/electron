@@ -1,7 +1,8 @@
 import type CrossProcessExports from "electron";
 import { app } from "electron";
-import { autoUpdater } from "electron-updater";
-import state from "./server/state";
+import electron_updater from 'electron-updater';
+const { autoUpdater } = electron_updater;
+import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import {
   retrieveNativePHPConfig,
@@ -9,10 +10,11 @@ import {
   runScheduler,
   startAPI,
   startPhpApp,
-} from "./server";
-import { notifyLaravel } from "./server/utils";
+  startQueue,
+} from "./server/index.js";
+import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
-import { stopAllProcesses } from "./server/api/childProcess";
+import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
 
 class NativePHP {
