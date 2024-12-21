@@ -19,11 +19,10 @@
     ],
     "types": [
       "node",
-      "jest",
-      "electron"
+      "jest"
     ]
   },
   "include": [
     "./src/**/*.ts"
-  ]
+  ],
 }

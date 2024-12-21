@@ -70,14 +70,14 @@ router.post('/close', (req, res) => {
         state.windows[id].close();
         delete state.windows[id];
     }
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 router.post('/hide', (req, res) => {
     const { id } = req.body;
     if (state.windows[id]) {
         state.windows[id].hide();
     }
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 router.post('/always-on-top', (req, res) => {
     var _a;
@@ -135,7 +135,8 @@ router.post('/open', (req, res) => {
     if (state.windows[id]) {
         state.windows[id].show();
         state.windows[id].focus();
-        return res.sendStatus(200);
+        res.sendStatus(200);
+        return;
     }
     let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js');
     const defaultWebPreferences = {
@@ -174,7 +175,7 @@ router.post('/open', (req, res) => {
     }
     require("@electron/remote/main").enable(window.webContents);
     if (req.body.rememberState === true) {
-        windowState.manage(window);
+        windowState === null || windowState === void 0 ? void 0 : windowState.manage(window);
     }
     window.on('blur', () => {
         notifyLaravel('events', {

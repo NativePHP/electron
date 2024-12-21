@@ -95,7 +95,7 @@ router.post('/close', (req, res) => {
         delete state.windows[id];
     }
 
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 
 router.post('/hide', (req, res) => {
@@ -105,7 +105,7 @@ router.post('/hide', (req, res) => {
         state.windows[id].hide();
     }
 
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 
 router.post('/always-on-top', (req, res) => {
@@ -216,7 +216,9 @@ router.post('/open', (req, res) => {
     if (state.windows[id]) {
         state.windows[id].show();
         state.windows[id].focus();
-        return res.sendStatus(200);
+        res.sendStatus(200);
+
+        return;
     }
 
     let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js');
@@ -283,7 +285,7 @@ router.post('/open', (req, res) => {
     require("@electron/remote/main").enable(window.webContents);
 
     if (req.body.rememberState === true) {
-        windowState.manage(window);
+        windowState?.manage(window);
     }
 
     window.on('blur', () => {
