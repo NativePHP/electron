@@ -55,7 +55,7 @@ if (isBuilding) {
     console.log();
 
     try {
-        const appPath = join(__dirname, 'resources', 'app');
+        const appPath = join(import.meta.dirname, 'resources', 'app');
 
         removeSync(appPath);
 
