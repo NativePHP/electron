@@ -35,6 +35,8 @@ trait ExecuteCommand
 
         note('Fetching latest dependencies…');
 
+        $this->info(var_export($envs[$type], true));
+
         Process::path(__DIR__.'/../../resources/js/')
             ->env($envs[$type])
             ->forever()
