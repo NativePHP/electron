@@ -1,4 +1,4 @@
-import startAPIServer, { APIProcess } from "../../src/server/api";
+import startAPIServer, {APIProcess} from "../../src/server/api";
 import axios from "axios";
 import electron from "electron";
 

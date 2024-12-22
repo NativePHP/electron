@@ -1,5 +1,5 @@
 import startAPIServer, { APIProcess } from "../../src/server/api";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import electron from "electron";
 
 let apiServer: APIProcess;
