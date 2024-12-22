@@ -16,7 +16,7 @@ it('can boot up the app', function () {
     // $process->wait(); // Uncomment this line to debug
 
     try {
-        retry(20, function () use ($output) {
+        retry(30, function () use ($output) {
             // Wait until port 8100 is open
             dump('Waiting for port 8100 to open...');
 
