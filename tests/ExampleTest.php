@@ -12,7 +12,6 @@ it('can boot up the app', function () {
         dump($line);
         $output .= $line;
     });
-    $process->wait();
 
     try {
         retry(20, function () use ($output) {
