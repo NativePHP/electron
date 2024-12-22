@@ -1,36 +1,20 @@
-// import type { JestConfigWithTsJest } from 'ts-jest'
-//
-// const config: JestConfigWithTsJest = {
-//     extensionsToTreatAsEsm: ['.ts'],
-//     verbose: true,
-//     preset: 'ts-jest/presets/default-esm',
-//     testEnvironment: 'node',
-//     transform: {
-//         '^.+\\.tsx?$': ['ts-jest', { useESM: true }]
-//     },
-//     testPathIgnorePatterns: ['./dist'],
-//     moduleNameMapper: {
-//         // '^electron$': '<rootDir>/tests/mocks/electron.ts',
-//         "^(\\.{1,2}/.*)\\.js$": "$1",
-//     }
-// }
-//
-// export default config
+import {createJsWithBabelEsmPreset, type JestConfigWithTsJest} from 'ts-jest'
 
-
-import {createJsWithTsEsmPreset, type JestConfigWithTsJest} from 'ts-jest'
-
-const presetConfig = createJsWithTsEsmPreset({
+const presetConfig = createJsWithBabelEsmPreset({
     //...options
 })
 
-const jestConfig: JestConfigWithTsJest ={
+const jestConfig: JestConfigWithTsJest = {
     ...presetConfig,
 
     moduleNameMapper: {
-        '^electron$': '<rootDir>/tests/mocks/electron.ts',
+        "^electron$": "<rootDir>/mocks/electron.ts",
         "^(\\.{1,2}/.*)\\.js$": "$1",
     },
+    transformIgnorePatterns: [
+        // 'node_modules\\/(?!get-port\\/|electron-store\\/|conf|dot-prop\\/)'
+    ],
+    testEnvironment: 'node',
 }
 
 console.log(jestConfig);

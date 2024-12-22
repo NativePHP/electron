@@ -1,4 +1,5 @@
-import {jest} from '@jest/globals';
+jest.mock('electron');
+
 import startAPIServer, {APIProcess} from "../src/server/api";
 import axios from "axios";
 

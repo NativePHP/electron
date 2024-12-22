@@ -8,8 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { app } from "electron";
-import electron_updater from 'electron-updater';
-const { autoUpdater } = electron_updater;
 import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, startQueue, } from "./server/index.js";
@@ -17,6 +15,8 @@ import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import electron_updater from 'electron-updater';
+const { autoUpdater } = electron_updater;
 class NativePHP {
     constructor() {
         this.processes = [];

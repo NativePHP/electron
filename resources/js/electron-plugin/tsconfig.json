@@ -10,13 +10,19 @@
         "noImplicitAny": false,
         "preserveConstEnums": true,
         "removeComments": true,
-        "typeRoots": ["../node_modules/@types"],
-        "lib": ["es2019", "dom"],
-        "types": ["node", "jest"]
+        "typeRoots": [
+            "../node_modules/@types"
+        ],
+        "lib": [
+            "es2019",
+            "dom"
+        ],
+        "types": [
+            "node",
+            "jest"
+        ]
     },
-    "ts-node": {
-        "esm": true,
-        "experimentalSpecifierResolution": "node"
-    },
-    "include": ["./src/**/*.ts"]
+    "include": [
+        "./src/**/*.ts"
+    ]
 }

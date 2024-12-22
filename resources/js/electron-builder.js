@@ -1,6 +1,8 @@
 import os from 'os';
 import { join } from 'path';
-import { mkdtempSync } from 'fs';;
+import { mkdtempSync } from 'fs';
+
+// Workaround for CommonJS module
 import fs_extra from 'fs-extra';
 const { copySync, removeSync, writeJsonSync } = fs_extra;
 

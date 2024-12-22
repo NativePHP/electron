@@ -33,7 +33,7 @@
         "build:linux-x64": "cross-env node php.js --linux --x64 && cross-env npm run build && cross-env node ./node_modules/electron-builder/cli.js -p never --linux --config --x64",
         "plugin:build": "rimraf electron-plugin/dist/ && node node_modules/typescript/bin/tsc --project electron-plugin",
         "plugin:build:watch": "npm run plugin:build -- -W",
-        "plugin:test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --rootDir=electron-plugin -i --config electron-plugin/jest.config.ts"
+        "plugin:test": "jest --rootDir=electron-plugin -i --config electron-plugin/jest.config.ts"
     },
     "dependencies": {
         "@electron-toolkit/preload": "^3.0.1",
