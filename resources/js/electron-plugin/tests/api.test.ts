@@ -1,29 +1,8 @@
+import {jest} from '@jest/globals';
 import startAPIServer, {APIProcess} from "../src/server/api";
 import axios from "axios";
 
 let apiServer: APIProcess;
-
-// jest.mock('electron', () => ({
-//     app: {
-//         // on: jest.fn(),
-//         // whenReady: jest.fn(() => Promise.resolve()),
-//         getPath: jest.fn(() => '/path/to/app'),
-//     },
-//     powerMonitor: {
-//         addListener: jest.fn(),
-//     },
-// }));
-
-jest.mock('get-port', () => ({
-    __esModule: true,
-    default: jest.fn().mockReturnValueOnce(4000).mockReturnValueOnce(4001).mockReturnValueOnce(4002).mockReturnValueOnce(4003).mockReturnValueOnce(4004),
-    portNumbers: jest.fn().mockReturnValueOnce(4000).mockReturnValueOnce(4001).mockReturnValueOnce(4002).mockReturnValueOnce(4003).mockReturnValueOnce(4004),
-}));
-
-jest.mock('electron-context-menu', () => ({
-    default: jest.fn(),
-}));
-
 
 describe('API test', () => {
     beforeEach(async () => {

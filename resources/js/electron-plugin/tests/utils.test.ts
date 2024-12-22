@@ -1,10 +1,8 @@
+import {jest} from '@jest/globals';
 import { notifyLaravel } from "../src/server/utils";
 import state from "../src/server/state";
 import axios from "axios";
 
-jest.mock('axios', () => ({
-  post: jest.fn(),
-}));
 
 describe('Utils test', () => {
 

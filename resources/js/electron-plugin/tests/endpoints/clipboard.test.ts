@@ -1,5 +1,6 @@
-import startAPIServer, { APIProcess } from "../../src/server/api";
-import axios, { AxiosError } from "axios";
+import {jest} from '@jest/globals';
+import startAPIServer, {APIProcess} from "../../src/server/api";
+import axios from "axios";
 import electron from "electron";
 
 let apiServer: APIProcess;

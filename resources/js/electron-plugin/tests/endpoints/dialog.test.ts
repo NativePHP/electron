@@ -15,6 +15,7 @@ jest.mock('electron', () => ({
     }
 }));
 
+
 describe('Dialog test', () => {
   beforeEach(async () => {
     apiServer = await startAPIServer('randomSecret')

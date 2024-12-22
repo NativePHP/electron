@@ -14,5 +14,9 @@
         "lib": ["es2019", "dom"],
         "types": ["node", "jest"]
     },
+    "ts-node": {
+        "esm": true,
+        "experimentalSpecifierResolution": "node"
+    },
     "include": ["./src/**/*.ts"]
 }
