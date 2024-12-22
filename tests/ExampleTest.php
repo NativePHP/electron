@@ -7,10 +7,12 @@ use function Orchestra\Testbench\remote;
 it('can boot up the app', function () {
     $output = '';
 
-    $process = remote('native:serve --no-dependencies --no-interaction');
+    $process = remote('native:serve --no-dependencies --no-interaction -v');
     $process->start(function ($type, $line) use (&$output) {
+        dump($line);
         $output .= $line;
     });
+    $process->wait();
 
     try {
         retry(20, function () use ($output) {
