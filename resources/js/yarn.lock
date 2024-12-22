@@ -3303,10 +3303,10 @@ electron-window-state@^5.0.3:
     jsonfile "^4.0.0"
     mkdirp "^0.5.1"
 
-electron@^31.3.1, "electron@>= 13.0.0", electron@>=13.0.0, "electron@>=9.0.0 <33.0.0":
-  version "31.7.6"
-  resolved "https://registry.npmjs.org/electron/-/electron-31.7.6.tgz"
-  integrity sha512-fc2kMaEc/zxGTW6oCxbuE7BQNOlDucSo+351AiovBAcp7G0iQkVu3k2kHIQolSsD38+tPdBj/N02DVpZTzi7rg==
+electron@^32.2.7, "electron@>= 13.0.0", electron@>=13.0.0, "electron@>=9.0.0 <33.0.0":
+  version "32.2.7"
+  resolved "https://registry.npmjs.org/electron/-/electron-32.2.7.tgz"
+  integrity sha512-y8jbQRG3xogF70XPlk5c+dWe5iRfUBo28o2NMpKd/CcW7ENIaWtBlGima8/8nmRdAaYTy1+yIt6KB0Lon9H8cA==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^20.9.0"
