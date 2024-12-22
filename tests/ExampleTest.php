@@ -12,6 +12,7 @@ it('can boot up the app', function () {
         echo $line;
         $output .= $line;
     });
+
     $process->wait();
 
     try {
