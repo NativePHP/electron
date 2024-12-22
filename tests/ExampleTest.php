@@ -9,7 +9,7 @@ it('can boot up the app', function () {
 
     $process = remote('native:serve --no-dependencies --no-interaction -v');
     $process->start(function ($type, $line) use (&$output) {
-        echo($line);
+        echo $line;
         $output .= $line;
     });
     $process->wait();
