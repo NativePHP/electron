@@ -1,4 +1,4 @@
-import { resolve, join } from 'path';
+import { join } from 'path';
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 
 export default defineConfig({

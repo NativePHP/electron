@@ -20,12 +20,14 @@ export function startPhpApp() {
     });
 }
 export function startQueue() {
-    if (!process.env.NATIVE_PHP_SKIP_QUEUE) {
-        return startQueueWorker(state.randomSecret, state.electronApiPort, state.phpIni);
-    }
-    else {
-        return undefined;
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!process.env.NATIVE_PHP_SKIP_QUEUE) {
+            return startQueueWorker(state.randomSecret, state.electronApiPort, state.phpIni);
+        }
+        else {
+            return undefined;
+        }
+    });
 }
 export function runScheduler() {
     startScheduler(state.randomSecret, state.electronApiPort, state.phpIni);

@@ -1,9 +1,10 @@
 import express from 'express';
 import { BrowserWindow } from 'electron';
 import state from '../state.js';
-import { join } from 'path';
+import { fileURLToPath } from 'url';
 import { notifyLaravel, goToUrl, appendWindowIdToUrl } from '../utils.js';
 import windowStateKeeper from 'electron-window-state';
+import { enable } from "@electron/remote/main/index.js";
 const router = express.Router();
 router.post('/maximize', (req, res) => {
     var _a;
@@ -138,7 +139,7 @@ router.post('/open', (req, res) => {
         res.sendStatus(200);
         return;
     }
-    let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js');
+    let preloadPath = fileURLToPath(new URL('../../electron-plugin/dist/preload/index.mjs', import.meta.url));
     const defaultWebPreferences = {
         backgroundThrottling: false,
         spellcheck: false,
@@ -173,7 +174,7 @@ router.post('/open', (req, res) => {
     if ((process.env.NODE_ENV === 'development' || showDevTools === true) && showDevTools !== false) {
         window.webContents.openDevTools();
     }
-    require("@electron/remote/main").enable(window.webContents);
+    enable(window.webContents);
     if (req.body.rememberState === true) {
         windowState === null || windowState === void 0 ? void 0 : windowState.manage(window);
     }

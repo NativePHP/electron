@@ -93,7 +93,7 @@ function getArgumentEnv() {
 }
 
 function getAppPath() {
-    let appPath = join(__dirname, '../../resources/app/').replace('app.asar', 'app.asar.unpacked')
+    let appPath = join(import.meta.dirname, '../../resources/app/').replace('app.asar', 'app.asar.unpacked')
 
     if (process.env.NODE_ENV === 'development' || argumentEnv.TESTING == 1) {
         appPath = process.env.APP_PATH || argumentEnv.APP_PATH;

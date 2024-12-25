@@ -1,9 +1,11 @@
 import express from 'express';
 import { BrowserWindow } from 'electron';
 import state from '../state.js';
-import { join } from 'path';
+import { fileURLToPath } from 'url'
 import { notifyLaravel, goToUrl, appendWindowIdToUrl } from '../utils.js';
 import windowStateKeeper from 'electron-window-state';
+
+import {enable} from "@electron/remote/main/index.js";
 
 const router = express.Router();
 
@@ -221,7 +223,7 @@ router.post('/open', (req, res) => {
         return;
     }
 
-    let preloadPath = join(__dirname, '../../electron-plugin/dist/preload/index.js');
+    let preloadPath = fileURLToPath(new URL('../../electron-plugin/dist/preload/index.mjs', import.meta.url));
 
     const defaultWebPreferences = {
         backgroundThrottling: false,
@@ -282,7 +284,7 @@ router.post('/open', (req, res) => {
         window.webContents.openDevTools();
     }
 
-    require("@electron/remote/main").enable(window.webContents);
+    enable(window.webContents);
 
     if (req.body.rememberState === true) {
         windowState?.manage(window);

@@ -2,11 +2,11 @@ import express from 'express';
 import { utilityProcess } from 'electron';
 import state from '../state.js';
 import { notifyLaravel } from "../utils.js";
-import { join } from 'path';
 import { getDefaultEnvironmentVariables, getDefaultPhpIniSettings } from "../php.js";
 
 
 import killSync from "kill-sync";
+import {fileURLToPath} from "url";
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ function startProcess(settings) {
     }
 
     const proc = utilityProcess.fork(
-        join(__dirname, '../../electron-plugin/dist/server/childProcess.js'),
+        fileURLToPath(new URL('../../electron-plugin/dist/server/childProcess.js', import.meta.url)),
         cmd,
         {
             cwd,

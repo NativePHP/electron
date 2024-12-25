@@ -1,5 +1,6 @@
 import type CrossProcessExports from "electron";
 import { app } from "electron";
+import {initialize} from "@electron/remote/main/index.js";
 import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import {
@@ -16,8 +17,8 @@ import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
 
 // Workaround for CommonJS module
-import electron_updater from 'electron-updater';
-const { autoUpdater } = electron_updater;
+import electronUpdater from 'electron-updater';
+const { autoUpdater } = electronUpdater;
 
 class NativePHP {
   processes = [];
@@ -29,7 +30,8 @@ class NativePHP {
     phpBinary: string,
     cert: string
   ) {
-    require("@electron/remote/main").initialize();
+
+    initialize();
 
     state.icon = icon;
     state.php = phpBinary;
