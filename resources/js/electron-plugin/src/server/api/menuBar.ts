@@ -53,7 +53,6 @@ router.post("/hide", (req, res) => {
 });
 
 router.post("/create", (req, res) => {
-    res.sendStatus(200);
 
     if (state.activeMenuBar) {
         state.activeMenuBar.tray.destroy();
@@ -187,6 +186,8 @@ router.post("/create", (req, res) => {
             });
         });
     });
+
+    res.sendStatus(200);
 });
 
 function buildMenu(contextMenu) {
