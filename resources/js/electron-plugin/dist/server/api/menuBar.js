@@ -35,7 +35,6 @@ router.post("/hide", (req, res) => {
     state.activeMenuBar.hideWindow();
 });
 router.post("/create", (req, res) => {
-    res.sendStatus(200);
     if (state.activeMenuBar) {
         state.activeMenuBar.tray.destroy();
     }
@@ -139,6 +138,7 @@ router.post("/create", (req, res) => {
             });
         });
     });
+    res.sendStatus(200);
 });
 function buildMenu(contextMenu) {
     let menu = Menu.buildFromTemplate([{ role: "quit" }]);
