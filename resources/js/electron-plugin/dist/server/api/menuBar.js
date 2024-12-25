@@ -87,6 +87,7 @@ router.post("/create", (req, res) => {
     }
     state.activeMenuBar.on("ready", () => {
         state.activeMenuBar.tray.setTitle(label);
+        res.sendStatus(200);
         state.activeMenuBar.on("hide", () => {
             notifyLaravel("events", {
                 event: "\\Native\\Laravel\\Events\\MenuBar\\MenuBarHidden"
@@ -138,7 +139,6 @@ router.post("/create", (req, res) => {
             });
         });
     });
-    res.sendStatus(200);
 });
 function buildMenu(contextMenu) {
     let menu = Menu.buildFromTemplate([{ role: "quit" }]);
