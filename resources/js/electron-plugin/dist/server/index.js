@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import startAPIServer from "./api.js";
-import { retrieveNativePHPConfig, retrievePhpIniSettings, serveApp, startQueueWorker, startScheduler, } from "./php.js";
+import { retrieveNativePHPConfig, retrievePhpIniSettings, serveApp, startScheduler, } from "./php.js";
 import { appendCookie } from "./utils.js";
 import state from "./state.js";
 export function startPhpApp() {
@@ -17,16 +17,6 @@ export function startPhpApp() {
         state.phpPort = result.port;
         yield appendCookie();
         return result.process;
-    });
-}
-export function startQueue() {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (!process.env.NATIVE_PHP_SKIP_QUEUE) {
-            return startQueueWorker(state.randomSecret, state.electronApiPort, state.phpIni);
-        }
-        else {
-            return undefined;
-        }
     });
 }
 export function runScheduler() {

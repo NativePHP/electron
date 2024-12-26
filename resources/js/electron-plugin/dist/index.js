@@ -11,7 +11,7 @@ import { app } from "electron";
 import { initialize } from "@electron/remote/main/index.js";
 import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
-import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, startQueue, } from "./server/index.js";
+import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, } from "./server/index.js";
 import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
@@ -77,7 +77,6 @@ class NativePHP {
             yield this.startElectronApi();
             state.phpIni = yield this.loadPhpIni();
             yield this.startPhpApp();
-            yield this.startQueueWorker();
             this.startScheduler();
             yield notifyLaravel("booted");
         });
@@ -148,11 +147,6 @@ class NativePHP {
     startPhpApp() {
         return __awaiter(this, void 0, void 0, function* () {
             this.processes.push(yield startPhpApp());
-        });
-    }
-    startQueueWorker() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.processes.push(yield startQueue());
         });
     }
     startScheduler() {

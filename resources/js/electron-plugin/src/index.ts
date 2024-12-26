@@ -9,7 +9,6 @@ import {
   runScheduler,
   startAPI,
   startPhpApp,
-  startQueue,
 } from "./server/index.js";
 import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
