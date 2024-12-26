@@ -9,11 +9,11 @@ it('can boot up the app', function () {
 
     $process = remote('native:serve --no-dependencies --no-interaction -v');
     $process->start(function ($type, $line) use (&$output) {
-        echo $line; // Uncomment this line to debug
+        // echo $line; // Uncomment this line to debug
         $output .= $line;
     });
 
-    $process->wait(); // Uncomment this line to debug
+    // $process->wait(); // Uncomment this line to debug
 
     try {
         retry(30, function () use ($output) {
