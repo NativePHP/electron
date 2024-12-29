@@ -55,6 +55,13 @@ router.post("/hide", (req, res) => {
 router.post("/create", (req, res) => {
     res.sendStatus(200);
 
+    let shouldSendCreatedEvent = true;
+
+    if (state.activeMenuBar) {
+        state.activeMenuBar.tray.destroy();
+        shouldSendCreatedEvent = false;
+    }
+
     const {
         width,
         height,
@@ -73,13 +80,6 @@ router.post("/create", (req, res) => {
         resizable,
         event,
     } = req.body;
-
-    let shouldSendCreatedEvent = true;
-
-    if (state.activeMenuBar) {
-        state.activeMenuBar.tray.destroy();
-        shouldSendCreatedEvent = false;
-    }
 
 
     if (onlyShowContextMenu) {

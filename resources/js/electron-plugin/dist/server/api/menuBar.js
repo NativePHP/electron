@@ -36,12 +36,12 @@ router.post("/hide", (req, res) => {
 });
 router.post("/create", (req, res) => {
     res.sendStatus(200);
-    const { width, height, url, label, alwaysOnTop, vibrancy, backgroundColor, transparency, icon, showDockIcon, onlyShowContextMenu, windowPosition, contextMenu, tooltip, resizable, event, } = req.body;
     let shouldSendCreatedEvent = true;
     if (state.activeMenuBar) {
         state.activeMenuBar.tray.destroy();
         shouldSendCreatedEvent = false;
     }
+    const { width, height, url, label, alwaysOnTop, vibrancy, backgroundColor, transparency, icon, showDockIcon, onlyShowContextMenu, windowPosition, contextMenu, tooltip, resizable, event, } = req.body;
     if (onlyShowContextMenu) {
         const tray = new Tray(icon || state.icon.replace("icon.png", "IconTemplate.png"));
         tray.setContextMenu(buildMenu(contextMenu));
