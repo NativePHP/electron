@@ -1,17 +1,18 @@
 import startAPIServer, { APIProcess } from "../../src/server/api";
 import axios from "axios";
-import electron from "electron";
+import state from "../../src/server/state";
 
 let apiServer: APIProcess;
 
-jest.mock('electron', () => ({
-    ...jest.requireActual('electron'),
-
-    window: {
-        hide: jest.fn(),
-        show: jest.fn(),
+jest.mock('../../src/server/state', () => ({
+    ...jest.requireActual('../../src/server/state'),
+    windows: {
+        main: {
+            hide: jest.fn(),
+            show: jest.fn(),
+        },
     }
-}));
+}))
 
 describe('Window test', () => {
   beforeEach(async () => {
@@ -26,14 +27,14 @@ describe('Window test', () => {
   });
 
   it('can hide a window', async () => {
-    const response = await axios.post('/window/hide');
+    const response = await axios.post('/window/hide', { id: 'main' });
     expect(response.status).toBe(200);
-    // expect(electron.window.show).toHaveBeenCalled();
+    expect(state.windows.main.hide).toHaveBeenCalled();
   });
 
   it('can show a window', async () => {
-    const response = await axios.post('/window/show');
+    const response = await axios.post('/window/show', { id: 'main' });
     expect(response.status).toBe(200);
-    // expect(electron.window.show).toHaveBeenCalled();
+    expect(state.windows.main.show).toHaveBeenCalled();
   });
 });
