@@ -213,7 +213,8 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
         // Make sure the storage path is linked - as people can move the app around, we
         // need to run this every time the app starts
         if (! runningSecureBuild()) {
-            callPhp(['artisan', 'storage:link', '--force'], phpOptions, phpIniSettings)
+            callPhp(['artisan', 'storage:link', '--force'], phpOptions, phpIniSettings);
+            callPhp(['artisan', 'view:cache'], phpOptions, phpIniSettings);
         }
 
         // Migrate the database
