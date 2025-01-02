@@ -16,7 +16,9 @@ import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import { watch } from "fs";
 import electronUpdater from 'electron-updater';
+import { getAppPath } from "./server/php.js";
 const { autoUpdater } = electronUpdater;
 class NativePHP {
     constructor() {
@@ -78,6 +80,9 @@ class NativePHP {
             state.phpIni = yield this.loadPhpIni();
             yield this.startPhpApp();
             this.startScheduler();
+            if (process.env.NODE_ENV === "development") {
+                this.watchPhpChanges();
+            }
             yield notifyLaravel("booted");
         });
     }
@@ -172,6 +177,19 @@ class NativePHP {
                 console.error(err);
             }
         });
+    }
+    watchPhpChanges() {
+        const appPath = getAppPath();
+        watch(appPath, { recursive: true }, (eventType, filename) => {
+            if (filename && filename.endsWith('.php')) {
+                console.log(`PHP file changed: ${filename} (${eventType})`);
+                notifyLaravel('events', {
+                    event: '\\Native\\Laravel\\Events\\App\\ProjectFileChanged',
+                    payload: [filename],
+                });
+            }
+        });
+        console.log(`Watching for PHP file changes in: ${appPath}`);
     }
 }
 export default new NativePHP();
