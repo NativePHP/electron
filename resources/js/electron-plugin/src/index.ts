@@ -14,9 +14,11 @@ import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import {watch} from "fs";
 
 // Workaround for CommonJS module
 import electronUpdater from 'electron-updater';
+import {getAppPath} from "./server/php.js";
 const { autoUpdater } = electronUpdater;
 
 class NativePHP {
@@ -106,6 +108,10 @@ class NativePHP {
 
     await this.startPhpApp();
     this.startScheduler();
+
+    if (process.env.NODE_ENV === "development") {
+        this.watchPhpChanges();
+    }
 
     await notifyLaravel("booted");
   }
@@ -215,6 +221,22 @@ class NativePHP {
           console.error(err);
         }
       });
+  }
+
+  private watchPhpChanges() {
+      const appPath = getAppPath();
+
+      watch(appPath, { recursive: true }, (eventType, filename) => {
+          if (filename && filename.endsWith('.php')) {
+              console.log(`PHP file changed: ${filename} (${eventType})`);
+              notifyLaravel('events', {
+                  event: '\\Native\\Laravel\\Events\\App\\ProjectFileChanged',
+                  payload: [filename],
+              });
+          }
+      });
+
+      console.log(`Watching for PHP file changes in: ${appPath}`);
   }
 }
 
