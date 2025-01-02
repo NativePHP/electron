@@ -1,10 +1,11 @@
 import express from "express";
-import { Menu, Tray } from "electron";
-import { compileMenu } from "./helper";
-import state from "../state";
+import { app, Menu, Tray } from "electron";
+import { compileMenu } from "./helper/index.js";
+import state from "../state.js";
 import { menubar } from "menubar";
-import { notifyLaravel } from "../utils";
-import { join } from "path";
+import { notifyLaravel } from "../utils.js";
+import { fileURLToPath } from 'url';
+import { enable } from "@electron/remote/main/index.js";
 const router = express.Router();
 router.post("/label", (req, res) => {
     res.sendStatus(200);
@@ -36,25 +37,19 @@ router.post("/hide", (req, res) => {
 });
 router.post("/create", (req, res) => {
     res.sendStatus(200);
+    let shouldSendCreatedEvent = true;
     if (state.activeMenuBar) {
         state.activeMenuBar.tray.destroy();
+        shouldSendCreatedEvent = false;
     }
     const { width, height, url, label, alwaysOnTop, vibrancy, backgroundColor, transparency, icon, showDockIcon, onlyShowContextMenu, windowPosition, contextMenu, tooltip, resizable, event, } = req.body;
     if (onlyShowContextMenu) {
         const tray = new Tray(icon || state.icon.replace("icon.png", "IconTemplate.png"));
         tray.setContextMenu(buildMenu(contextMenu));
-        state.activeMenuBar = menubar({
-            tray,
-            tooltip,
-            index: false,
-            showDockIcon,
-            showOnAllWorkspaces: false,
-            browserWindow: {
-                show: false,
-                width: 0,
-                height: 0,
-            }
-        });
+        tray.setToolTip(tooltip);
+        if (!showDockIcon) {
+            app.dock.hide();
+        }
     }
     else {
         state.activeMenuBar = menubar({
@@ -75,7 +70,7 @@ router.post("/create", (req, res) => {
                 backgroundColor,
                 transparent: transparency,
                 webPreferences: {
-                    preload: join(__dirname, '../../electron-plugin/dist/preload/index.js'),
+                    preload: fileURLToPath(new URL('../../electron-plugin/dist/preload/index.mjs', import.meta.url)),
                     nodeIntegration: true,
                     sandbox: false,
                     contextIsolation: false,
@@ -83,11 +78,16 @@ router.post("/create", (req, res) => {
             }
         });
         state.activeMenuBar.on("after-create-window", () => {
-            require("@electron/remote/main").enable(state.activeMenuBar.window.webContents);
+            enable(state.activeMenuBar.window.webContents);
         });
     }
     state.activeMenuBar.on("ready", () => {
         state.activeMenuBar.tray.setTitle(label);
+        if (shouldSendCreatedEvent) {
+            notifyLaravel("events", {
+                event: "\\Native\\Laravel\\Events\\MenuBar\\MenuBarCreated"
+            });
+        }
         state.activeMenuBar.on("hide", () => {
             notifyLaravel("events", {
                 event: "\\Native\\Laravel\\Events\\MenuBar\\MenuBarHidden"
