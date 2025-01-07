@@ -11,6 +11,7 @@ use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\CopiesToBuildDirectory;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\OsAndArch;
+use Native\Electron\Traits\SetsAppName;
 
 use function Laravel\Prompts\intro;
 
@@ -21,6 +22,7 @@ class BuildCommand extends Command
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
+    use SetsAppName;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
@@ -36,6 +38,8 @@ class BuildCommand extends Command
 
     public function handle(): void
     {
+        $this->setAppName(slugify: true);
+
         $os = $this->selectOs($this->argument('os'));
 
         $buildCommand = 'build';
