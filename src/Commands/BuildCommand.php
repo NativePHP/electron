@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\CopiesToBuildDirectory;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\OsAndArch;
@@ -15,6 +16,7 @@ use function Laravel\Prompts\intro;
 
 class BuildCommand extends Command
 {
+    use CleansEnvFile;
     use CopiesToBuildDirectory;
     use InstallsAppIcon;
     use LocatesPhpBinary;
@@ -59,6 +61,9 @@ class BuildCommand extends Command
 
         $this->newLine();
         $this->copyToBuildDirectory();
+
+        $this->newLine();
+        $this->cleanEnvFile();
 
         $this->newLine();
         $this->installIcon();
