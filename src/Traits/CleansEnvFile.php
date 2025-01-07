@@ -7,6 +7,8 @@ use function Laravel\Prompts\note;
 
 trait CleansEnvFile
 {
+    abstract protected function buildPath(): string;
+
     protected function cleanEnvFile(): void
     {
         intro('Cleaning .env file...');
