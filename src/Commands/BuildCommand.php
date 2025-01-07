@@ -7,11 +7,15 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\CopiesToBuildDirectory;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\OsAndArch;
 
+use function Laravel\Prompts\intro;
+
 class BuildCommand extends Command
 {
+    use CopiesToBuildDirectory;
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
@@ -23,25 +27,14 @@ class BuildCommand extends Command
 
     protected $availableOs = ['win', 'linux', 'mac', 'all'];
 
+    protected function buildPath(): string
+    {
+        return __DIR__.'/../../resources/js/resources/app';
+    }
+
     public function handle(): void
     {
-        $this->info('Build NativePHP app…');
-
-        Process::path(__DIR__.'/../../resources/js/')
-            ->env($this->getEnvironmentVariables())
-            ->forever()
-            ->run('npm update', function (string $type, string $output) {
-                echo $output;
-            });
-
-        Process::path(base_path())
-            ->run('composer install --no-dev', function (string $type, string $output) {
-                echo $output;
-            });
-
         $os = $this->selectOs($this->argument('os'));
-
-        $this->installIcon();
 
         $buildCommand = 'build';
         if ($os != 'all') {
@@ -55,8 +48,32 @@ class BuildCommand extends Command
             }
         }
 
-        $this->info((($publish ?? false) ? 'Publishing' : 'Building')." for {$os}");
+        $this->newLine();
+        intro('Updating Electron dependencies...');
+        Process::path(__DIR__.'/../../resources/js/')
+            ->env($this->getEnvironmentVariables())
+            ->forever()
+            ->run('npm update', function (string $type, string $output) {
+                echo $output;
+            });
 
+        $this->newLine();
+        $this->copyToBuildDirectory();
+
+        $this->newLine();
+        $this->installIcon();
+
+        $this->newLine();
+        intro('Installing App Composer dependencies');
+        Process::path($this->buildPath())
+            ->run('composer install --no-dev', function (string $type, string $output) {
+                echo $output;
+            });
+
+        // TODO: Add Cleanup command & include files skipped from ported node app copy code
+
+        $this->newLine();
+        intro((($publish ?? false) ? 'Publishing' : 'Building')." for {$os}");
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
