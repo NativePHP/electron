@@ -2,6 +2,10 @@
 
 namespace Native\Electron\Traits;
 
+use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\note;
 
@@ -9,7 +13,24 @@ trait CopiesToBuildDirectory
 {
     abstract protected function buildPath(): string;
 
-    public function copyToBuildDirectory()
+    const SKIP_PATTERNS = [
+        // Skip .git and Dev directories
+        '.git',
+        'docker',
+        'packages',
+
+        // Only needed for local testing
+        'vendor/nativephp/electron/vendor',
+        'vendor/nativephp/laravel/vendor',
+
+        'vendor/nativephp/php-bin',
+        'vendor/nativephp/electron/bin',
+        'vendor/nativephp/electron/resources',
+        'node_modules',
+        'dist',
+    ];
+
+    protected function copyToBuildDirectory()
     {
         intro('Copying App to build directory...');
 
@@ -19,10 +40,26 @@ trait CopiesToBuildDirectory
         $this->removeDirectory($buildPath);
         mkdir($buildPath, 0755, true);
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($sourcePath, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
+        // A filtered iterator that will exclude files matching our skip patterns
+        $directory = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+
+        $filter = new RecursiveCallbackFilterIterator($directory, function ($current) {
+            $relativePath = substr($current->getPathname(), strlen(base_path()) + 1);
+            $patterns = config('nativephp.cleanup_exclude_files') + static::SKIP_PATTERNS;
+
+            // Check each skip pattern against the current file/directory
+            foreach ($patterns as $pattern) {
+                // fnmatch supports glob patterns like "*.txt" or "cache/*"
+                if (fnmatch($pattern, $relativePath)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        // Now we walk all directories & files and copy them over accordingly
+        $iterator = new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::SELF_FIRST);
 
         foreach ($iterator as $item) {
             $target = $buildPath.DIRECTORY_SEPARATOR.substr($item->getPathname(), strlen($sourcePath) + 1);
