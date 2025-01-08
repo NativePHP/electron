@@ -84,7 +84,7 @@ export default {
             process.exit(1);
         }
 
-        console.log(`exec php.js --${targetOs} --${arch}`);
+        console.log(`  • building php binary - exec php.js --${targetOs} --${arch}`);
         exec(`node php.js --${targetOs} --${arch}`);
     },
     afterSign: 'build/notarize.js',

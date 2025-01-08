@@ -79,8 +79,6 @@ class BuildCommand extends Command
                 echo $output;
             });
 
-        // TODO: Add Cleanup command & include files skipped from ported node app copy code
-
         $this->newLine();
         intro((($publish ?? false) ? 'Publishing' : 'Building')." for {$os}");
         Process::path(__DIR__.'/../../resources/js/')

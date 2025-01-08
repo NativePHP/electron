@@ -29,7 +29,6 @@ trait CopiesToBuildDirectory
         'node_modules',
         'dist',
 
-        'Versions',
         '**/.github',
     ];
 
