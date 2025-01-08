@@ -1,18 +1,13 @@
-import os from 'os';
 import { join } from 'path';
-import { mkdtempSync } from 'fs';
+import { exec } from 'child_process';
 
-// Workaround for CommonJS module
-import fs_extra from 'fs-extra';
-const { copySync, removeSync, writeJsonSync } = fs_extra;
-
-const isBuilding = process.env.NATIVEPHP_BUILDING;
+const appUrl = process.env.APP_URL;
 const appId = process.env.NATIVEPHP_APP_ID;
 const appName = process.env.NATIVEPHP_APP_NAME;
+const isBuilding = process.env.NATIVEPHP_BUILDING;
+const appAuthor = process.env.NATIVEPHP_APP_AUTHOR;
 const fileName = process.env.NATIVEPHP_APP_FILENAME;
 const appVersion = process.env.NATIVEPHP_APP_VERSION;
-const appUrl = process.env.APP_URL;
-const appAuthor = process.env.NATIVEPHP_APP_AUTHOR;
 const deepLinkProtocol = process.env.NATIVEPHP_DEEPLINK_SCHEME;
 
 // Since we do not copy the php executable here, we only need these for building
@@ -25,20 +20,17 @@ let targetOs;
 if (isWindows) {
     targetOs = 'win';
 }
+
 if (isLinux) {
     targetOs = 'linux';
 }
-// Use of isDarwin
+
 if (isDarwin) {
     targetOs = 'mac';
 }
 
 
 let updaterConfig = {};
-
-// We wouldn't need these since its not representing the target platform
-console.log("Arch: ", process.arch)
-console.log("Platform: ", process.platform)
 
 try {
     updaterConfig = process.env.NATIVEPHP_UPDATER_CONFIG;
@@ -74,6 +66,27 @@ export default {
     asarUnpack: [
         'resources/**',
     ],
+    beforePack: async (context) => {
+        let arch = {
+            1: 'x64',
+            3: 'arm64'
+        }[context.arch];
+
+        // If mac is not arm, use 32bits (x86)
+        // This is how this works now according to package.json scripts,
+        // TODO: Check this. Not sure why mac x64 needs a php binary for x86? @simonhamp
+        if(targetOs === 'mac' && arch === 'x64') {
+            arch = 'x86'
+        }
+
+        if(arch === undefined) {
+            console.error('Cannot build PHP for unsupported architecture');
+            process.exit(1);
+        }
+
+        console.log(`exec php.js --${targetOs} --${arch}`);
+        exec(`node php.js --${targetOs} --${arch}`);
+    },
     afterSign: 'build/notarize.js',
     win: {
         executableName: fileName,
