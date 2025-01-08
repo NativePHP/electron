@@ -30,6 +30,14 @@ trait CopiesToBuildDirectory
         'dist',
 
         '**/.github',
+
+        'database/*.sqlite',
+        'database/*.sqlite-shm',
+        'database/*.sqlite-wal',
+
+        'storage/logs/*',
+        'storage/views/*',
+        'storage/sessions/*',
     ];
 
     protected function copyToBuildDirectory()
