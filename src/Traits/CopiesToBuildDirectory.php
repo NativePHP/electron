@@ -13,33 +13,6 @@ trait CopiesToBuildDirectory
 {
     abstract protected function buildPath(): string;
 
-    const SKIP_PATTERNS = [
-        // Skip .git and Dev directories
-        '.git',
-        'docker',
-        'packages',
-
-        // Only needed for local testing
-        'vendor/nativephp/electron/vendor',
-        'vendor/nativephp/laravel/vendor',
-
-        'vendor/nativephp/php-bin',
-        'vendor/nativephp/electron/bin',
-        'vendor/nativephp/electron/resources',
-        'node_modules',
-        'dist',
-
-        '**/.github',
-
-        'database/*.sqlite',
-        'database/*.sqlite-shm',
-        'database/*.sqlite-wal',
-
-        'storage/logs/*',
-        'storage/views/*',
-        'storage/sessions/*',
-    ];
-
     protected function copyToBuildDirectory()
     {
         intro('Copying App to build directory...');
@@ -55,7 +28,7 @@ trait CopiesToBuildDirectory
 
         $filter = new RecursiveCallbackFilterIterator($directory, function ($current) {
             $relativePath = substr($current->getPathname(), strlen(base_path()) + 1);
-            $patterns = config('nativephp.cleanup_exclude_files') + static::SKIP_PATTERNS;
+            $patterns = config('nativephp.cleanup_exclude_files') + static::CLEANUP_PATTERNS;
 
             // Check each skip pattern against the current file/directory
             foreach ($patterns as $pattern) {

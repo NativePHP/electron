@@ -36,6 +36,33 @@ class BuildCommand extends Command
         return __DIR__.'/../../resources/js/resources/app';
     }
 
+    const CLEANUP_PATTERNS = [
+        // Skip .git and Dev directories
+        '.git',
+        'docker',
+        'packages',
+
+        // Only needed for local testing
+        'vendor/nativephp/electron/vendor',
+        'vendor/nativephp/laravel/vendor',
+
+        'vendor/nativephp/php-bin',
+        'vendor/nativephp/electron/bin',
+        'vendor/nativephp/electron/resources',
+        'node_modules',
+        'dist',
+
+        '**/.github',
+
+        'database/*.sqlite',
+        'database/*.sqlite-shm',
+        'database/*.sqlite-wal',
+
+        'storage/logs/*',
+        'storage/views/*',
+        'storage/sessions/*',
+    ];
+
     public function handle(): void
     {
         $this->setAppName(slugify: true);
