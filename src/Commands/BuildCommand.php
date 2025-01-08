@@ -56,12 +56,12 @@ class BuildCommand extends Command
 
         $this->newLine();
         intro('Updating Electron dependencies...');
-        Process::path(__DIR__.'/../../resources/js/')
-            ->env($this->getEnvironmentVariables())
-            ->forever()
-            ->run('npm update', function (string $type, string $output) {
-                echo $output;
-            });
+        // Process::path(__DIR__.'/../../resources/js/')
+        //     ->env($this->getEnvironmentVariables())
+        //     ->forever()
+        //     ->run('npm update', function (string $type, string $output) {
+        //         echo $output;
+        //     });
 
         $this->newLine();
         $this->copyToBuildDirectory();

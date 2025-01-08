@@ -28,6 +28,9 @@ trait CopiesToBuildDirectory
         'vendor/nativephp/electron/resources',
         'node_modules',
         'dist',
+
+        'Versions',
+        '**/.github',
     ];
 
     protected function copyToBuildDirectory()
