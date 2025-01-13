@@ -56,9 +56,11 @@ class BuildCommand extends Command
         'database/*.sqlite-shm',
         'database/*.sqlite-wal',
 
+        'storage/framework/sessions/*',
+        'storage/framework/testing/*',
+        'storage/framework/cache/*',
+        'storage/framework/views/*',
         'storage/logs/*',
-        'storage/views/*',
-        'storage/sessions/*',
     ];
 
     public function handle(): void
