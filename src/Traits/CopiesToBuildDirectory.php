@@ -31,6 +31,7 @@ trait CopiesToBuildDirectory
 
         $finder
             ->in($sourcePath)
+            ->ignoreVCS(true)
             ->ignoreDotFiles(false)
             ->followLinks(false)
             ->exclude($patterns) // Exclude directories
