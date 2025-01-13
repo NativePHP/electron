@@ -31,7 +31,6 @@ trait CopiesToBuildDirectory
 
         $finder
             ->in($sourcePath)
-            ->exclude(['vendor/bin', 'node_modules']) // Common exclusions - TODO: move to config
             ->ignoreDotFiles(false)
             ->followLinks(false)
             ->exclude($patterns) // Exclude directories

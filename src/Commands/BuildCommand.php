@@ -48,7 +48,6 @@ class BuildCommand extends Command
         'vendor/nativephp/electron/bin',
         'vendor/nativephp/laravel/vendor',
         'vendor/nativephp/php-bin',
-        'node_modules',
         'dist',
 
         '**/.github',
