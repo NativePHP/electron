@@ -43,12 +43,11 @@ class BuildCommand extends Command
         'packages',
 
         // Only needed for local testing
-        'vendor/nativephp/electron/vendor',
-        'vendor/nativephp/laravel/vendor',
-
-        'vendor/nativephp/php-bin',
-        'vendor/nativephp/electron/bin',
         'vendor/nativephp/electron/resources',
+        'vendor/nativephp/electron/vendor',
+        'vendor/nativephp/electron/bin',
+        'vendor/nativephp/laravel/vendor',
+        'vendor/nativephp/php-bin',
         'node_modules',
         'dist',
 
