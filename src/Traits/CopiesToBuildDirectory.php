@@ -2,12 +2,13 @@
 
 namespace Native\Electron\Traits;
 
-use function Laravel\Prompts\note;
-use function Laravel\Prompts\intro;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
+
+use function Laravel\Prompts\intro;
+use function Laravel\Prompts\note;
 
 trait CopiesToBuildDirectory
 {
@@ -19,7 +20,7 @@ trait CopiesToBuildDirectory
 
         $sourcePath = base_path();
         $buildPath = $this->buildPath();
-        $filesystem = new Filesystem();
+        $filesystem = new Filesystem;
 
         // Clean and create build directory
         $filesystem->remove($buildPath);
