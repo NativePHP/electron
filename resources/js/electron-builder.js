@@ -72,9 +72,8 @@ export default {
             3: 'arm64'
         }[context.arch];
 
-        // If mac is not arm, use 32bits (x86)
-        // This is how this works now according to package.json scripts,
-        // TODO: Check this. Not sure why mac x64 needs a php binary for x86? @simonhamp
+        // Small deviation due to naming misnomer. Will change in future PR in php-bin
+        // https://github.com/NativePHP/electron/pull/153#discussion_r1912363517
         if(targetOs === 'mac' && arch === 'x64') {
             arch = 'x86'
         }
