@@ -37,8 +37,7 @@
         "nativephp/laravel": "*",
         "nativephp/php-bin": "^0.5.1",
         "spatie/laravel-package-tools": "^1.14.0",
-        "symfony/filesystem": "^7.2",
-        "symfony/finder": "^6.4"
+        "symfony/filesystem": "^7.2"
     },
     "require-dev": {
         "laravel/pint": "^1.0",

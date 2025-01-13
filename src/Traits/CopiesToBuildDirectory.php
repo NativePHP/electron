@@ -4,9 +4,9 @@ namespace Native\Electron\Traits;
 
 use function Laravel\Prompts\note;
 use function Laravel\Prompts\intro;
-
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
+use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
 
 trait CopiesToBuildDirectory
@@ -25,38 +25,39 @@ trait CopiesToBuildDirectory
         $filesystem->remove($buildPath);
         $filesystem->mkdir($buildPath);
 
-        // Configure finder
-        $finder = new Finder();
-        $patterns = config('nativephp.cleanup_exclude_files') + static::CLEANUP_PATTERNS;
+        // A filtered iterator that will exclude files matching our skip patterns
+        $directory = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
 
-        $finder
-            ->in($sourcePath)
-            ->ignoreVCS(true)
-            ->ignoreDotFiles(false)
-            ->followLinks(false)
-            ->exclude($patterns) // Exclude directories
-            ->filter(function (SplFileInfo $file) use ($patterns, $sourcePath) {
-                // Filter out glob patterns
-                $relativePath = substr($file->getPathname(), strlen($sourcePath) + 1);
+        $filter = new RecursiveCallbackFilterIterator($directory, function ($current) {
+            $relativePath = substr($current->getPathname(), strlen(base_path()) + 1);
+            $patterns = config('nativephp.cleanup_exclude_files') + static::CLEANUP_PATTERNS;
 
-                foreach ($patterns as $pattern) {
-                    if (fnmatch($pattern, $relativePath)) {
-                        return false;
-                    }
+            // Check each skip pattern against the current file/directory
+            foreach ($patterns as $pattern) {
+                // fnmatch supports glob patterns like "*.txt" or "cache/*"
+                if (fnmatch($pattern, $relativePath)) {
+                    return false;
                 }
-                return true;
-            });
-
-        // Copy files to build directory
-        foreach ($finder as $file) {
-            $relativePath = $file->getRelativePathname();
-            $targetPath = $buildPath . DIRECTORY_SEPARATOR . $relativePath;
-
-            if ($file->isDir()) {
-                $filesystem->mkdir($targetPath);
-            } else {
-                $filesystem->copy($file->getRealPath(), $targetPath);
             }
+
+            return true;
+        });
+
+        // Now we walk all directories & files and copy them over accordingly
+        $iterator = new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::SELF_FIRST);
+
+        foreach ($iterator as $item) {
+            $target = $buildPath.DIRECTORY_SEPARATOR.substr($item->getPathname(), strlen($sourcePath) + 1);
+
+            if ($item->isDir()) {
+                if (! is_dir($target)) {
+                    mkdir($target, 0755, true);
+                }
+
+                continue;
+            }
+
+            copy($item->getPathname(), $target);
         }
 
         $this->keepRequiredDirectories();
