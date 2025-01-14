@@ -35,6 +35,7 @@ class BuildCommand extends Command
 
         $this->setAppName(slugify: true);
 
+        $this->line('Updating npm packages…');
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
@@ -42,6 +43,7 @@ class BuildCommand extends Command
                 echo $output;
             });
 
+        $this->line('Removing composer dev dependencies…');
         Process::path(base_path())
             ->run('composer install --no-dev', function (string $type, string $output) {
                 echo $output;
