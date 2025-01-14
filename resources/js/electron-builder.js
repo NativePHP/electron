@@ -1,10 +1,10 @@
 import os from 'os';
-import { join } from 'path';
-import { mkdtempSync } from 'fs';
+import path, { join } from 'path';
+import {existsSync, mkdtempSync} from 'fs';
 
 // Workaround for CommonJS module
 import fs_extra from 'fs-extra';
-const { copySync, removeSync, writeJsonSync } = fs_extra;
+const { copySync, removeSync, writeJsonSync, mkdirpSync } = fs_extra;
 
 const isBuilding = process.env.NATIVEPHP_BUILDING;
 const appId = process.env.NATIVEPHP_APP_ID;
@@ -67,16 +67,18 @@ if (isBuilding) {
             // As we can't copy into a subdirectory of ourself we need to copy to a temp directory
             let tmpDir = mkdtempSync(join(os.tmpdir(), 'nativephp'));
 
-            console.warn('=====================');
-            console.warn('* * * INSECURE BUILD * * *');
+            console.warn('===================================================================');
+            console.warn('                    * * * INSECURE BUILD * * *');
+            console.warn('===================================================================');
             console.warn('Secure app bundle not found! Building with exposed source files.');
-            console.warn('See https://nativephp.com/docs/publishing/building#security for more details');
-            console.warn('=====================');
+            console.warn('See https://nativephp.com/docs/publishing/building#security');
+            console.warn('===================================================================');
 
+            console.log('Copying app to temporary directory for build');
             copySync(process.env.APP_PATH, tmpDir, {
                 overwrite: true,
                 dereference: true,
-                filter: (src, dest) => {
+                filter: (src) => {
                     let skip = [
                         // Skip .git and Dev directories
                         join(process.env.APP_PATH, '.git'),
@@ -111,14 +113,27 @@ if (isBuilding) {
 
             copySync(tmpDir, appPath);
 
+            console.log('Preparing directories for electron build');
             // Electron build removes empty folders, so we have to create dummy files
             // dotfiles unfortunately don't work.
-            writeJsonSync(join(appPath, 'storage', 'framework', 'cache', '_native.json'), {})
-            writeJsonSync(join(appPath, 'storage', 'framework', 'sessions', '_native.json'), {})
-            writeJsonSync(join(appPath, 'storage', 'framework', 'testing', '_native.json'), {})
-            writeJsonSync(join(appPath, 'storage', 'framework', 'views', '_native.json'), {})
-            writeJsonSync(join(appPath, 'storage', 'app', 'public', '_native.json'), {})
-            writeJsonSync(join(appPath, 'storage', 'logs', '_native.json'), {})
+            const emptyPaths = [
+                join(appPath, 'storage', 'framework', 'cache', '_native.json'),
+                join(appPath, 'storage', 'framework', 'sessions', '_native.json'),
+                join(appPath, 'storage', 'framework', 'testing', '_native.json'),
+                join(appPath, 'storage', 'framework', 'views', '_native.json'),
+                join(appPath, 'storage', 'app', 'public', '_native.json'),
+                join(appPath, 'storage', 'logs', '_native.json'),
+            ];
+
+            emptyPaths.forEach((emptyPath) => {
+                // Create directory if it doesn't exist
+                let dir =  path.dirname(emptyPath);
+                if (!existsSync(dir)) {
+                    mkdirpSync(dir);
+                }
+
+                writeJsonSync(emptyPath, {});
+            });
 
             removeSync(tmpDir);
         }
@@ -129,6 +144,7 @@ if (isBuilding) {
         console.log();
         console.log('===================================================================');
         console.log('                       Starting build...');
+        console.log('===================================================================');
         console.log();
     } catch (e) {
         console.error();
