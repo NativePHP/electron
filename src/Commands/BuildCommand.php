@@ -6,11 +6,11 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Facades\Updater;
-use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
 use Native\Electron\Traits\SetsAppName;
+use Native\Laravel\Commands\Traits\CleansEnvFile;
 
 class BuildCommand extends Command
 {
