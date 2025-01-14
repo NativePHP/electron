@@ -2,9 +2,10 @@
 
 namespace Native\Electron\Traits;
 
-use function Laravel\Prompts\intro;
 use Illuminate\Support\Facades\Process;
 use Symfony\Component\Filesystem\Filesystem;
+
+use function Laravel\Prompts\intro;
 
 trait PrunesVendorDirectory
 {

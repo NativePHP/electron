@@ -10,7 +10,7 @@ trait CleansEnvFile
     const OVERRIDE_KEYS = [
         'LOG_CHANNEL',
         'LOG_STACK',
-        'LOG_DAILY_DAYS'
+        'LOG_DAILY_DAYS',
     ];
 
     abstract protected function buildPath(): string;
