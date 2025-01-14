@@ -7,22 +7,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { app } from "electron";
-import { autoUpdater } from "electron-updater";
-import state from "./server/state";
+import { app, session } from "electron";
+import { initialize } from "@electron/remote/main/index.js";
+import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
-import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, startQueue, } from "./server";
-import { notifyLaravel } from "./server/utils";
+import { retrieveNativePHPConfig, retrievePhpIniSettings, runScheduler, startAPI, startPhpApp, } from "./server/index.js";
+import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
-import { stopAllProcesses } from "./server/api/childProcess";
+import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import electronUpdater from 'electron-updater';
+const { autoUpdater } = electronUpdater;
 class NativePHP {
     constructor() {
         this.processes = [];
         this.schedulerInterval = undefined;
     }
     bootstrap(app, icon, phpBinary, cert) {
-        require("@electron/remote/main").initialize();
+        initialize();
         state.icon = icon;
         state.php = phpBinary;
         state.caCert = cert;
@@ -75,8 +77,14 @@ class NativePHP {
             yield this.startElectronApi();
             state.phpIni = yield this.loadPhpIni();
             yield this.startPhpApp();
-            yield this.startQueueWorker();
             this.startScheduler();
+            const filter = {
+                urls: [`http://127.0.0.1:${state.phpPort}/*`]
+            };
+            session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+                details.requestHeaders['X-NativePHP-Secret'] = state.randomSecret;
+                callback({ requestHeaders: details.requestHeaders });
+            });
             yield notifyLaravel("booted");
         });
     }
@@ -146,11 +154,6 @@ class NativePHP {
     startPhpApp() {
         return __awaiter(this, void 0, void 0, function* () {
             this.processes.push(yield startPhpApp());
-        });
-    }
-    startQueueWorker() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.processes.push(yield startQueue());
         });
     }
     startScheduler() {

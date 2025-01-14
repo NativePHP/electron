@@ -1,7 +1,7 @@
 import type CrossProcessExports from "electron";
-import { app } from "electron";
-import { autoUpdater } from "electron-updater";
-import state from "./server/state";
+import { app, session } from "electron";
+import { initialize } from "@electron/remote/main/index.js";
+import state from "./server/state.js";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import {
   retrieveNativePHPConfig,
@@ -9,12 +9,15 @@ import {
   runScheduler,
   startAPI,
   startPhpApp,
-  startQueue,
-} from "./server";
-import { notifyLaravel } from "./server/utils";
+} from "./server/index.js";
+import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
-import { stopAllProcesses } from "./server/api/childProcess";
+import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+
+// Workaround for CommonJS module
+import electronUpdater from 'electron-updater';
+const { autoUpdater } = electronUpdater;
 
 class NativePHP {
   processes = [];
@@ -26,7 +29,8 @@ class NativePHP {
     phpBinary: string,
     cert: string
   ) {
-    require("@electron/remote/main").initialize();
+
+    initialize();
 
     state.icon = icon;
     state.php = phpBinary;
@@ -101,8 +105,17 @@ class NativePHP {
     state.phpIni = await this.loadPhpIni();
 
     await this.startPhpApp();
-    await this.startQueueWorker();
     this.startScheduler();
+
+    const filter = {
+        urls: [`http://127.0.0.1:${state.phpPort}/*`]
+    };
+
+    session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+        details.requestHeaders['X-NativePHP-Secret'] = state.randomSecret;
+
+        callback({ requestHeaders: details.requestHeaders });
+    });
 
     await notifyLaravel("booted");
   }
@@ -182,10 +195,6 @@ class NativePHP {
 
   private async startPhpApp() {
     this.processes.push(await startPhpApp());
-  }
-
-  private async startQueueWorker() {
-    this.processes.push(await startQueue());
   }
 
   private startScheduler() {
