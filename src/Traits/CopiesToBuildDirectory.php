@@ -22,12 +22,16 @@ trait CopiesToBuildDirectory
         $buildPath = $this->buildPath();
         $filesystem = new Filesystem;
 
+        $patterns = array_merge(
+            config('nativephp-internal.cleanup_exclude_files', []),
+            config('nativephp.cleanup_exclude_files', [])
+        );
+
         // Clean and create build directory
         $filesystem->remove($buildPath);
         $filesystem->mkdir($buildPath);
 
         // A filtered iterator that will exclude files matching our skip patterns
-        $patterns = array_merge(static::CLEANUP_PATTERNS, config('nativephp.cleanup_exclude_files', []));
         $directory = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
 
         $filter = new RecursiveCallbackFilterIterator($directory, function ($current) use ($patterns) {
