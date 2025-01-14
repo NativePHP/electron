@@ -92,6 +92,19 @@ router.post("/create", (req, res) => {
         if (!showDockIcon) {
             app.dock.hide();
         }
+
+        state.activeMenuBar = menubar({
+            tray,
+            tooltip,
+            index: false,
+            showDockIcon,
+            showOnAllWorkspaces: false,
+            browserWindow: {
+                show: false,
+                width: 0,
+                height: 0,
+            }
+        });
     } else {
         state.activeMenuBar = menubar({
             icon: icon || state.icon.replace("icon.png", "IconTemplate.png"),
