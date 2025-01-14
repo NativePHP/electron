@@ -2,13 +2,13 @@
 
 namespace Native\Electron\Traits;
 
-use RecursiveCallbackFilterIterator;
-use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Symfony\Component\Filesystem\Filesystem;
-
-use function Laravel\Prompts\intro;
+use RecursiveDirectoryIterator;
 use function Laravel\Prompts\note;
+use function Laravel\Prompts\intro;
+
+use RecursiveCallbackFilterIterator;
+use Symfony\Component\Filesystem\Filesystem;
 
 trait CopiesToBuildDirectory
 {
@@ -27,14 +27,15 @@ trait CopiesToBuildDirectory
         $filesystem->mkdir($buildPath);
 
         // A filtered iterator that will exclude files matching our skip patterns
+        $patterns = array_merge(static::CLEANUP_PATTERNS, config('nativephp.cleanup_exclude_files', []));
         $directory = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
 
-        $filter = new RecursiveCallbackFilterIterator($directory, function ($current) {
+        $filter = new RecursiveCallbackFilterIterator($directory, function ($current) use ($patterns) {
             $relativePath = substr($current->getPathname(), strlen(base_path()) + 1);
-            $patterns = config('nativephp.cleanup_exclude_files') + static::CLEANUP_PATTERNS;
 
             // Check each skip pattern against the current file/directory
             foreach ($patterns as $pattern) {
+
                 // fnmatch supports glob patterns like "*.txt" or "cache/*"
                 if (fnmatch($pattern, $relativePath)) {
                     return false;

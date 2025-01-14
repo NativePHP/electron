@@ -2,18 +2,19 @@
 
 namespace Native\Electron\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
-use Native\Electron\Concerns\LocatesPhpBinary;
-use Native\Electron\Facades\Updater;
-use Native\Electron\Traits\CleansEnvFile;
-use Native\Electron\Traits\CopiesToBuildDirectory;
-use Native\Electron\Traits\InstallsAppIcon;
-use Native\Electron\Traits\OsAndArch;
-use Native\Electron\Traits\SetsAppName;
-
+use Illuminate\Console\Command;
 use function Laravel\Prompts\intro;
+use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\OsAndArch;
+use Illuminate\Support\Facades\Process;
+use Native\Electron\Traits\SetsAppName;
+use Native\Electron\Traits\CleansEnvFile;
+use Native\Electron\Traits\InstallsAppIcon;
+use Native\Electron\Concerns\LocatesPhpBinary;
+
+use Native\Electron\Traits\PrunesVendorDirectory;
+use Native\Electron\Traits\CopiesToBuildDirectory;
 
 class BuildCommand extends Command
 {
@@ -22,6 +23,7 @@ class BuildCommand extends Command
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
+    use PrunesVendorDirectory;
     use SetsAppName;
 
     protected $signature = 'native:build
@@ -37,21 +39,14 @@ class BuildCommand extends Command
     }
 
     const CLEANUP_PATTERNS = [
-        // Skip .git and Dev directories
+        // .git and dev directories
         '.git',
+        'dist',
         'docker',
         'packages',
-
-        // Only needed for local testing
-        'vendor/nativephp/electron/resources',
-        'vendor/nativephp/electron/vendor',
-        'vendor/nativephp/electron/bin',
-        'vendor/nativephp/laravel/vendor',
-        'vendor/nativephp/php-bin',
-        'dist',
-
         '**/.github',
 
+        // Potentially containing sensitive info
         'database/*.sqlite',
         'database/*.sqlite-shm',
         'database/*.sqlite-wal',
@@ -61,6 +56,13 @@ class BuildCommand extends Command
         'storage/framework/cache/*',
         'storage/framework/views/*',
         'storage/logs/*',
+
+        // Only needed for local testing
+        'vendor/nativephp/electron/resources',
+        'vendor/nativephp/electron/vendor',
+        'vendor/nativephp/electron/bin',
+        'vendor/nativephp/laravel/vendor',
+        'vendor/nativephp/php-bin',
     ];
 
     public function handle(): void
@@ -100,11 +102,7 @@ class BuildCommand extends Command
         $this->installIcon();
 
         $this->newLine();
-        intro('Installing App Composer dependencies');
-        Process::path($this->buildPath())
-            ->run('composer install --no-dev', function (string $type, string $output) {
-                echo $output;
-            });
+        $this->pruneVendorDirectory();
 
         $this->newLine();
         intro((($publish ?? false) ? 'Publishing' : 'Building')." for {$os}");
