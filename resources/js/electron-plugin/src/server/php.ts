@@ -1,15 +1,15 @@
-import { mkdirSync, statSync, writeFileSync, existsSync } from 'fs';
+import {existsSync, mkdirSync, statSync, writeFileSync} from 'fs';
 import fs_extra from 'fs-extra';
-const { copySync } = fs_extra;
-
 import Store from 'electron-store';
-import { promisify } from 'util';
-import { join } from 'path';
-import { app } from 'electron';
-import {  execFile, spawn } from 'child_process';
+import {promisify} from 'util';
+import {join} from 'path';
+import {app} from 'electron';
+import {execFile, spawn} from 'child_process';
 import state from "./state.js";
 import getPort, {portNumbers} from 'get-port';
-import { ProcessResult } from "./ProcessResult.js";
+import {ProcessResult} from "./ProcessResult.js";
+
+const {copySync} = fs_extra;
 
 const storagePath = join(app.getPath('userData'), 'storage');
 const databasePath = join(app.getPath('userData'), 'database');
@@ -99,11 +99,9 @@ function getArgumentEnv() {
     const envArgs = process.argv.filter(arg => arg.startsWith('--env.'));
 
     const env: {
-      TESTING?: number,
-      APP_PATH?: string
-    } = {
-
-    };
+        TESTING?: number,
+        APP_PATH?: string
+    } = {};
 
     envArgs.forEach(arg => {
         const [key, value] = arg.slice(6).split('=');
@@ -124,7 +122,7 @@ function getAppPath() {
 }
 
 function ensureAppFoldersAreAvailable() {
-    if (! existsSync(storagePath) || process.env.NODE_ENV === 'development') {
+    if (!existsSync(storagePath) || process.env.NODE_ENV === 'development') {
         copySync(join(appPath, 'storage'), storagePath);
     }
 
@@ -230,6 +228,8 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
             console.log('You may migrate manually by running: php artisan native:migrate');
         }
 
+        console.log('Starting PHP server...');
+
         const phpPort = await getPhpPort();
 
         let serverPath = join(appPath, 'build', '__nativephp_app_bundle');
@@ -247,22 +247,14 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
         const portRegex = /Development Server \(.*:([0-9]+)\) started/gm;
 
         phpServer.stdout.on('data', (data) => {
-            const match = portRegex.exec(data.toString());
-
-            if (match) {
-                console.log("PHP Server started on port: ", match[1]);
-                const port = parseInt(match[1]);
-                resolve({
-                    port,
-                    process: phpServer,
-                });
-            }
+            // [Tue Jan 14 19:51:00 2025] 127.0.0.1:52779 [POST] URI: /_native/api/events
+            // console.log('D:', data.toString());
         });
 
         phpServer.stderr.on('data', (data) => {
             const error = data.toString();
-            const match = portRegex.exec(error);
-
+            const match = portRegex.exec(data.toString());
+            // console.log('E:', error);
             if (match) {
                 const port = parseInt(match[1]);
                 console.log("PHP Server started on port: ", port);
@@ -271,11 +263,12 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
                     process: phpServer,
                 });
             } else {
-                // 27 is the length of the php -S output preamble
-                if (error.startsWith('[NATIVE_EXCEPTION]: ', 27)) {
+
+                // Starting at [NATIVE_EXCEPTION]:
+                if (error.includes('[NATIVE_EXCEPTION]:')) {
                     console.log();
                     console.error('Error in PHP:');
-                    console.error('  ' + error.slice(47));
+                    console.error('  ' + error.split('[NATIVE_EXCEPTION]:')[1].trim());
                     console.log('Please check your log file:');
                     console.log('  ' + join(appPath, 'storage', 'logs', 'laravel.log'));
                     console.log();
@@ -286,6 +279,10 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
         phpServer.on('error', (error) => {
             reject(error);
         });
+
+        phpServer.on('close', (code) => {
+            console.log(`PHP server exited with code ${code}`);
+        });
     })
 }
 
@@ -294,4 +291,12 @@ function shouldMigrateDatabase(store) {
         && process.env.NODE_ENV !== 'development';
 }
 
-export {  startScheduler, serveApp, getAppPath, retrieveNativePHPConfig, retrievePhpIniSettings, getDefaultEnvironmentVariables, getDefaultPhpIniSettings };
+export {
+    startScheduler,
+    serveApp,
+    getAppPath,
+    retrieveNativePHPConfig,
+    retrievePhpIniSettings,
+    getDefaultEnvironmentVariables,
+    getDefaultPhpIniSettings
+};

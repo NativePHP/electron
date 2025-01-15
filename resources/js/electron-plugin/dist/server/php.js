@@ -7,9 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { mkdirSync, statSync, writeFileSync, existsSync } from 'fs';
+import { existsSync, mkdirSync, statSync, writeFileSync } from 'fs';
 import fs_extra from 'fs-extra';
-const { copySync } = fs_extra;
 import Store from 'electron-store';
 import { promisify } from 'util';
 import { join } from 'path';
@@ -17,6 +16,7 @@ import { app } from 'electron';
 import { execFile, spawn } from 'child_process';
 import state from "./state.js";
 import getPort, { portNumbers } from 'get-port';
+const { copySync } = fs_extra;
 const storagePath = join(app.getPath('userData'), 'storage');
 const databasePath = join(app.getPath('userData'), 'database');
 const databaseFile = join(databasePath, 'database.sqlite');
@@ -182,6 +182,7 @@ function serveApp(secret, apiPort, phpIniSettings) {
             console.log('Skipping Database migration while in development.');
             console.log('You may migrate manually by running: php artisan native:migrate');
         }
+        console.log('Starting PHP server...');
         const phpPort = yield getPhpPort();
         let serverPath = join(appPath, 'build', '__nativephp_app_bundle');
         if (!runningSecureBuild()) {
@@ -194,19 +195,10 @@ function serveApp(secret, apiPort, phpIniSettings) {
         }, phpIniSettings);
         const portRegex = /Development Server \(.*:([0-9]+)\) started/gm;
         phpServer.stdout.on('data', (data) => {
-            const match = portRegex.exec(data.toString());
-            if (match) {
-                console.log("PHP Server started on port: ", match[1]);
-                const port = parseInt(match[1]);
-                resolve({
-                    port,
-                    process: phpServer,
-                });
-            }
         });
         phpServer.stderr.on('data', (data) => {
             const error = data.toString();
-            const match = portRegex.exec(error);
+            const match = portRegex.exec(data.toString());
             if (match) {
                 const port = parseInt(match[1]);
                 console.log("PHP Server started on port: ", port);
@@ -216,10 +208,10 @@ function serveApp(secret, apiPort, phpIniSettings) {
                 });
             }
             else {
-                if (error.startsWith('[NATIVE_EXCEPTION]: ', 27)) {
+                if (error.includes('[NATIVE_EXCEPTION]:')) {
                     console.log();
                     console.error('Error in PHP:');
-                    console.error('  ' + error.slice(47));
+                    console.error('  ' + error.split('[NATIVE_EXCEPTION]:')[1].trim());
                     console.log('Please check your log file:');
                     console.log('  ' + join(appPath, 'storage', 'logs', 'laravel.log'));
                     console.log();
@@ -228,6 +220,9 @@ function serveApp(secret, apiPort, phpIniSettings) {
         });
         phpServer.on('error', (error) => {
             reject(error);
+        });
+        phpServer.on('close', (code) => {
+            console.log(`PHP server exited with code ${code}`);
         });
     }));
 }
