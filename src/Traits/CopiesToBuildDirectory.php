@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * This trait is responsible for copying over the app to the build directory.
+ * It skips any ignored paths/globs during the copy step
+ *
+ * TODO: When more drivers/adapters are added, this should be relocated
+ */
+
 namespace Native\Electron\Traits;
 
 use RecursiveIteratorIterator;

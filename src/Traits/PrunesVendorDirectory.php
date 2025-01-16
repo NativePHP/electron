@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * TODO: When more drivers/adapters are added, this should be relocated
+ */
 namespace Native\Electron\Traits;
 
 use function Laravel\Prompts\intro;
