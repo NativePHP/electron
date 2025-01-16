@@ -11,8 +11,6 @@ namespace Native\Electron\Traits;
 
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
-use function Laravel\Prompts\note;
-use function Laravel\Prompts\intro;
 
 use RecursiveCallbackFilterIterator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -23,8 +21,6 @@ trait CopiesToBuildDirectory
 
     protected function copyToBuildDirectory()
     {
-        intro('Copying App to build directory...');
-
         $sourcePath = base_path();
         $buildPath = $this->buildPath();
         $filesystem = new Filesystem;
@@ -74,8 +70,6 @@ trait CopiesToBuildDirectory
         }
 
         $this->keepRequiredDirectories();
-
-        note('App copied');
     }
 
     private function keepRequiredDirectories()

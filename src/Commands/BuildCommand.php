@@ -66,15 +66,19 @@ class BuildCommand extends Command
             });
 
         $this->newLine();
+        intro('Copying App to build directory...');
         $this->copyToBuildDirectory();
 
         $this->newLine();
+        intro('Cleaning .env file...');
         $this->cleanEnvFile();
 
         $this->newLine();
+        intro('Copying app icons...');
         $this->installIcon();
 
         $this->newLine();
+        intro('Pruning vendor directory');
         $this->pruneVendorDirectory();
 
         $this->newLine();

@@ -9,9 +9,6 @@
 
 namespace Native\Electron\Traits;
 
-use function Laravel\Prompts\intro;
-use function Laravel\Prompts\note;
-
 trait CleansEnvFile
 {
     const OVERRIDE_KEYS = [
@@ -24,8 +21,6 @@ trait CleansEnvFile
 
     protected function cleanEnvFile(): void
     {
-        intro('Cleaning .env file...');
-
         $cleanUpKeys = array_merge(self::OVERRIDE_KEYS, config('nativephp.cleanup_env_keys', []));
 
         $envFile = str_replace(base_path(), $this->buildPath(), app()->environmentFilePath());
@@ -46,7 +41,5 @@ trait CleansEnvFile
             ->join("\n");
 
         file_put_contents($envFile, $contents);
-
-        note('File cleaned');
     }
 }

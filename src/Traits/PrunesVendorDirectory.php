@@ -5,7 +5,6 @@
  */
 namespace Native\Electron\Traits;
 
-use function Laravel\Prompts\intro;
 use Illuminate\Support\Facades\Process;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -15,8 +14,6 @@ trait PrunesVendorDirectory
 
     protected function pruneVendorDirectory()
     {
-        intro('Pruning vendor directory');
-
         Process::path($this->buildPath())
             ->run('composer install --no-dev', function (string $type, string $output) {
                 echo $output;
