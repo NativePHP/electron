@@ -20,7 +20,7 @@ trait CopiesToBuildDirectory
     abstract protected function buildPath(): string;
     abstract protected function sourcePath(string $path  = ''): string;
 
-    protected function copyToBuildDirectory()
+    public function copyToBuildDirectory()
     {
         $sourcePath = $this->sourcePath();
         $buildPath = $this->buildPath();
@@ -28,7 +28,7 @@ trait CopiesToBuildDirectory
 
         $patterns = array_merge(
             config('nativephp-internal.cleanup_exclude_files', []),
-            config('nativephp.cleanup_exclude_files', [])
+            self::CLEANUP_EXCLUDE_FILES
         );
 
         // Clean and create build directory
@@ -46,10 +46,12 @@ trait CopiesToBuildDirectory
 
                 // fnmatch supports glob patterns like "*.txt" or "cache/*"
                 if (fnmatch($pattern, $relativePath)) {
+                    // dump('false: ' . $relativePath);
                     return false;
                 }
             }
-
+            // dump($patterns);
+            // dump('true: ' .$relativePath);
             return true;
         });
 
@@ -77,13 +79,14 @@ trait CopiesToBuildDirectory
     {
         // Electron build removes empty folders, so we have to create dummy files
         // dotfiles unfortunately don't work.
+        $filesystem = new Filesystem;
         $buildPath = $this->buildPath();
 
-        file_put_contents("{$buildPath}/storage/framework/cache/_native.json", '{}');
-        file_put_contents("{$buildPath}/storage/framework/sessions/_native.json", '{}');
-        file_put_contents("{$buildPath}/storage/framework/testing/_native.json", '{}');
-        file_put_contents("{$buildPath}/storage/framework/views/_native.json", '{}');
-        file_put_contents("{$buildPath}/storage/app/public/_native.json", '{}');
-        file_put_contents("{$buildPath}/storage/logs/_native.json", '{}');
+        $filesystem->dumpFile("{$buildPath}/storage/framework/cache/_native.json", '{}');
+        $filesystem->dumpFile("{$buildPath}/storage/framework/sessions/_native.json", '{}');
+        $filesystem->dumpFile("{$buildPath}/storage/framework/testing/_native.json", '{}');
+        $filesystem->dumpFile("{$buildPath}/storage/framework/views/_native.json", '{}');
+        $filesystem->dumpFile("{$buildPath}/storage/app/public/_native.json", '{}');
+        $filesystem->dumpFile("{$buildPath}/storage/logs/_native.json", '{}');
     }
 }

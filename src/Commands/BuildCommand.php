@@ -33,6 +33,36 @@ class BuildCommand extends Command
 
     protected $availableOs = ['win', 'linux', 'mac', 'all'];
 
+    const CLEANUP_EXCLUDE_FILES = [
+        // .git and dev directories
+        '.git',
+        'dist',
+        'docker',
+        'packages',
+        '**/.github',
+
+        // Potentially containing sensitive info
+        'database/*.sqlite',
+        'database/*.sqlite-shm',
+        'database/*.sqlite-wal',
+
+        'storage/framework/sessions/*',
+        'storage/framework/testing/*',
+        'storage/framework/cache/*',
+        'storage/framework/views/*',
+        'storage/logs/*',
+
+        // Only needed for local testing
+        'vendor/nativephp/electron/resources',
+        'vendor/nativephp/electron/vendor',
+        'vendor/nativephp/electron/bin',
+        'vendor/nativephp/laravel/vendor',
+        'vendor/nativephp/php-bin',
+
+        // Also deleted in PrunesVendorDirectory after fresh composer install
+        'vendor/bin',
+    ];
+
     protected function buildPath(): string
     {
         return __DIR__.'/../../resources/js/resources/app';
