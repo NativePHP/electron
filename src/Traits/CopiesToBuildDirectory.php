@@ -9,11 +9,11 @@
 
 namespace Native\Electron\Traits;
 
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-
 use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
+
 
 trait CopiesToBuildDirectory
 {

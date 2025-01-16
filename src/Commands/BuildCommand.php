@@ -2,19 +2,19 @@
 
 namespace Native\Electron\Commands;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use function Laravel\Prompts\intro;
-use Native\Electron\Facades\Updater;
-use Native\Electron\Traits\OsAndArch;
 use Illuminate\Support\Facades\Process;
 use Native\Electron\Traits\SetsAppName;
 use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
-
 use Native\Electron\Traits\PrunesVendorDirectory;
+use Illuminate\Support\Str;
+use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\CopiesToBuildDirectory;
+use Native\Electron\Traits\OsAndArch;
+
+use function Laravel\Prompts\intro;
 
 class BuildCommand extends Command
 {
