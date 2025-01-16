@@ -2,7 +2,6 @@
 
 namespace Native\Electron\Traits;
 
-
 trait InstallsAppIcon
 {
     public function installIcon()

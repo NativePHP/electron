@@ -1,9 +1,8 @@
 <?php
 
-use Native\Laravel\NativeServiceProvider;
 use Native\Electron\Commands\BuildCommand;
-use Symfony\Component\Filesystem\Filesystem;
 use Native\Electron\Traits\CopiesToBuildDirectory;
+use Symfony\Component\Filesystem\Filesystem;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +86,7 @@ it('skips directories by path', function () use ($sourcePath, $buildPath, $comma
     createFiles("$sourcePath/foo-bar/do-not-delete.json");
 
     config()->set('nativephp.cleanup_exclude_files', [
-        'foo-bar'
+        'foo-bar',
     ]);
 
     $command->copyToBuildDirectory();
@@ -99,7 +98,7 @@ it('skips files by path', function () use ($sourcePath, $buildPath, $command) {
     createFiles("$sourcePath/foo-bar/delete-me.json");
 
     config()->set('nativephp.cleanup_exclude_files', [
-        'foo-bar/delete-me.json'
+        'foo-bar/delete-me.json',
     ]);
 
     $command->copyToBuildDirectory();

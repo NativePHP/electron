@@ -19,7 +19,7 @@ trait CleansEnvFile
 
     abstract protected function buildPath(): string;
 
-    abstract protected function sourcePath(string $path  = ''): string;
+    abstract protected function sourcePath(string $path = ''): string;
 
     protected function cleanEnvFile(): void
     {
