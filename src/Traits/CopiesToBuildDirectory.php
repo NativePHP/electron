@@ -27,8 +27,8 @@ trait CopiesToBuildDirectory
         $filesystem = new Filesystem;
 
         $patterns = array_merge(
-            config('nativephp-internal.cleanup_exclude_files', []),
-            self::CLEANUP_EXCLUDE_FILES
+            self::CLEANUP_EXCLUDE_FILES,
+            config('nativephp.cleanup_exclude_files', []),
         );
 
         // Clean and create build directory
@@ -46,12 +46,9 @@ trait CopiesToBuildDirectory
 
                 // fnmatch supports glob patterns like "*.txt" or "cache/*"
                 if (fnmatch($pattern, $relativePath)) {
-                    // dump('false: ' . $relativePath);
                     return false;
                 }
             }
-            // dump($patterns);
-            // dump('true: ' .$relativePath);
             return true;
         });
 
