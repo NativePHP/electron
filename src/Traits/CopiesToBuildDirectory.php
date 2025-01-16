@@ -18,10 +18,11 @@ use Symfony\Component\Filesystem\Filesystem;
 trait CopiesToBuildDirectory
 {
     abstract protected function buildPath(): string;
+    abstract protected function sourcePath(string $path  = ''): string;
 
     protected function copyToBuildDirectory()
     {
-        $sourcePath = base_path();
+        $sourcePath = $this->sourcePath();
         $buildPath = $this->buildPath();
         $filesystem = new Filesystem;
 
@@ -38,7 +39,7 @@ trait CopiesToBuildDirectory
         $directory = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
 
         $filter = new RecursiveCallbackFilterIterator($directory, function ($current) use ($patterns) {
-            $relativePath = substr($current->getPathname(), strlen(base_path()) + 1);
+            $relativePath = substr($current->getPathname(), strlen($this->sourcePath()) + 1);
 
             // Check each skip pattern against the current file/directory
             foreach ($patterns as $pattern) {
