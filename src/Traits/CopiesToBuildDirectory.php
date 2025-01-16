@@ -14,11 +14,11 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
 
-
 trait CopiesToBuildDirectory
 {
     abstract protected function buildPath(): string;
-    abstract protected function sourcePath(string $path  = ''): string;
+
+    abstract protected function sourcePath(string $path = ''): string;
 
     public function copyToBuildDirectory()
     {
@@ -49,6 +49,7 @@ trait CopiesToBuildDirectory
                     return false;
                 }
             }
+
             return true;
         });
 

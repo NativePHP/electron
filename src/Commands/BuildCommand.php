@@ -4,15 +4,15 @@ namespace Native\Electron\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
-use Native\Electron\Traits\SetsAppName;
-use Native\Electron\Traits\CleansEnvFile;
-use Native\Electron\Traits\InstallsAppIcon;
-use Native\Electron\Traits\LocatesPhpBinary;
-use Native\Electron\Traits\PrunesVendorDirectory;
 use Illuminate\Support\Str;
 use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\CopiesToBuildDirectory;
+use Native\Electron\Traits\InstallsAppIcon;
+use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
+use Native\Electron\Traits\PrunesVendorDirectory;
+use Native\Electron\Traits\SetsAppName;
 
 use function Laravel\Prompts\intro;
 
@@ -68,11 +68,10 @@ class BuildCommand extends Command
         return __DIR__.'/../../resources/js/resources/app';
     }
 
-    protected function sourcePath(string $path  = ''): string
+    protected function sourcePath(string $path = ''): string
     {
         return base_path($path);
     }
-
 
     public function handle(): void
     {
