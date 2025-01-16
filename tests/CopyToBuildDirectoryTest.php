@@ -9,8 +9,8 @@ use Symfony\Component\Filesystem\Filesystem;
 | Setup
 |--------------------------------------------------------------------------
 */
-$sourcePath = testsDir('_test_source_path/');
-$buildPath = testsDir('_test_build_path/');
+$sourcePath = testsDir('_test_source_path');
+$buildPath = testsDir('_test_build_path');
 
 beforeEach(function () use ($sourcePath, $buildPath) {
     $filesystem = new Filesystem;
@@ -42,12 +42,12 @@ $command = new class($sourcePath, $buildPath)
 
     protected function sourcePath(string $path = ''): string
     {
-        return $this->sourcePath.$path;
+        return app()->joinPaths($this->sourcePath, $path);
     }
 
     protected function buildPath(string $path = ''): string
     {
-        return $this->buildPath.$path;
+        return app()->joinPaths($this->buildPath, $path);
     }
 };
 
