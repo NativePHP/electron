@@ -17,15 +17,13 @@ trait CleansEnvFile
         'LOG_DAILY_DAYS',
     ];
 
-    abstract protected function buildPath(): string;
+    abstract protected function buildPath(string $path = ''): string;
 
-    abstract protected function sourcePath(string $path = ''): string;
-
-    protected function cleanEnvFile(): void
+    public function cleanEnvFile(): void
     {
         $cleanUpKeys = array_merge(self::OVERRIDE_KEYS, config('nativephp.cleanup_env_keys', []));
 
-        $envFile = str_replace($this->sourcePath(), $this->buildPath(), app()->environmentFilePath());
+        $envFile = $this->buildPath(app()->environmentFile());
 
         $contents = collect(file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES))
             // Remove cleanup keys

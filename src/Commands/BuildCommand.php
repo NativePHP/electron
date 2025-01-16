@@ -63,9 +63,9 @@ class BuildCommand extends Command
         'vendor/bin',
     ];
 
-    protected function buildPath(): string
+    protected function buildPath(string $path = ''): string
     {
-        return __DIR__.'/../../resources/js/resources/app';
+        return __DIR__.'/../../resources/js/resources/app/' . $path;
     }
 
     protected function sourcePath(string $path = ''): string

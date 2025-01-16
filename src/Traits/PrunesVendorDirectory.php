@@ -11,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 trait PrunesVendorDirectory
 {
-    abstract protected function buildPath(): string;
+    abstract protected function buildPath(string $path = ''): string;
 
     protected function pruneVendorDirectory()
     {
@@ -21,6 +21,6 @@ trait PrunesVendorDirectory
             });
 
         $filesystem = new Filesystem;
-        $filesystem->remove("{$this->buildPath()}/vendor/bin");
+        $filesystem->remove($this->buildPath('/vendor/bin'));
     }
 }

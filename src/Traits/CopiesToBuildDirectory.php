@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 trait CopiesToBuildDirectory
 {
-    abstract protected function buildPath(): string;
+    abstract protected function buildPath(string $path = ''): string;
 
     abstract protected function sourcePath(string $path = ''): string;
 

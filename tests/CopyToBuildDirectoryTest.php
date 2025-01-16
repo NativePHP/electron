@@ -9,8 +9,8 @@ use Symfony\Component\Filesystem\Filesystem;
 | Setup
 |--------------------------------------------------------------------------
 */
-$sourcePath = testsDir('_test_source_path');
-$buildPath = testsDir('_test_build_path');
+$sourcePath = testsDir('_test_source_path/');
+$buildPath = testsDir('_test_build_path/');
 
 beforeEach(function () use ($sourcePath, $buildPath) {
     $filesystem = new Filesystem;
@@ -45,9 +45,9 @@ $command = new class($sourcePath, $buildPath)
         return $this->sourcePath.$path;
     }
 
-    protected function buildPath(): string
+    protected function buildPath(string $path = ''): string
     {
-        return $this->buildPath;
+        return $this->buildPath.$path;
     }
 };
 
@@ -114,7 +114,7 @@ it('skips directories by wildcard path', function () use ($sourcePath, $buildPat
     ]);
 
     config()->set('nativephp.cleanup_exclude_files', [
-        'do/*'
+        'do/*',
     ]);
 
     $command->copyToBuildDirectory();
@@ -132,7 +132,7 @@ it('skips files by wildcard path', function () use ($sourcePath, $buildPath, $co
     ]);
 
     config()->set('nativephp.cleanup_exclude_files', [
-        '*.json'
+        '*.json',
     ]);
 
     $command->copyToBuildDirectory();
@@ -150,7 +150,7 @@ it('skips matches on any number of subdirectories', function () use ($sourcePath
     ]);
 
     config()->set('nativephp.cleanup_exclude_files', [
-        '**/*.json'
+        '**/*.json',
     ]);
 
     $command->copyToBuildDirectory();
@@ -159,7 +159,6 @@ it('skips matches on any number of subdirectories', function () use ($sourcePath
     expect("$buildPath/matches/any/subdir/remove.json")->not->toBeFile();
     expect("$buildPath/matches/any/subdir/dont-remove.php")->toBeFile();
 });
-
 
 it('will never include files that may contain sensitive information', function () use ($sourcePath, $buildPath, $command) {
 
