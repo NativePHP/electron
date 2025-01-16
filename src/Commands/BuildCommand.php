@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Process;
 use Native\Electron\Traits\SetsAppName;
 use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\InstallsAppIcon;
-use Native\Electron\Concerns\LocatesPhpBinary;
+use Native\Electron\Traits\LocatesPhpBinary;
 
 use Native\Electron\Traits\PrunesVendorDirectory;
 use Native\Electron\Traits\CopiesToBuildDirectory;
