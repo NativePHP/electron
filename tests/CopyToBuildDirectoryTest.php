@@ -108,9 +108,59 @@ it('skips files by path', function () use ($sourcePath, $buildPath, $command) {
     expect("$buildPath/foo-bar/delete-me.json")->not->toBeFile();
 });
 
-it('skips directories by wildcard path')->todo();
-it('skips files by wildcard path')->todo();
-it('can combine multiple files in a single glob')->todo();
+it('skips directories by wildcard path', function () use ($sourcePath, $buildPath, $command) {
+    createFiles([
+        "$sourcePath/dont-delete/foo.json",
+        "$sourcePath/do/delete/foo.json",
+    ]);
+
+    config()->set('nativephp.cleanup_exclude_files', [
+        'do/*'
+    ]);
+
+    $command->copyToBuildDirectory();
+
+    expect("$buildPath/dont-delete")->toBeDirectory();
+    expect("$buildPath/do")->toBeDirectory();
+    expect("$buildPath/do/delete")->not->toBeDirectory();
+});
+
+it('skips files by wildcard path', function () use ($sourcePath, $buildPath, $command) {
+    createFiles([
+        "$sourcePath/foo/remove.json",
+        "$sourcePath/foo/dont-remove.php",
+        "$sourcePath/bar/remove.json",
+    ]);
+
+    config()->set('nativephp.cleanup_exclude_files', [
+        '*.json'
+    ]);
+
+    $command->copyToBuildDirectory();
+
+    expect("$buildPath/foo/remove.json")->not->toBeFile();
+    expect("$buildPath/bar/remove.json")->not->toBeFile();
+    expect("$buildPath/foo/dont-remove.php")->toBeFile();
+});
+
+it('skips matches on any number of subdirectories', function () use ($sourcePath, $buildPath, $command) {
+    createFiles([
+        "$sourcePath/matches/subdir/remove.json",
+        "$sourcePath/matches/any/subdir/remove.json",
+        "$sourcePath/matches/any/subdir/dont-remove.php",
+    ]);
+
+    config()->set('nativephp.cleanup_exclude_files', [
+        '**/*.json'
+    ]);
+
+    $command->copyToBuildDirectory();
+
+    expect("$buildPath/matches/subdir/remove.json")->not->toBeFile();
+    expect("$buildPath/matches/any/subdir/remove.json")->not->toBeFile();
+    expect("$buildPath/matches/any/subdir/dont-remove.php")->toBeFile();
+});
+
 
 it('will never include files that may contain sensitive information', function () use ($sourcePath, $buildPath, $command) {
 
