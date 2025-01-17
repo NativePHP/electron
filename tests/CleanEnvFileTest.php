@@ -44,7 +44,7 @@ it('cleans configured keys', function () use ($buildPath, $command) {
     TXT);
 
     config()->set('nativephp.cleanup_env_keys', [
-        'FOO'
+        'FOO',
     ]);
 
     $command->cleanEnvFile();
