@@ -72,12 +72,6 @@ export default {
             3: 'arm64'
         }[context.arch];
 
-        // Small deviation due to naming misnomer. Will change in future PR in php-bin
-        // https://github.com/NativePHP/electron/pull/153#discussion_r1912363517
-        if(targetOs === 'mac' && arch === 'x64') {
-            arch = 'x86'
-        }
-
         if(arch === undefined) {
             console.error('Cannot build PHP for unsupported architecture');
             process.exit(1);
