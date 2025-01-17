@@ -12,7 +12,7 @@ use Symfony\Component\Filesystem\Filesystem;
 $buildPath = testsDir('_test_build_path');
 
 beforeEach(function() {
-    (new Filesystem)->remove($buildPath));
+    (new Filesystem)->remove($buildPath);
 
     // Need to register this or the nativephp config won't merge.
     // A case to move this to the other repo altogether?
