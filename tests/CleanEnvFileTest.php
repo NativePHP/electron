@@ -1,6 +1,7 @@
 <?php
 
 use Native\Electron\Traits\CleansEnvFile;
+use Native\Laravel\NativeServiceProvider;
 use Symfony\Component\Filesystem\Filesystem;
 
 /*
@@ -9,6 +10,11 @@ use Symfony\Component\Filesystem\Filesystem;
 |--------------------------------------------------------------------------
 */
 $buildPath = testsDir('_test_build_path');
+
+// Need to register this or the nativephp config won't merge.
+// A case to move this to the other repo altogether?
+beforeEach(fn () => app()->register(NativeServiceProvider::class));
+
 beforeEach(fn () => (new Filesystem)->remove($buildPath));
 afterEach(fn () => (new Filesystem)->remove($buildPath));
 
