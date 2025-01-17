@@ -36,33 +36,23 @@ $command = new class($buildPath)
 | Tests
 |--------------------------------------------------------------------------
 */
-it('cleans sensitive variables', function () use ($buildPath, $command) {
-    (new Filesystem)->dumpFile("{$buildPath}/.env", <<<'TXT'
-    SAFE_VARIABLE=test
+it('cleans configured keys', function () use ($buildPath, $command) {
 
-    AWS_WILDCARD=test
-    GITHUB_WILDCARD=test
-    DO_SPACES_WILDCARD=test
-    WILDCARD_SECRET=test
-    NATIVEPHP_UPDATER_PATH=test
-    NATIVEPHP_APPLE_ID=test
-    NATIVEPHP_APPLE_ID_PASS=test
-    NATIVEPHP_APPLE_TEAM_ID=test
+    (new Filesystem)->dumpFile("{$buildPath}/.env", <<<'TXT'
+    FOO=BAR
+    BAZ=ZAH
     TXT);
+
+    config()->set('nativephp.cleanup_env_keys', [
+        'FOO'
+    ]);
 
     $command->cleanEnvFile();
 
     expect(file_get_contents("{$buildPath}/.env"))
-        ->toContain('SAFE_VARIABLE=test')
-        ->not->toContain('AWS_WILDCARD')
-        ->not->toContain('GITHUB_WILDCARD')
-        ->not->toContain('DO_SPACES_WILDCARD')
-        ->not->toContain('WILDCARD_SECRET')
-        ->not->toContain('NATIVEPHP_UPDATER_PATH')
-        ->not->toContain('NATIVEPHP_APPLE_ID')
-        ->not->toContain('NATIVEPHP_APPLE_ID_PASS')
-        ->not->toContain('NATIVEPHP_APPLE_TEAM_ID');
-});
+        ->not->toContain('FOO')
+        ->toContain('BAZ');
+});)
 
 it('removes comments', function () use ($buildPath, $command) {
 
@@ -90,4 +80,34 @@ it('injects defaults', function () use ($buildPath, $command) {
         ->toContain('LOG_CHANNEL=stack')
         ->toContain('LOG_STACK=daily')
         ->toContain('LOG_DAILY_DAYS');
+});
+
+it('cleans default cleanup keys', function () use ($buildPath, $command) {
+
+    // NOTE: This checks the default cleanup_env_keys are cleaned. So we can sleep at night.
+    (new Filesystem)->dumpFile("{$buildPath}/.env", <<<'TXT'
+    SAFE_VARIABLE=test
+
+    AWS_WILDCARD=test
+    GITHUB_WILDCARD=test
+    DO_SPACES_WILDCARD=test
+    WILDCARD_SECRET=test
+    NATIVEPHP_UPDATER_PATH=test
+    NATIVEPHP_APPLE_ID=test
+    NATIVEPHP_APPLE_ID_PASS=test
+    NATIVEPHP_APPLE_TEAM_ID=test
+    TXT);
+
+    $command->cleanEnvFile();
+
+    expect(file_get_contents("{$buildPath}/.env"))
+        ->toContain('SAFE_VARIABLE=test')
+        ->not->toContain('AWS_WILDCARD')
+        ->not->toContain('GITHUB_WILDCARD')
+        ->not->toContain('DO_SPACES_WILDCARD')
+        ->not->toContain('WILDCARD_SECRET')
+        ->not->toContain('NATIVEPHP_UPDATER_PATH')
+        ->not->toContain('NATIVEPHP_APPLE_ID')
+        ->not->toContain('NATIVEPHP_APPLE_ID_PASS')
+        ->not->toContain('NATIVEPHP_APPLE_TEAM_ID');
 });
