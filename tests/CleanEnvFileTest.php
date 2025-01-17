@@ -17,7 +17,7 @@ beforeEach(function() {
     // Need to register this or the nativephp config won't merge.
     // A case to move this to the other repo altogether?
     app()->register(NativeServiceProvider::class);
-};
+});
 afterEach(fn () => (new Filesystem)->remove($buildPath));
 
 /*
