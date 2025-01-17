@@ -11,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 */
 $buildPath = testsDir('_test_build_path');
 
-beforeEach(function() {
+beforeEach(function() use ($buildPath) {
     (new Filesystem)->remove($buildPath);
 
     // Need to register this or the nativephp config won't merge.
