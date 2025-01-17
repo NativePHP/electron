@@ -45,8 +45,6 @@ class BuildCommand extends Command
 
     public function handle(): void
     {
-        $this->setAppName(slugify: true);
-
         $os = $this->selectOs($this->argument('os'));
 
         $buildCommand = 'build';
@@ -60,6 +58,8 @@ class BuildCommand extends Command
                 $buildCommand = 'publish';
             }
         }
+
+        $this->setAppName(slugify: true);
 
         $this->newLine();
         intro('Updating Electron dependencies...');
