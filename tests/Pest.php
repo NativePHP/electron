@@ -3,7 +3,7 @@
 use Native\Electron\Tests\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
-uses(TestCase::class)->in(__DIR__);
+uses(TestCase::class)->in('Feature', 'Unit');
 
 function testsDir(string $path = ''): string
 {
