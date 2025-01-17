@@ -70,6 +70,7 @@ trait CopiesToBuildDirectory
 
         $filter = new RecursiveCallbackFilterIterator($directory, function ($current) use ($patterns) {
             $relativePath = substr($current->getPathname(), strlen($this->sourcePath()) + 1);
+            $relativePath = str_replace(DIRECTORY_SEPARATOR, '/', $relativePath); // Windows
 
             // Check each skip pattern against the current file/directory
             foreach ($patterns as $pattern) {
