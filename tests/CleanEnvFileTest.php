@@ -11,11 +11,13 @@ use Symfony\Component\Filesystem\Filesystem;
 */
 $buildPath = testsDir('_test_build_path');
 
-// Need to register this or the nativephp config won't merge.
-// A case to move this to the other repo altogether?
-beforeEach(fn () => app()->register(NativeServiceProvider::class));
+beforeEach(function() {
+    (new Filesystem)->remove($buildPath));
 
-beforeEach(fn () => (new Filesystem)->remove($buildPath));
+    // Need to register this or the nativephp config won't merge.
+    // A case to move this to the other repo altogether?
+    app()->register(NativeServiceProvider::class);
+};
 afterEach(fn () => (new Filesystem)->remove($buildPath));
 
 /*
