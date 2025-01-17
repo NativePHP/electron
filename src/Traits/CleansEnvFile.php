@@ -11,17 +11,17 @@ namespace Native\Electron\Traits;
 
 trait CleansEnvFile
 {
-    const OVERRIDE_KEYS = [
+    abstract protected function buildPath(string $path = ''): string;
+
+    public array $overrideKeys = [
         'LOG_CHANNEL',
         'LOG_STACK',
         'LOG_DAILY_DAYS',
     ];
 
-    abstract protected function buildPath(string $path = ''): string;
-
     public function cleanEnvFile(): void
     {
-        $cleanUpKeys = array_merge(self::OVERRIDE_KEYS, config('nativephp.cleanup_env_keys', []));
+        $cleanUpKeys = array_merge($this->overrideKeys, config('nativephp.cleanup_env_keys', []));
 
         $envFile = $this->buildPath(app()->environmentFile());
 

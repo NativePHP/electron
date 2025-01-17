@@ -1,6 +1,5 @@
 <?php
 
-use Native\Electron\Commands\BuildCommand;
 use Native\Electron\Traits\CopiesToBuildDirectory;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -32,8 +31,6 @@ afterEach(function () use ($sourcePath, $buildPath) {
 $command = new class($sourcePath, $buildPath)
 {
     use CopiesToBuildDirectory;
-
-    const CLEANUP_EXCLUDE_FILES = BuildCommand::CLEANUP_EXCLUDE_FILES;
 
     public function __construct(
         public $sourcePath,
