@@ -52,7 +52,7 @@ it('cleans configured keys', function () use ($buildPath, $command) {
     expect(file_get_contents("{$buildPath}/.env"))
         ->not->toContain('FOO')
         ->toContain('BAZ');
-});)
+});
 
 it('removes comments', function () use ($buildPath, $command) {
 
