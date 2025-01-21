@@ -14,6 +14,7 @@ import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import killSync from "kill-sync";
 
 // Workaround for CommonJS module
 import electronUpdater from 'electron-updater';
@@ -22,6 +23,7 @@ const { autoUpdater } = electronUpdater;
 class NativePHP {
   processes = [];
   schedulerInterval = undefined;
+  mainWindow = null;
 
   public bootstrap(
     app: CrossProcessExports.App,
@@ -88,6 +90,17 @@ class NativePHP {
 
       event.preventDefault();
     });
+
+    // Handle deep linking for Windows
+    if (process.platform === 'win32') {
+        app.on('second-instance', (event, commandLine, workingDirectory) => {
+            if (this.mainWindow) {
+                if (this.mainWindow.isMinimized()) this.mainWindow.restore();
+                this.mainWindow.focus();
+            }
+            this.handleDeepLink(commandLine.pop());
+        });
+    }
   }
 
   private async bootstrapApp(app: Electron.CrossProcessExports.App) {
@@ -161,6 +174,15 @@ class NativePHP {
       } else {
         app.setAsDefaultProtocolClient(deepLinkProtocol);
       }
+
+
+      if (process.platform === 'win32') {
+          const gotTheLock = app.requestSingleInstanceLock();
+          if (!gotTheLock) {
+              app.quit();
+              return;
+          }
+      }
     }
   }
 
@@ -220,7 +242,9 @@ class NativePHP {
       .filter((p) => p !== undefined)
       .forEach((process) => {
         try {
-          ps.kill(process.pid);
+          // @ts-ignore
+          killSync(process.pid, 'SIGTERM', true); // Kill tree
+          ps.kill(process.pid); // Sometimes does not kill the subprocess of php server
         } catch (err) {
           console.error(err);
         }
