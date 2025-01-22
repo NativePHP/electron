@@ -55,7 +55,11 @@ it('cleans configured keys', function () use ($buildPath, $command) {
         'FOO',
     ]);
 
+    dump(file_get_contents("{$buildPath}/.env");
+
     $command->cleanEnvFile();
+
+    dump(file_get_contents("{$buildPath}/.env");
 
     expect(file_get_contents("{$buildPath}/.env"))
         ->not->toContain('FOO')
@@ -69,7 +73,11 @@ it('removes comments', function () use ($buildPath, $command) {
     # REMOVE_ME=hello
     TXT);
 
+    dump(file_get_contents("{$buildPath}/.env");
+
     $command->cleanEnvFile();
+
+    dump(file_get_contents("{$buildPath}/.env");
 
     expect(file_get_contents("{$buildPath}/.env"))
         ->not->toContain('REMOVE_ME')
@@ -107,7 +115,11 @@ it('cleans default cleanup keys', function () use ($buildPath, $command) {
     NATIVEPHP_APPLE_TEAM_ID=test
     TXT);
 
+    dump(file_get_contents("{$buildPath}/.env");
+
     $command->cleanEnvFile();
+
+    dump(file_get_contents("{$buildPath}/.env");
 
     expect(file_get_contents("{$buildPath}/.env"))
         ->toContain('SAFE_VARIABLE=test')
