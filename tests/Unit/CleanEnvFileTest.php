@@ -85,6 +85,8 @@ it('injects defaults', function () use ($buildPath, $command) {
     $command->cleanEnvFile();
 
     expect(file_get_contents("{$buildPath}/.env"))
+        ->not->toContain('LOG_CHANNEL=test')
+        ->not->toContain('LOG_STACK=test')
         ->toContain('LOG_CHANNEL=stack')
         ->toContain('LOG_STACK=daily')
         ->toContain('LOG_DAILY_DAYS');
