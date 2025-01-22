@@ -97,7 +97,6 @@ it('cleans default cleanup keys', function () use ($buildPath, $command) {
     // NOTE: This checks the default cleanup_env_keys are cleaned. So we can sleep at night.
     (new Filesystem)->dumpFile("{$buildPath}/.env", <<<'TXT'
     SAFE_VARIABLE=test
-
     AWS_WILDCARD=test
     GITHUB_WILDCARD=test
     DO_SPACES_WILDCARD=test
