@@ -98,7 +98,7 @@ class NativePHP {
                 if (this.mainWindow.isMinimized()) this.mainWindow.restore();
                 this.mainWindow.focus();
             }
-            this.handleDeepLink(commandLine.pop());
+            // this.handleDeepLink(commandLine.pop());
         });
     }
   }
