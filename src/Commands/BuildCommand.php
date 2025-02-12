@@ -5,16 +5,20 @@ namespace Native\Electron\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
-use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\InstallsAppIcon;
+use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
+use Native\Electron\Traits\SetsAppName;
+use Native\Laravel\Commands\Traits\CleansEnvFile;
 
 class BuildCommand extends Command
 {
+    use CleansEnvFile;
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
+    use SetsAppName;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
@@ -27,6 +31,11 @@ class BuildCommand extends Command
     {
         $this->info('Build NativePHP app…');
 
+        $this->prepareNativeEnv();
+
+        $this->setAppName(slugify: true);
+
+        $this->line('Updating npm packages…');
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
@@ -34,6 +43,7 @@ class BuildCommand extends Command
                 echo $output;
             });
 
+        $this->line('Removing composer dev dependencies…');
         Process::path(base_path())
             ->run('composer install --no-dev', function (string $type, string $output) {
                 echo $output;
@@ -64,6 +74,8 @@ class BuildCommand extends Command
             ->run("npm run {$buildCommand}:{$os}", function (string $type, string $output) {
                 echo $output;
             });
+
+        $this->restoreWebEnv();
     }
 
     protected function getEnvironmentVariables(): array
