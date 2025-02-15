@@ -46,9 +46,14 @@ trait ManagesAssetBuilding
         }
 
         if (! isset($scripts[$buildCommand])) {
-            $this->error('Invalid script selected... Continuing...');
+            // We might get here if the script wasn't defined and the default was used.
+            // We can try to prompt the user again.
+            $buildCommand = $this->promptForAssetBuildCommand($scripts);
 
-            return null;
+            if (! isset($scripts[$buildCommand])) {
+                $this->error('Invalid script selected. Exiting…');
+                return null;
+            }
         }
 
         $this->info('Building project assets…');

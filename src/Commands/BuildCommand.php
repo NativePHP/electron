@@ -21,7 +21,9 @@ class BuildCommand extends Command
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
         {arch? : The Processor Architecture to build for (x64, x86, arm64)}
-        {--publish : to publish the app}';
+        {--publish : to publish the app}
+        {--assets : to build the project assets}
+        {--asset-build=build : The NPM script to run to build your project assets}';
 
     protected $availableOs = ['win', 'linux', 'mac', 'all'];
 
@@ -41,7 +43,9 @@ class BuildCommand extends Command
                 echo $output;
             });
 
-        $this->checkAndBuildProjectAssets(null);
+        if ($this->option('assets')) {
+            $this->checkAndBuildProjectAssets($this->option('asset-build'));
+        }
 
         $os = $this->selectOs($this->argument('os'));
 
