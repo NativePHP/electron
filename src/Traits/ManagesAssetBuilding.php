@@ -8,7 +8,6 @@ use Symfony\Component\Process\Process as SymfonyProcess;
 
 /**
  * Trait ManagesAssetBuilding
- * @package Native\Electron\Traits
  */
 trait ManagesAssetBuilding
 {
@@ -16,7 +15,7 @@ trait ManagesAssetBuilding
     {
         $filePath = base_path('package.json');
 
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             return [];
         }
 
@@ -25,7 +24,7 @@ trait ManagesAssetBuilding
         return $packageFile['scripts'] ?? [];
     }
 
-    public function checkAndBuildProjectAssets(?string $buildCommand): null|ProcessResult
+    public function checkAndBuildProjectAssets(?string $buildCommand): ?ProcessResult
     {
         $scripts = $this->detectNpmScripts();
 
@@ -39,14 +38,14 @@ trait ManagesAssetBuilding
                 false
             );
 
-            if (!$runBuild) {
+            if (! $runBuild) {
                 return null;
             }
 
             $buildCommand = $this->promptForAssetBuildCommand($scripts);
         }
 
-        if (!isset($scripts[$buildCommand])) {
+        if (! isset($scripts[$buildCommand])) {
             $this->error('Invalid script selected... Continuing...');
 
             return null;
