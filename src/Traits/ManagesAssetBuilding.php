@@ -52,6 +52,7 @@ trait ManagesAssetBuilding
 
             if (! isset($scripts[$buildCommand])) {
                 $this->error('Invalid script selected. Exiting…');
+
                 return null;
             }
         }
