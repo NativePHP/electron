@@ -8,12 +8,14 @@ use Illuminate\Support\Str;
 use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\InstallsAppIcon;
+use Native\Electron\Traits\ManagesAssetBuilding;
 use Native\Electron\Traits\OsAndArch;
 
 class BuildCommand extends Command
 {
     use InstallsAppIcon;
     use LocatesPhpBinary;
+    use ManagesAssetBuilding;
     use OsAndArch;
 
     protected $signature = 'native:build
@@ -38,6 +40,8 @@ class BuildCommand extends Command
             ->run('composer install --no-dev', function (string $type, string $output) {
                 echo $output;
             });
+
+        $this->checkAndBuildProjectAssets(null);
 
         $os = $this->selectOs($this->argument('os'));
 
