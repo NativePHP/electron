@@ -2,19 +2,22 @@ name: run-tests
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         php: [8.2, 8.1, 8.3]
-        laravel: [10.*, 11.*]
+        laravel: ['10.*', '11.*', '12.*']
         stability: [prefer-lowest, prefer-stable]
         include:
           - laravel: 10.*
@@ -24,11 +27,13 @@ jobs:
             collision: 7.*
           - laravel: 11.*
             testbench: 9.*
-            carbon: "^2.67|^3.0"
+            carbon: ^2.67|^3.0
             laravel-package-tools: ^1.16
             collision: ^8.1.1
         exclude:
           - laravel: 11.*
+            php: 8.1
+          - laravel: 12.*
             php: 8.1
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
@@ -66,9 +71,9 @@ jobs:
         run: vendor/bin/pest --version
 
       - name: Execute tests on Linux
-        if: matrix.os == 'ubuntu-latest'
+        if: "matrix.os == 'ubuntu-latest'"
         run: Xvfb :99 & DISPLAY=:99 vendor/bin/pest
 
       - name: Execute tests on Windows
-        if: matrix.os == 'windows-latest'
+        if: "matrix.os == 'windows-latest'"
         run: vendor/bin/pest
