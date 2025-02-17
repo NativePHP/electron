@@ -31,6 +31,11 @@ jobs:
             carbon: "^2.67|^3.0"
             laravel-package-tools: ^1.16.4
             collision: ^8.1.1
+          - laravel: 12.*
+            testbench: 10.*
+            carbon: "^2.67|^3.0"
+            laravel-package-tools: ^1.16.4
+            collision: ^8.1.1
         exclude:
           - laravel: 11.*
             php: 8.1
