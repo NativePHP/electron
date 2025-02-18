@@ -5,6 +5,7 @@ namespace Native\Electron\Traits;
 use Illuminate\Contracts\Process\ProcessResult;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Process;
+
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\note;
@@ -83,6 +84,7 @@ trait HasPreAndPostProcessing
 
             if (! $result->successful()) {
                 error("Command failed: {$command}");
+
                 return;
             }
 
