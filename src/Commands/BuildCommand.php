@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Concerns\LocatesPhpBinary;
 use Native\Electron\Facades\Updater;
+use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\OsAndArch;
 
 class BuildCommand extends Command
 {
+    use HasPreAndPostProcessing;
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
