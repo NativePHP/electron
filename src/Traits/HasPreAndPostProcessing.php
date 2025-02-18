@@ -12,38 +12,32 @@ use function Laravel\Prompts\outro;
 
 trait HasPreAndPostProcessing
 {
-    protected function preProcess(string $configKey): void
+    protected function preProcess(): void
     {
-        $config = $this->getConfig($configKey);
+        $config = $this->getConfig('prebuild');
 
-        if (! $config instanceof Collection
-            || empty($config->get('before'))
-        ) {
+        if (! $config instanceof Collection) {
             return;
         }
 
         intro('Running pre-process commands...');
 
-        $config->get('before', collect())
-            ->each($this->getProcessCallback());
+        $config->each($this->getProcessCallback());
 
         outro('Pre-process commands completed.');
     }
 
-    protected function postProcess(string $configKey): void
+    protected function postProcess(): void
     {
-        $config = $this->getConfig($configKey);
+        $config = $this->getConfig('postbuild');
 
-        if (! $config instanceof Collection
-            || empty($config->get('after'))
-        ) {
+        if (! $config instanceof Collection) {
             return;
         }
 
         intro('Running post-process commands...');
 
-        $config->get('after', collect())
-            ->each($this->getProcessCallback());
+        $config->each($this->getProcessCallback());
 
         outro('Post-process commands completed.');
     }
@@ -68,8 +62,9 @@ trait HasPreAndPostProcessing
         $config = config($this->formatConfigKey($configKey));
 
         if (is_array($config)) {
+            // Filter out empty values
             return collect($config)
-                ->map(fn ($value) => is_array($value) ? collect($value) : $value);
+                ->filter(fn ($value) => ! empty($value));
         }
 
         return $config;
@@ -79,6 +74,11 @@ trait HasPreAndPostProcessing
     {
         return function ($command) {
             note("Running command: {$command}");
+
+            if (is_array($command)) {
+                $command = implode(' && ', $command);
+            }
+
             $result = $this->executeCommand($command);
 
             if (! $result->successful()) {
