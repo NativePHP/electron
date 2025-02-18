@@ -29,6 +29,8 @@ class BuildCommand extends Command
     {
         $this->info('Build NativePHP app…');
 
+        $this->preProcess('build');
+
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
@@ -66,6 +68,8 @@ class BuildCommand extends Command
             ->run("npm run {$buildCommand}:{$os}", function (string $type, string $output) {
                 echo $output;
             });
+
+        $this->postProcess('build');
     }
 
     protected function getEnvironmentVariables(): array
