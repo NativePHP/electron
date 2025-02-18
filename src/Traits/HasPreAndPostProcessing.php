@@ -12,9 +12,9 @@ use function Laravel\Prompts\outro;
 
 trait HasPreAndPostProcessing
 {
-    protected function preProcess(): void
+    public function preProcess(): void
     {
-        $config = $this->getConfig('prebuild');
+        $config = $this->getPrePostBuildConfig('prebuild');
 
         if (! $config instanceof Collection) {
             return;
@@ -27,9 +27,9 @@ trait HasPreAndPostProcessing
         outro('Pre-process commands completed.');
     }
 
-    protected function postProcess(): void
+    public function postProcess(): void
     {
-        $config = $this->getConfig('postbuild');
+        $config = $this->getPrePostBuildConfig('postbuild');
 
         if (! $config instanceof Collection) {
             return;
@@ -51,13 +51,13 @@ trait HasPreAndPostProcessing
     {
         return Process::path(base_path())
             ->timeout(300)
-            ->tty(\Symfony\Component\Process\Process::isTtySupported() && ! $this->option('no-interaction'))
+            ->tty(\Symfony\Component\Process\Process::isTtySupported())
             ->run($command, function (string $type, string $output) {
                 echo $output;
             });
     }
 
-    private function getConfig(string $configKey): mixed
+    protected function getPrePostBuildConfig(string $configKey): mixed
     {
         $config = config($this->formatConfigKey($configKey));
 
