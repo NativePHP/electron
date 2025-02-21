@@ -13,6 +13,7 @@ use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
 use Native\Electron\Traits\PrunesVendorDirectory;
 use Native\Electron\Traits\SetsAppName;
+use Symfony\Component\Process\Process as SymfonyProcess;
 
 use function Laravel\Prompts\intro;
 
@@ -91,7 +92,7 @@ class BuildCommand extends Command
         Process::path(__DIR__.'/../../resources/js/')
             ->env($this->getEnvironmentVariables())
             ->forever()
-            ->tty(PHP_OS_FAMILY != 'Windows' && ! $this->option('no-interaction'))
+            ->tty(SymfonyProcess::isTtySupported() && ! $this->option('no-interaction'))
             ->run("npm run {$buildCommand}:{$os}", function (string $type, string $output) {
                 echo $output;
             });
