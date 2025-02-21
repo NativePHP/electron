@@ -37,7 +37,8 @@ it('can run pre and post processing from config', function (object $mock) {
 })
     ->with([
         // Empty class with the HasPreAndPostProcessing trait
-        new class {
+        new class
+        {
             use HasPreAndPostProcessing;
-        }
+        },
     ]);
