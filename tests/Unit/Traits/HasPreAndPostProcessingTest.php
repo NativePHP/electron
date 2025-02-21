@@ -3,9 +3,9 @@
 namespace Native\Electron\Tests\Unit\Traits;
 
 use Illuminate\Support\Facades\Config;
-use Native\Electron\Tests\Mocks\HasPreAndPostProcessingMock;
+use Native\Electron\Traits\HasPreAndPostProcessing;
 
-it('can run pre and post processing from config', function () {
+it('can run pre and post processing from config', function (object $mock) {
     $tmpDir = sys_get_temp_dir();
 
     Config::set('nativephp.prebuild', [
@@ -17,18 +17,6 @@ it('can run pre and post processing from config', function () {
         'touch '.$tmpDir.'/postbuild1',
         'touch '.$tmpDir.'/postbuild2',
     ]);
-
-    $mock = \Mockery::mock(HasPreAndPostProcessingMock::class)
-        ->makePartial();
-
-    $mock->shouldAllowMockingProtectedMethods();
-    $mock->shouldReceive('getPrePostBuildConfig')
-        ->with('prebuild')
-        ->andReturn(collect(Config::get('nativephp.prebuild')));
-
-    $mock->shouldReceive('getPrePostBuildConfig')
-        ->with('postbuild')
-        ->andReturn(collect(Config::get('nativephp.postbuild')));
 
     // Verify those files were created in preProcess
     $mock->preProcess();
@@ -46,4 +34,10 @@ it('can run pre and post processing from config', function () {
     unlink($tmpDir.'/prebuild2');
     unlink($tmpDir.'/postbuild1');
     unlink($tmpDir.'/postbuild2');
-});
+})
+    ->with([
+        // Empty class with the HasPreAndPostProcessing trait
+        new class {
+            use HasPreAndPostProcessing;
+        }
+    ]);

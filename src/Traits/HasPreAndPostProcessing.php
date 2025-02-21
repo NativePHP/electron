@@ -2,7 +2,6 @@
 
 namespace Native\Electron\Traits;
 
-use Illuminate\Contracts\Process\ProcessResult;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Process;
 
@@ -15,72 +14,49 @@ trait HasPreAndPostProcessing
 {
     public function preProcess(): void
     {
-        $config = $this->getPrePostBuildConfig('prebuild');
+        $config = collect(config('nativephp.prebuild'));
 
-        if (! $config instanceof Collection) {
+        if ($config->isEmpty()) {
             return;
         }
 
         intro('Running pre-process commands...');
 
-        $config->each($this->getProcessCallback());
+        $this->runProcess($config);
 
         outro('Pre-process commands completed.');
     }
 
     public function postProcess(): void
     {
-        $config = $this->getPrePostBuildConfig('postbuild');
+        $config = collect(config('nativephp.postbuild'));
 
-        if (! $config instanceof Collection) {
+        if ($config->isEmpty()) {
             return;
         }
 
         intro('Running post-process commands...');
 
-        $config->each($this->getProcessCallback());
+        $this->runProcess($config);
 
         outro('Post-process commands completed.');
     }
 
-    private function formatConfigKey(string $configKey): string
+    private function runProcess(Collection $configCommands): void
     {
-        return sprintf('nativephp.%s', $configKey);
-    }
-
-    private function executeCommand(mixed $command): ProcessResult
-    {
-        return Process::path(base_path())
-            ->timeout(300)
-            ->tty(\Symfony\Component\Process\Process::isTtySupported())
-            ->run($command, function (string $type, string $output) {
-                echo $output;
-            });
-    }
-
-    protected function getPrePostBuildConfig(string $configKey): mixed
-    {
-        $config = config($this->formatConfigKey($configKey));
-
-        if (is_array($config)) {
-            // Filter out empty values
-            return collect($config)
-                ->filter(fn ($value) => ! empty($value));
-        }
-
-        return $config;
-    }
-
-    private function getProcessCallback(): callable
-    {
-        return function ($command) {
+        $configCommands->each(function ($command) {
             note("Running command: {$command}");
 
             if (is_array($command)) {
                 $command = implode(' && ', $command);
             }
 
-            $result = $this->executeCommand($command);
+            $result = Process::path(base_path())
+                ->timeout(300)
+                ->tty(\Symfony\Component\Process\Process::isTtySupported())
+                ->run($command, function (string $type, string $output) {
+                    echo $output;
+                });
 
             if (! $result->successful()) {
                 error("Command failed: {$command}");
@@ -89,6 +65,6 @@ trait HasPreAndPostProcessing
             }
 
             note("Command successful: {$command}");
-        };
+        });
     }
 }
