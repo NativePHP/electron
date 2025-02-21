@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Facades\Updater;
-use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\CleansEnvFile;
 use Native\Electron\Traits\CopiesToBuildDirectory;
+use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
@@ -20,9 +20,9 @@ use function Laravel\Prompts\intro;
 
 class BuildCommand extends Command
 {
-    use HasPreAndPostProcessing;
     use CleansEnvFile;
     use CopiesToBuildDirectory;
+    use HasPreAndPostProcessing;
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
@@ -61,7 +61,7 @@ class BuildCommand extends Command
                 $buildCommand = 'publish';
             }
         }
-      
+
         $this->preProcess();
 
         $this->setAppName(slugify: true);
