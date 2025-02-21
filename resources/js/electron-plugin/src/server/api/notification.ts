@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
 
     const eventName = customEvent ?? '\\Native\\Laravel\\Events\\Notifications\\NotificationClicked';
 
-    const notificationReference = reference ?? Date.now();
+    const notificationReference = reference ?? (Date.now() + '.' + Math.random().toString(36).slice(2, 9));
 
     const notification = new Notification({
         title,
