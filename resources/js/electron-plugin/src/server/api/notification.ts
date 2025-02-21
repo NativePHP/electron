@@ -44,7 +44,7 @@ router.post('/', (req, res) => {
 
     notification.on("click", (event) => {
         notifyLaravel('events', {
-            event: eventName,
+            event: eventName || '\\Native\\Laravel\\Events\\Notifications\\NotificationClicked',
             payload: {
                 reference: notificationReference,
                 event: JSON.stringify(event),
