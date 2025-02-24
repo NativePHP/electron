@@ -43,4 +43,4 @@ it('can boot up the app', function () {
             $output,
         ));
     }
-})->skip('for now');
+});

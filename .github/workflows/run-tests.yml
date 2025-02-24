@@ -62,7 +62,11 @@ jobs:
 
       - name: Execute tests on Linux
         if: "matrix.os == 'ubuntu-latest'"
-        run: Xvfb :99 & DISPLAY=:99 vendor/bin/pest
+        run: |
+          apt-get install -y xvfb
+          xvfb-run vendor/bin/pest
+        env:
+          DISPLAY: ":99"
 
       - name: Execute tests on Windows
         if: "matrix.os == 'windows-latest'"
