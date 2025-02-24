@@ -1,6 +1,6 @@
 # Run only Features tests
 # TODO: Currently failing on ubuntu-latest
-name: run-tests
+name: run-feature-tests
 
 on:
   workflow_dispatch:
