@@ -1,6 +1,8 @@
 name: install-tests
 
 on:
+  pull_request_target:
+    branches: [main]
   push:
     branches: [main]
 
@@ -23,4 +25,4 @@ jobs:
         run: composer create-project laravel/laravel laravel --no-interaction
 
       - name: Attempt to install NativePHP on top of Laravel
-        run: composer require nativephp/electron --no-interaction
+        run: composer require nativephp/electron:dev-main --no-interaction || exit 1
