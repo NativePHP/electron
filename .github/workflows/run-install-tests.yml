@@ -1,0 +1,26 @@
+name: install-tests
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [8.3, 8.4]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Install a blank laravel app
+        run: composer create-project laravel/laravel laravel --no-interaction
+
+      - name: Attempt to install NativePHP on top of Laravel
+        run: composer require nativephp/electron --no-interaction
