@@ -119,7 +119,6 @@ class BuildCommand extends Command
                 'NATIVEPHP_BUILDING' => true,
                 'NATIVEPHP_PHP_BINARY_VERSION' => PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION,
                 'NATIVEPHP_PHP_BINARY_PATH' => $this->sourcePath($this->phpBinaryPath()),
-                'NATIVEPHP_CERTIFICATE_FILE_PATH' => $this->sourcePath($this->binaryPackageDirectory().'cacert.pem'),
                 'NATIVEPHP_APP_NAME' => config('app.name'),
                 'NATIVEPHP_APP_ID' => config('nativephp.app_id'),
                 'NATIVEPHP_APP_VERSION' => config('nativephp.version'),
