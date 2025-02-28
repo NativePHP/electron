@@ -10,9 +10,14 @@
 namespace Native\Electron\Traits;
 
 use RecursiveCallbackFilterIterator;
+use Symfony\Component\Filesystem\Path;
+
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
+use Throwable;
+
+use function Laravel\Prompts\warning;
 
 trait CopiesToBuildDirectory
 {
@@ -98,7 +103,11 @@ trait CopiesToBuildDirectory
                 continue;
             }
 
-            copy($item->getPathname(), $target);
+            try {
+                copy($item->getPathname(), $target);
+            } catch (Throwable $e) {
+                warning('[WARNING] ' . $e->getMessage());
+            }
         }
 
         $this->keepRequiredDirectories();
