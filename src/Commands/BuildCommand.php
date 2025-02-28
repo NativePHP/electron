@@ -83,8 +83,8 @@ class BuildCommand extends Command
         $this->newLine();
         intro('Copying latest CA Certificate...');
         copy(
-            Path::join($sourcePath, 'vendor', 'nativephp', 'php-bin', 'cacert.pem'),
-            Path::join($sourcePath, 'vendor', 'nativephp', 'electron', 'resources', 'js', 'resources', 'cacert.pem')
+            Path::join($this->sourcePath(), 'vendor', 'nativephp', 'php-bin', 'cacert.pem'),
+            Path::join($this->sourcePath(), 'vendor', 'nativephp', 'electron', 'resources', 'js', 'resources', 'cacert.pem')
         );
 
         $this->newLine();
