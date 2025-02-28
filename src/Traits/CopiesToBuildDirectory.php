@@ -10,8 +10,6 @@
 namespace Native\Electron\Traits;
 
 use RecursiveCallbackFilterIterator;
-use Symfony\Component\Filesystem\Path;
-
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -106,7 +104,7 @@ trait CopiesToBuildDirectory
             try {
                 copy($item->getPathname(), $target);
             } catch (Throwable $e) {
-                warning('[WARNING] ' . $e->getMessage());
+                warning('[WARNING] '.$e->getMessage());
             }
         }
 
