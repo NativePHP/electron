@@ -16,12 +16,14 @@ import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import killSync from "kill-sync";
 import electronUpdater from 'electron-updater';
 const { autoUpdater } = electronUpdater;
 class NativePHP {
     constructor() {
         this.processes = [];
         this.schedulerInterval = undefined;
+        this.mainWindow = null;
     }
     bootstrap(app, icon, phpBinary, cert) {
         initialize();
@@ -65,6 +67,16 @@ class NativePHP {
             }
             event.preventDefault();
         });
+        if (process.platform === 'win32') {
+            app.on('second-instance', (event, commandLine, workingDirectory) => {
+                if (this.mainWindow) {
+                    if (this.mainWindow.isMinimized())
+                        this.mainWindow.restore();
+                    this.mainWindow.focus();
+                }
+                this.handleDeepLink(commandLine.pop());
+            });
+        }
     }
     bootstrapApp(app) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -123,6 +135,13 @@ class NativePHP {
             else {
                 app.setAsDefaultProtocolClient(deepLinkProtocol);
             }
+            if (process.platform === 'win32') {
+                const gotTheLock = app.requestSingleInstanceLock();
+                if (!gotTheLock) {
+                    app.quit();
+                    return;
+                }
+            }
         }
     }
     startAutoUpdater(config) {
@@ -173,6 +192,7 @@ class NativePHP {
             .filter((p) => p !== undefined)
             .forEach((process) => {
             try {
+                killSync(process.pid, 'SIGTERM', true);
                 ps.kill(process.pid);
             }
             catch (err) {

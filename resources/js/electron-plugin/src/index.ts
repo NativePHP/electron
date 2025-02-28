@@ -14,6 +14,7 @@ import { notifyLaravel } from "./server/utils.js";
 import { resolve } from "path";
 import { stopAllProcesses } from "./server/api/childProcess.js";
 import ps from "ps-node";
+import killSync from "kill-sync";
 
 // Workaround for CommonJS module
 import electronUpdater from 'electron-updater';
@@ -22,6 +23,7 @@ const { autoUpdater } = electronUpdater;
 class NativePHP {
   processes = [];
   schedulerInterval = undefined;
+  mainWindow = null;
 
   public bootstrap(
     app: CrossProcessExports.App,
@@ -161,8 +163,44 @@ class NativePHP {
       } else {
         app.setAsDefaultProtocolClient(deepLinkProtocol);
       }
+
+            /**
+             * Handle protocol url for windows and linux
+             * This code will be different in Windows and Linux compared to MacOS.
+             * This is due to both platforms emitting the second-instance event rather
+             * than the open-url event and Windows requiring additional code in order to
+             * open the contents of the protocol link within the same Electron instance.
+             */
+            if (process.platform !== "darwin") {
+                const gotTheLock = app.requestSingleInstanceLock();
+                if (!gotTheLock) {
+                    app.quit();
+                    return;
+                } else {
+                    app.on(
+                        "second-instance",
+                        (event, commandLine, workingDirectory) => {
+                            // Someone tried to run a second instance, we should focus our window.
+                            if (this.mainWindow) {
+                                if (this.mainWindow.isMinimized())
+                                    this.mainWindow.restore();
+                                this.mainWindow.focus();
+                            }
+
+                            // the commandLine is array of strings in which last element is deep link url
+                            notifyLaravel("events", {
+                                event: "\\Native\\Laravel\\Events\\App\\OpenedFromURL",
+                                payload: {
+                                    url: commandLine[commandLine.length - 1],
+                                    workingDirectory: workingDirectory,
+                                },
+                            });
+                        },
+                    );
+                }
+            }
+        }
     }
-  }
 
   private startAutoUpdater(config) {
     if (config?.updater?.enabled === true) {
@@ -220,7 +258,9 @@ class NativePHP {
       .filter((p) => p !== undefined)
       .forEach((process) => {
         try {
-          ps.kill(process.pid);
+          // @ts-ignore
+          killSync(process.pid, 'SIGTERM', true); // Kill tree
+          ps.kill(process.pid); // Sometimes does not kill the subprocess of php server
         } catch (err) {
           console.error(err);
         }
