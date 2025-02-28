@@ -11,7 +11,7 @@ it('can copy the default CA certificate from php-bin', function ($mock) {
     // Set up
     app()->setBasePath(realpath(__DIR__.'/../../../'));
 
-    /// Make directory temporarily
+    // / Make directory temporarily
     mkdir(base_path('vendor/nativephp/electron/resources/js/resources'), 0777, true);
 
     // Test

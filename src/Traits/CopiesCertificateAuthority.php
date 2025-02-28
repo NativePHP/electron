@@ -3,6 +3,7 @@
 namespace Native\Electron\Traits;
 
 use Symfony\Component\Filesystem\Path;
+
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\warning;
@@ -25,8 +26,8 @@ trait CopiesCertificateAuthority
             $certificateFileName = 'cacert.pem';
             $certFilePath = Path::join($phpBinaryDirectory, $certificateFileName);
 
-            if (!file_exists($certFilePath)) {
-                warning('CA Certificate not found at ' . $certFilePath . '. Skipping copy.');
+            if (! file_exists($certFilePath)) {
+                warning('CA Certificate not found at '.$certFilePath.'. Skipping copy.');
 
                 return;
             }
@@ -36,7 +37,7 @@ trait CopiesCertificateAuthority
                 Path::join(base_path('vendor/nativephp/electron/resources/js/resources'), $certificateFileName)
             );
 
-            if (!$copied) {
+            if (! $copied) {
                 // It returned false, but doesn't give a reason why.
                 throw new \Exception('copy() failed for an unknown reason.');
             }

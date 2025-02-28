@@ -15,7 +15,6 @@ use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
 use Native\Electron\Traits\PrunesVendorDirectory;
 use Native\Electron\Traits\SetsAppName;
-use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 use function Laravel\Prompts\intro;
