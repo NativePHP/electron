@@ -32,7 +32,6 @@ describe('API test', () => {
         try {
             await axios.get('/api/process');
         } catch (error) {
-            console.log(error.response.status);
             expect(error.response.status).toBe(403);
         }
 
@@ -43,11 +42,8 @@ describe('API test', () => {
                     'x-nativephp-secret': 'randomSecret',
                 }
             });
-        } catch (error) {
-            console.log(error.response.status);
-            expect(error.response.status).toBe(200);
+        } finally {
+            expect(response.status).toBe(200);
         }
-
-        expect(response.status).toBe(200);
     });
 });

@@ -115,6 +115,7 @@ mockForNodeRequire('electron', () => ({
     },
     powerMonitor: {
         on: vi.fn(),
+        addListener: vi.fn(),
         removeAllListeners: vi.fn(),
     },
     nativeTheme: {
@@ -128,7 +129,7 @@ mockForNodeRequire('electron', () => ({
 }));
 
 // Mock @electron/remote
-mockForNodeRequire('@electron/remote', () => ({
+vi.mock('@electron/remote', () => ({
     initialize: vi.fn(),
     enable: vi.fn(),
     getCurrentWindow: vi.fn().mockReturnValue({
@@ -187,3 +188,24 @@ const createRouterMock = () => {
     return { default: router };
 };
 
+// Mock individual route files directly to avoid the @electron/remote issue
+// vi.mock('../src/server/api/clipboard.js', () => createRouterMock());
+// vi.mock('../src/server/api/app.js', () => createRouterMock());
+// vi.mock('../src/server/api/screen.js', () => createRouterMock());
+// vi.mock('../src/server/api/dialog.js', () => createRouterMock());
+// vi.mock('../src/server/api/debug.js', () => createRouterMock());
+// vi.mock('../src/server/api/broadcasting.js', () => createRouterMock());
+// vi.mock('../src/server/api/system.js', () => createRouterMock());
+// vi.mock('../src/server/api/globalShortcut.js', () => createRouterMock());
+// vi.mock('../src/server/api/notification.js', () => createRouterMock());
+// vi.mock('../src/server/api/dock.js', () => createRouterMock());
+// vi.mock('../src/server/api/menu.js', () => createRouterMock());
+vi.mock('../src/server/api/menuBar.js', () => createRouterMock());
+vi.mock('../src/server/api/window.js', () => createRouterMock());
+// vi.mock('../src/server/api/process.js', () => createRouterMock());
+vi.mock('../src/server/api/contextMenu.js', () => createRouterMock());
+// vi.mock('../src/server/api/settings.js', () => createRouterMock());
+// vi.mock('../src/server/api/shell.js', () => createRouterMock());
+// vi.mock('../src/server/api/progressBar.js', () => createRouterMock());
+vi.mock('../src/server/api/powerMonitor.js', () => createRouterMock());
+vi.mock('../src/server/api/childProcess.js', () => createRouterMock());
