@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Native\Electron\Facades\Updater;
 use Native\Electron\Traits\CleansEnvFile;
+use Native\Electron\Traits\CopiesCertificateAuthority;
 use Native\Electron\Traits\CopiesToBuildDirectory;
 use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
@@ -22,6 +23,7 @@ use function Laravel\Prompts\intro;
 class BuildCommand extends Command
 {
     use CleansEnvFile;
+    use CopiesCertificateAuthority;
     use CopiesToBuildDirectory;
     use HasPreAndPostProcessing;
     use InstallsAppIcon;
@@ -81,11 +83,7 @@ class BuildCommand extends Command
         $this->copyToBuildDirectory();
 
         $this->newLine();
-        intro('Copying latest CA Certificate...');
-        copy(
-            Path::join($this->sourcePath(), 'vendor', 'nativephp', 'php-bin', 'cacert.pem'),
-            Path::join($this->sourcePath(), 'vendor', 'nativephp', 'electron', 'resources', 'js', 'resources', 'cacert.pem')
-        );
+        $this->copyCertificateAuthorityCertificate();
 
         $this->newLine();
         intro('Cleaning .env file...');
