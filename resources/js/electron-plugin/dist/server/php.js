@@ -9,19 +9,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { mkdirSync, statSync, writeFileSync, existsSync } from 'fs';
 import fs_extra from 'fs-extra';
-const { copySync } = fs_extra;
+const { copySync, mkdirpSync } = fs_extra;
 import Store from 'electron-store';
 import { promisify } from 'util';
 import { join } from 'path';
 import { app } from 'electron';
-import { execFile, spawn } from 'child_process';
+import { execFile, spawn, spawnSync } from 'child_process';
 import state from "./state.js";
 import getPort, { portNumbers } from 'get-port';
 const storagePath = join(app.getPath('userData'), 'storage');
 const databasePath = join(app.getPath('userData'), 'database');
 const databaseFile = join(databasePath, 'database.sqlite');
+const bootstrapCache = join(app.getPath('userData'), 'bootstrap', 'cache');
 const argumentEnv = getArgumentEnv();
 const appPath = getAppPath();
+mkdirpSync(bootstrapCache);
+function runningProdVersion() {
+    return existsSync(join(appPath, 'build', '__nativephp_app_bundle'));
+}
+function runningSecureBuild() {
+    return existsSync(join(appPath, 'build', '__nativephp_app_bundle'));
+}
+function shouldMigrateDatabase(store) {
+    return store.get('migrated_version') !== app.getVersion()
+        && process.env.NODE_ENV !== 'development';
+}
 function getPhpPort() {
     return __awaiter(this, void 0, void 0, function* () {
         return yield getPort({
@@ -41,7 +53,11 @@ function retrievePhpIniSettings() {
             cwd: appPath,
             env
         };
-        return yield promisify(execFile)(state.php, ['artisan', 'native:php-ini'], phpOptions);
+        let command = ['artisan', 'native:php-ini'];
+        if (runningSecureBuild()) {
+            command.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
+        }
+        return yield promisify(execFile)(state.php, command, phpOptions);
     });
 }
 function retrieveNativePHPConfig() {
@@ -55,17 +71,43 @@ function retrieveNativePHPConfig() {
             cwd: appPath,
             env
         };
-        return yield promisify(execFile)(state.php, ['artisan', 'native:config'], phpOptions);
+        let command = ['artisan', 'native:config'];
+        if (runningSecureBuild()) {
+            command.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
+        }
+        return yield promisify(execFile)(state.php, command, phpOptions);
     });
 }
 function callPhp(args, options, phpIniSettings = {}) {
+    if (args[0] === 'artisan' && runningSecureBuild()) {
+        args.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
+    }
     let iniSettings = Object.assign(getDefaultPhpIniSettings(), phpIniSettings);
     Object.keys(iniSettings).forEach(key => {
         args.unshift('-d', `${key}=${iniSettings[key]}`);
     });
+    if (parseInt(process.env.SHELL_VERBOSITY) > 0) {
+        console.log('Calling PHP', state.php, args);
+    }
     return spawn(state.php, args, {
         cwd: options.cwd,
         env: Object.assign(Object.assign({}, process.env), options.env),
+    });
+}
+function callPhpSync(args, options, phpIniSettings = {}) {
+    if (args[0] === 'artisan' && runningSecureBuild()) {
+        args.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
+    }
+    let iniSettings = Object.assign(getDefaultPhpIniSettings(), phpIniSettings);
+    Object.keys(iniSettings).forEach(key => {
+        args.unshift('-d', `${key}=${iniSettings[key]}`);
+    });
+    if (parseInt(process.env.SHELL_VERBOSITY) > 0) {
+        console.log('Calling PHP', state.php, args);
+    }
+    return spawnSync(state.php, args, {
+        cwd: options.cwd,
+        env: Object.assign(Object.assign({}, process.env), options.env)
     });
 }
 function getArgumentEnv() {
@@ -113,9 +155,10 @@ function getPath(name) {
     }
 }
 function getDefaultEnvironmentVariables(secret, apiPort) {
-    return {
+    let variables = {
         APP_ENV: process.env.NODE_ENV === 'development' ? 'local' : 'production',
         APP_DEBUG: process.env.NODE_ENV === 'development' ? 'true' : 'false',
+        LARAVEL_STORAGE_PATH: storagePath,
         NATIVEPHP_STORAGE_PATH: storagePath,
         NATIVEPHP_DATABASE_PATH: databaseFile,
         NATIVEPHP_API_URL: `http://localhost:${apiPort}/api/`,
@@ -132,6 +175,14 @@ function getDefaultEnvironmentVariables(secret, apiPort) {
         NATIVEPHP_VIDEOS_PATH: getPath('videos'),
         NATIVEPHP_RECENT_PATH: getPath('recent'),
     };
+    if (runningProdVersion()) {
+        variables.APP_SERVICES_CACHE = join(bootstrapCache, 'services.php');
+        variables.APP_PACKAGES_CACHE = join(bootstrapCache, 'packages.php');
+        variables.APP_CONFIG_CACHE = join(bootstrapCache, 'config.php');
+        variables.APP_ROUTES_CACHE = join(bootstrapCache, 'routes.php');
+        variables.APP_EVENTS_CACHE = join(bootstrapCache, 'events.php');
+    }
+    return variables;
 }
 function getDefaultPhpIniSettings() {
     return {
@@ -152,50 +203,55 @@ function serveApp(secret, apiPort, phpIniSettings) {
             env
         };
         const store = new Store();
-        callPhp(['artisan', 'storage:link', '--force'], phpOptions, phpIniSettings);
-        if (store.get('migrated_version') !== app.getVersion() && process.env.NODE_ENV !== 'development') {
+        if (!runningSecureBuild()) {
+            callPhpSync(['artisan', 'storage:link', '--force'], phpOptions, phpIniSettings);
+        }
+        if (runningProdVersion()) {
+            console.log('Caching view and routes...');
+            callPhpSync(['artisan', 'optimize'], phpOptions, phpIniSettings);
+        }
+        if (shouldMigrateDatabase(store)) {
             console.log('Migrating database...');
-            callPhp(['artisan', 'migrate', '--force'], phpOptions, phpIniSettings);
+            callPhpSync(['artisan', 'migrate', '--force'], phpOptions, phpIniSettings);
             store.set('migrated_version', app.getVersion());
         }
         if (process.env.NODE_ENV === 'development') {
             console.log('Skipping Database migration while in development.');
             console.log('You may migrate manually by running: php artisan native:migrate');
         }
+        console.log('Starting PHP server...');
         const phpPort = yield getPhpPort();
-        const serverPath = join(appPath, 'vendor', 'laravel', 'framework', 'src', 'Illuminate', 'Foundation', 'resources', 'server.php');
+        let serverPath = join(appPath, 'build', '__nativephp_app_bundle');
+        if (!runningSecureBuild()) {
+            console.log('* * * Running from source * * *');
+            serverPath = join(appPath, 'vendor', 'laravel', 'framework', 'src', 'Illuminate', 'Foundation', 'resources', 'server.php');
+        }
         const phpServer = callPhp(['-S', `127.0.0.1:${phpPort}`, serverPath], {
             cwd: join(appPath, 'public'),
             env
         }, phpIniSettings);
         const portRegex = /Development Server \(.*:([0-9]+)\) started/gm;
         phpServer.stdout.on('data', (data) => {
-            const match = portRegex.exec(data.toString());
-            if (match) {
-                console.log("PHP Server started on port: ", match[1]);
-                const port = parseInt(match[1]);
-                resolve({
-                    port,
-                    process: phpServer
-                });
+            if (parseInt(process.env.SHELL_VERBOSITY) > 0) {
+                console.log(data.toString());
             }
         });
         phpServer.stderr.on('data', (data) => {
             const error = data.toString();
-            const match = portRegex.exec(error);
+            const match = portRegex.exec(data.toString());
             if (match) {
                 const port = parseInt(match[1]);
                 console.log("PHP Server started on port: ", port);
                 resolve({
                     port,
-                    process: phpServer
+                    process: phpServer,
                 });
             }
             else {
-                if (error.startsWith('[NATIVE_EXCEPTION]: ', 27)) {
+                if (error.includes('[NATIVE_EXCEPTION]:')) {
                     console.log();
                     console.error('Error in PHP:');
-                    console.error('  ' + error.slice(47));
+                    console.error('  ' + error.split('[NATIVE_EXCEPTION]:')[1].trim());
                     console.log('Please check your log file:');
                     console.log('  ' + join(appPath, 'storage', 'logs', 'laravel.log'));
                     console.log();
@@ -204,6 +260,9 @@ function serveApp(secret, apiPort, phpIniSettings) {
         });
         phpServer.on('error', (error) => {
             reject(error);
+        });
+        phpServer.on('close', (code) => {
+            console.log(`PHP server exited with code ${code}`);
         });
     }));
 }
