@@ -1,6 +1,7 @@
 import express from 'express'
 import { dialog } from 'electron'
 const router = express.Router();
+
 router.post('/message', (req, res) => {
     const { message, type, title, detail, buttons, defaultId, cancelId } = req.body;
     const result = dialog.showMessageBoxSync({
