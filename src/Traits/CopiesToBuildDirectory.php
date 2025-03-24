@@ -118,7 +118,9 @@ trait CopiesToBuildDirectory
                 continue;
             }
 
-            chmod($target, $perms);
+            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                chmod($target, $perms);
+            }
         }
 
         $this->keepRequiredDirectories();
