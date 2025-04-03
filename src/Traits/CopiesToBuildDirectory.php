@@ -113,7 +113,7 @@ trait CopiesToBuildDirectory
             }
 
             if (PHP_OS_FAMILY !== 'Windows') {
-                $perms = fileperms($item->getPathname());
+                $perms = @fileperms($item->getPathname());
                 if ($perms !== false) {
                     chmod($target, $perms);
                 }
