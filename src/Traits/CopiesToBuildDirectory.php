@@ -13,6 +13,9 @@ use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
+use Throwable;
+
+use function Laravel\Prompts\warning;
 
 trait CopiesToBuildDirectory
 {
@@ -24,6 +27,8 @@ trait CopiesToBuildDirectory
         // .git and dev directories
         '.git',
         'dist',
+        'build',
+        'temp',
         'docker',
         'packages',
         '**/.github',
@@ -50,7 +55,7 @@ trait CopiesToBuildDirectory
         'vendor/bin',
     ];
 
-    public function copyToBuildDirectory()
+    public function copyToBuildDirectory(): bool
     {
         $sourcePath = $this->sourcePath();
         $buildPath = $this->buildPath();
@@ -66,7 +71,10 @@ trait CopiesToBuildDirectory
         $filesystem->mkdir($buildPath);
 
         // A filtered iterator that will exclude files matching our skip patterns
-        $directory = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+        $directory = new RecursiveDirectoryIterator(
+            $sourcePath,
+            RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS
+        );
 
         $filter = new RecursiveCallbackFilterIterator($directory, function ($current) use ($patterns) {
             $relativePath = substr($current->getPathname(), strlen($this->sourcePath()) + 1);
@@ -98,10 +106,23 @@ trait CopiesToBuildDirectory
                 continue;
             }
 
-            copy($item->getPathname(), $target);
+            try {
+                copy($item->getPathname(), $target);
+
+                if (PHP_OS_FAMILY !== 'Windows') {
+                    $perms = fileperms($item->getPathname());
+                    if ($perms !== false) {
+                        chmod($target, $perms);
+                    }
+                }
+            } catch (Throwable $e) {
+                warning('[WARNING] '.$e->getMessage());
+            }
         }
 
         $this->keepRequiredDirectories();
+
+        return true;
     }
 
     private function keepRequiredDirectories()

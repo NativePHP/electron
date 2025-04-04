@@ -2,6 +2,11 @@ import express from 'express'
 import { app } from 'electron'
 const router = express.Router();
 
+router.post('/quit', (req, res) => {
+    app.quit()
+    res.sendStatus(200);
+});
+
 router.post('/show', (req, res) => {
     app.show()
     res.sendStatus(200);
@@ -56,6 +61,19 @@ router.post('/recent-documents', (req, res) => {
 router.delete('/recent-documents', (req, res) => {
     app.clearRecentDocuments();
     res.sendStatus(200);
+});
+
+router.post('/open-at-login', (req, res) => {
+    app.setLoginItemSettings({
+        openAtLogin: req.body.open,
+    });
+    res.sendStatus(200);
+});
+
+router.get('/open-at-login', (req, res) => {
+    res.json({
+        open: app.getLoginItemSettings().openAtLogin,
+    });
 });
 
 export default router;

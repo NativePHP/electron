@@ -8,6 +8,7 @@ const isBuilding = process.env.NATIVEPHP_BUILDING;
 const appAuthor = process.env.NATIVEPHP_APP_AUTHOR;
 const fileName = process.env.NATIVEPHP_APP_FILENAME;
 const appVersion = process.env.NATIVEPHP_APP_VERSION;
+const appCopyright = process.env.NATIVEPHP_APP_COPYRIGHT;
 const deepLinkProtocol = process.env.NATIVEPHP_DEEPLINK_SCHEME;
 
 // Since we do not copy the php executable here, we only need these for building
@@ -40,18 +41,13 @@ try {
 }
 
 if (isBuilding) {
-    console.log();
-    console.log('===================================================================');
-    console.log('                    Building for ' + targetOs);
-    console.log('===================================================================');
-    console.log();
-    console.log('Updater config', updaterConfig);
-    console.log();
+    console.log('  • updater config', updaterConfig);
 }
 
 export default {
     appId: appId,
     productName: appName,
+    copyright: appCopyright,
     directories: {
         buildResources: 'build',
         output: isBuilding ? join(process.env.APP_PATH, 'dist') : undefined,
