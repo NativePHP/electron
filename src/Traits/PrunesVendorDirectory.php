@@ -29,7 +29,7 @@ trait PrunesVendorDirectory
 
         // Remove custom php binary package directory
         $binaryPackageDirectory = $this->binaryPackageDirectory();
-        if (! empty($binaryPackageDirectory)) {
+        if (! empty($binaryPackageDirectory) && $filesystem->exists($this->buildPath($binaryPackageDirectory))) {
             $filesystem->remove($this->buildPath($binaryPackageDirectory));
         }
     }
