@@ -13,8 +13,8 @@ use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
-use Native\Electron\Traits\PrunesVendorDirectory;
 use Native\Electron\Traits\PatchesPackagesJson;
+use Native\Electron\Traits\PrunesVendorDirectory;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 use function Laravel\Prompts\intro;
@@ -28,8 +28,8 @@ class BuildCommand extends Command
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
-    use PrunesVendorDirectory;
     use PatchesPackagesJson;
+    use PrunesVendorDirectory;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}

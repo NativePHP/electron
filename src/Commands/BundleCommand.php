@@ -15,8 +15,8 @@ use Native\Electron\Traits\HandlesZephpyr;
 use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
-use Native\Electron\Traits\PrunesVendorDirectory;
 use Native\Electron\Traits\PatchesPackagesJson;
+use Native\Electron\Traits\PrunesVendorDirectory;
 use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
@@ -30,8 +30,8 @@ class BundleCommand extends Command
     use HasPreAndPostProcessing;
     use InstallsAppIcon;
     use LocatesPhpBinary;
-    use PrunesVendorDirectory;
     use PatchesPackagesJson;
+    use PrunesVendorDirectory;
 
     protected $signature = 'native:bundle {--fetch} {--clear} {--without-cleanup}';
 
