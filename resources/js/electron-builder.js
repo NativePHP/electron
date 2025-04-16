@@ -30,7 +30,6 @@ if (isDarwin) {
     targetOs = 'mac';
 }
 
-
 let updaterConfig = {};
 
 try {
@@ -60,7 +59,7 @@ export default {
         '!{.env,.env.*,.npmrc,pnpm-lock.yaml}',
     ],
     asarUnpack: [
-        'resources/**',
+        'resources/*',
     ],
     beforePack: async (context) => {
         let arch = {
@@ -103,6 +102,7 @@ export default {
             NSDownloadsFolderUsageDescription:
                 "Application requests access to the user's Downloads folder.",
         },
+        notarize: true,
     },
     dmg: {
         artifactName: appName + '-${version}-${arch}.${ext}',
