@@ -1,0 +1,59 @@
+import express from "express";
+import electronUpdater, { UpdateDownloadedEvent } from "electron-updater";
+import { notifyLaravel } from "../utils.js";
+
+const router = express.Router();
+const { autoUpdater } = electronUpdater;
+
+router.post("/check-for-updates", (req, res) => {
+    autoUpdater.checkForUpdates();
+    res.sendStatus(200);
+});
+
+router.post("/quit-and-install", (req, res) => {
+    autoUpdater.quitAndInstall();
+    res.sendStatus(200);
+});
+
+autoUpdater.addListener("checking-for-update", () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\CheckingForUpdate`,
+    });
+});
+
+autoUpdater.addListener("update-available", () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\UpdateAvailable`,
+    });
+});
+
+autoUpdater.addListener("update-not-available", () => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\UpdateNotAvailable`,
+    });
+});
+
+autoUpdater.addListener("error", (error) => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\Error`,
+        payload: {
+            error: error,
+        },
+    });
+});
+
+autoUpdater.addListener("update-downloaded", (event: UpdateDownloadedEvent) => {
+        notifyLaravel("events", {
+            event: `\\Native\\Laravel\\Events\\AutoUpdater\\UpdateDownloaded`,
+            payload: {
+                version: event.version,
+                downloadedFile: event.downloadedFile,
+                releaseDate: event.releaseDate,
+                releaseNotes: event.releaseNotes,
+                releaseName: event.releaseName,
+            },
+        });
+    },
+);
+
+export default router;
