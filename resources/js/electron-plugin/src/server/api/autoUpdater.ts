@@ -1,5 +1,8 @@
 import express from "express";
-import electronUpdater, { UpdateDownloadedEvent } from "electron-updater";
+import electronUpdater, {
+    ProgressInfo,
+    UpdateDownloadedEvent,
+} from "electron-updater";
 import { notifyLaravel } from "../utils.js";
 
 const router = express.Router();
@@ -42,18 +45,30 @@ autoUpdater.addListener("error", (error) => {
     });
 });
 
+autoUpdater.addListener("download-progress", (progressInfo: ProgressInfo) => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\DownloadProgress`,
+        payload: {
+            total: progressInfo.total,
+            delta: progressInfo.delta,
+            transferred: progressInfo.transferred,
+            percent: progressInfo.percent,
+            bytesPerSecond: progressInfo.bytesPerSecond,
+        },
+    });
+});
+
 autoUpdater.addListener("update-downloaded", (event: UpdateDownloadedEvent) => {
-        notifyLaravel("events", {
-            event: `\\Native\\Laravel\\Events\\AutoUpdater\\UpdateDownloaded`,
-            payload: {
-                version: event.version,
-                downloadedFile: event.downloadedFile,
-                releaseDate: event.releaseDate,
-                releaseNotes: event.releaseNotes,
-                releaseName: event.releaseName,
-            },
-        });
-    },
-);
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\UpdateDownloaded`,
+        payload: {
+            version: event.version,
+            downloadedFile: event.downloadedFile,
+            releaseDate: event.releaseDate,
+            releaseNotes: event.releaseNotes,
+            releaseName: event.releaseName,
+        },
+    });
+});
 
 export default router;

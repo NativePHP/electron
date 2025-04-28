@@ -34,6 +34,18 @@ autoUpdater.addListener("error", (error) => {
         },
     });
 });
+autoUpdater.addListener("download-progress", (progressInfo) => {
+    notifyLaravel("events", {
+        event: `\\Native\\Laravel\\Events\\AutoUpdater\\DownloadProgress`,
+        payload: {
+            total: progressInfo.total,
+            delta: progressInfo.delta,
+            transferred: progressInfo.transferred,
+            percent: progressInfo.percent,
+            bytesPerSecond: progressInfo.bytesPerSecond,
+        },
+    });
+});
 autoUpdater.addListener("update-downloaded", (event) => {
     notifyLaravel("events", {
         event: `\\Native\\Laravel\\Events\\AutoUpdater\\UpdateDownloaded`,
