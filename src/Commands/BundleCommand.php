@@ -14,8 +14,9 @@ use Native\Electron\Traits\CopiesToBuildDirectory;
 use Native\Electron\Traits\HandlesZephpyr;
 use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
+use Native\Electron\Traits\LocatesPhpBinary;
+use Native\Electron\Traits\PatchesPackagesJson;
 use Native\Electron\Traits\PrunesVendorDirectory;
-use Native\Electron\Traits\SetsAppName;
 use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
@@ -28,8 +29,9 @@ class BundleCommand extends Command
     use HandlesZephpyr;
     use HasPreAndPostProcessing;
     use InstallsAppIcon;
+    use LocatesPhpBinary;
+    use PatchesPackagesJson;
     use PrunesVendorDirectory;
-    use SetsAppName;
 
     protected $signature = 'native:bundle {--fetch} {--clear} {--without-cleanup}';
 
@@ -85,7 +87,7 @@ class BundleCommand extends Command
 
         $this->preProcess();
 
-        $this->setAppName();
+        $this->setAppNameAndVersion();
         intro('Copying App to build directory...');
 
         // We update composer.json later,
@@ -240,10 +242,12 @@ class BundleCommand extends Command
         $this->finderToZip($finder, $zip);
 
         // Why do I have to force this? please someone explain.
-        $this->finderToZip(
-            (new Finder)->files()
-                ->followLinks()
-                ->in($this->buildPath('public/build')), $zip, 'public/build');
+        if (file_exists($this->buildPath('public/build'))) {
+            $this->finderToZip(
+                (new Finder)->files()
+                    ->followLinks()
+                    ->in($this->buildPath('public/build')), $zip, 'public/build');
+        }
 
         // Add .env file manually because Finder ignores VCS and dot files
         $zip->addFile($this->buildPath('.env'), '.env');
@@ -283,7 +287,10 @@ class BundleCommand extends Command
                 continue;
             }
 
-            $zip->addFile($file->getRealPath(), str($path)->finish(DIRECTORY_SEPARATOR).$file->getRelativePathname());
+            $zipPath = str($path)->finish('/').$file->getRelativePathname();
+            $zipPath = str_replace('\\', '/', $zipPath);
+
+            $zip->addFile($file->getRealPath(), $zipPath);
         }
     }
 

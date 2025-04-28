@@ -24,6 +24,11 @@ const bootstrapCache = join(app.getPath('userData'), 'bootstrap', 'cache');
 const argumentEnv = getArgumentEnv();
 const appPath = getAppPath();
 mkdirpSync(bootstrapCache);
+mkdirpSync(join(storagePath, 'logs'));
+mkdirpSync(join(storagePath, 'framework', 'cache'));
+mkdirpSync(join(storagePath, 'framework', 'sessions'));
+mkdirpSync(join(storagePath, 'framework', 'views'));
+mkdirpSync(join(storagePath, 'framework', 'testing'));
 function runningSecureBuild() {
     return existsSync(join(appPath, 'build', '__nativephp_app_bundle'))
         && process.env.NODE_ENV !== 'development';
@@ -33,7 +38,7 @@ function shouldMigrateDatabase(store) {
         && process.env.NODE_ENV !== 'development';
 }
 function shouldOptimize(store) {
-    return true;
+    return process.env.NODE_ENV !== 'development';
 }
 function getPhpPort() {
     return __awaiter(this, void 0, void 0, function* () {

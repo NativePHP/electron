@@ -13,8 +13,8 @@ use Native\Electron\Traits\HasPreAndPostProcessing;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\LocatesPhpBinary;
 use Native\Electron\Traits\OsAndArch;
+use Native\Electron\Traits\PatchesPackagesJson;
 use Native\Electron\Traits\PrunesVendorDirectory;
-use Native\Electron\Traits\SetsAppName;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 use function Laravel\Prompts\intro;
@@ -28,8 +28,8 @@ class BuildCommand extends Command
     use InstallsAppIcon;
     use LocatesPhpBinary;
     use OsAndArch;
+    use PatchesPackagesJson;
     use PrunesVendorDirectory;
-    use SetsAppName;
 
     protected $signature = 'native:build
         {os? : The operating system to build for (all, linux, mac, win)}
@@ -78,7 +78,7 @@ class BuildCommand extends Command
 
     private function buildBundle(): void
     {
-        $this->setAppName();
+        $this->setAppNameAndVersion();
 
         $this->updateElectronDependencies();
 
@@ -101,7 +101,7 @@ class BuildCommand extends Command
     {
         $this->preProcess();
 
-        $this->setAppName();
+        $this->setAppNameAndVersion();
 
         $this->updateElectronDependencies();
 
@@ -141,10 +141,15 @@ class BuildCommand extends Command
                 'NATIVEPHP_APP_NAME' => config('app.name'),
                 'NATIVEPHP_APP_ID' => config('nativephp.app_id'),
                 'NATIVEPHP_APP_VERSION' => config('nativephp.version'),
+                'NATIVEPHP_APP_COPYRIGHT' => config('nativephp.copyright'),
                 'NATIVEPHP_APP_FILENAME' => Str::slug(config('app.name')),
                 'NATIVEPHP_APP_AUTHOR' => config('nativephp.author'),
                 'NATIVEPHP_UPDATER_CONFIG' => json_encode(Updater::builderOptions()),
                 'NATIVEPHP_DEEPLINK_SCHEME' => config('nativephp.deeplink_scheme'),
+                // Notarization
+                'NATIVEPHP_APPLE_ID' => config('nativephp-internal.notarization.apple_id'),
+                'NATIVEPHP_APPLE_ID_PASS' => config('nativephp-internal.notarization.apple_id_pass'),
+                'NATIVEPHP_APPLE_TEAM_ID' => config('nativephp-internal.notarization.apple_team_id'),
             ],
             Updater::environmentVariables(),
         );
