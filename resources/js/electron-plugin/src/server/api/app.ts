@@ -8,9 +8,7 @@ router.post('/quit', (req, res) => {
 });
 
 router.post('/relaunch', (req, res) => {
-    app.relaunch({
-        args: process.argv.slice(1).concat(['--relaunch']),
-    })
+    app.relaunch()
     app.quit()
 });
 

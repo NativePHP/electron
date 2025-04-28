@@ -6,9 +6,7 @@ router.post('/quit', (req, res) => {
     res.sendStatus(200);
 });
 router.post('/relaunch', (req, res) => {
-    app.relaunch({
-        args: process.argv.slice(1).concat(['--relaunch']),
-    });
+    app.relaunch();
     app.quit();
 });
 router.post('/show', (req, res) => {
