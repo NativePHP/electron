@@ -1,8 +1,7 @@
 import express from "express";
-import electronUpdater from "electron-updater";
+import { autoUpdater } from "electron-updater";
 import { notifyLaravel } from "../utils.js";
 const router = express.Router();
-const { autoUpdater } = electronUpdater;
 router.post("/check-for-updates", (req, res) => {
     autoUpdater.checkForUpdates();
     res.sendStatus(200);

@@ -4,12 +4,10 @@ import axios from "axios";
 
 // Mock für electron-updater
 vi.mock('electron-updater', () => ({
-    default: {
-        autoUpdater: {
-            checkForUpdates: vi.fn(),
-            quitAndInstall: vi.fn(),
-            addListener: vi.fn(),
-        },
+    autoUpdater: {
+        checkForUpdates: vi.fn(),
+        quitAndInstall: vi.fn(),
+        addListener: vi.fn(),
     },
 }));
 
