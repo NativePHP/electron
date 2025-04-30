@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import startAPIServer, { APIProcess } from "../src/server/api";
 import axios from "axios";
 
-// Mock für electron-updater
 vi.mock('electron-updater', () => ({
     autoUpdater: {
         checkForUpdates: vi.fn(),
