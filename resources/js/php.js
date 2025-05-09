@@ -1,7 +1,7 @@
 import fs from "fs";
 import fs_extra from 'fs-extra';
 const { copySync, removeSync, ensureDirSync } = fs_extra;
-import { join } from "path";
+import { resolve,join } from "path";
 import unzip from "yauzl";
 
 
@@ -52,7 +52,7 @@ if (isBuilding) {
 
 const phpVersionZip = 'php-' + phpVersion + '.zip';
 const binarySrcDir = join(phpBinaryPath, platform.os, platform.arch, phpVersionZip);
-const binaryDestDir = join(import.meta.dirname, 'resources/php');
+const binaryDestDir = resolve('./resources/php');
 
 console.log('Binary Source: ', binarySrcDir);
 console.log('Binary Filename: ', platform.phpBinary);
