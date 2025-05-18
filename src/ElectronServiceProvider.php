@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Native\Electron\Commands\BuildCommand;
 use Native\Electron\Commands\BundleCommand;
 use Native\Electron\Commands\DevelopCommand;
+use Native\Electron\Commands\ElectronBuilderCommand;
 use Native\Electron\Commands\InstallCommand;
 use Native\Electron\Commands\PublishCommand;
 use Native\Electron\Commands\ResetCommand;
@@ -27,6 +28,7 @@ class ElectronServiceProvider extends PackageServiceProvider
                 PublishCommand::class,
                 BundleCommand::class,
                 ResetCommand::class,
+                ElectronBuilderCommand::class,
             ]);
     }
 
