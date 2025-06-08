@@ -9,9 +9,14 @@ use Native\Electron\Traits\Installer;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\PatchesPackagesJson;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\note;
 
+#[AsCommand(
+    name: 'native:serve',
+    description: 'Start the NativePHP development server with the Electron app',
+)]
 class DevelopCommand extends Command
 {
     use CopiesCertificateAuthority;
