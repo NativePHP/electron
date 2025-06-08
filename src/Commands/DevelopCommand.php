@@ -8,8 +8,8 @@ use Native\Electron\Traits\Developer;
 use Native\Electron\Traits\Installer;
 use Native\Electron\Traits\InstallsAppIcon;
 use Native\Electron\Traits\PatchesPackagesJson;
-
 use Symfony\Component\Console\Attribute\AsCommand;
+
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\note;
 

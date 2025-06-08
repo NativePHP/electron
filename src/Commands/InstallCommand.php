@@ -5,8 +5,8 @@ namespace Native\Electron\Commands;
 use Illuminate\Console\Command;
 use Native\Electron\Traits\Installer;
 use RuntimeException;
-
 use Symfony\Component\Console\Attribute\AsCommand;
+
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\intro;

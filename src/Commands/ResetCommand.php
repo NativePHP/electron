@@ -19,7 +19,6 @@ class ResetCommand extends Command
 
     protected $signature = 'native:reset {--with-app-data : Clear the app data as well}';
 
-
     public function handle(): int
     {
         intro('Clearing build and dist directories...');
