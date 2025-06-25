@@ -263,7 +263,7 @@ function getDefaultEnvironmentVariables(secret?: string, apiPort?: number): Envi
         NATIVEPHP_VIDEOS_PATH: getPath('videos'),
         NATIVEPHP_RECENT_PATH: getPath('recent'),
         NATIVEPHP_EXTRAS_PATH: app.isPackaged
-            ? join(app.getAppPath(), 'public', 'extras')
+            ? join(app.getAppPath(), 'nativephp', 'extras')
             : join(app.getAppPath(), '..', '..', 'extras'),
     };
 
