@@ -124,7 +124,7 @@ export default {
     },
     extraFiles: [
         {
-            "from": join(process.env.APP_PATH, "public/extras"),
+            "from": join(process.env.APP_PATH, 'public', 'extras'),
             "to": "extras",
             "filter": [
                 "**/*"
