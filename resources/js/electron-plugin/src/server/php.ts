@@ -233,6 +233,7 @@ interface EnvironmentVariables {
     NATIVEPHP_PICTURES_PATH: string;
     NATIVEPHP_VIDEOS_PATH: string;
     NATIVEPHP_RECENT_PATH: string;
+    NATIVEPHP_EXTRAS_PATH: string;
     // Cache variables
     APP_SERVICES_CACHE?: string;
     APP_PACKAGES_CACHE?: string;
@@ -261,6 +262,9 @@ function getDefaultEnvironmentVariables(secret?: string, apiPort?: number): Envi
         NATIVEPHP_PICTURES_PATH: getPath('pictures'),
         NATIVEPHP_VIDEOS_PATH: getPath('videos'),
         NATIVEPHP_RECENT_PATH: getPath('recent'),
+        NATIVEPHP_EXTRAS_PATH: app.isPackaged
+            ? join(app.getAppPath(), 'public', 'extras')
+            : join(app.getAppPath(), '..', '..', 'extras'),
     };
 
     // Only if the server has already started
