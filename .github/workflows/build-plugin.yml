@@ -5,9 +5,9 @@ name: plugin-build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -33,19 +33,20 @@ jobs:
         working-directory: ./resources/js/
         run: npm run plugin:build
 
-
       - name: Commit changes
         if: github.event_name == 'pull_request'
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Build plugin
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Create Pull Request
         if: github.event_name != 'pull_request'
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: Build plugin
-          title: 'Auto: Build plugin assets'
+          title: "Auto: Build plugin assets"
           body: |
             This PR contains the latest built plugin assets.
 
