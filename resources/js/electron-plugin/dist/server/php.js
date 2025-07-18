@@ -173,6 +173,9 @@ function getDefaultEnvironmentVariables(secret, apiPort) {
         NATIVEPHP_PICTURES_PATH: getPath('pictures'),
         NATIVEPHP_VIDEOS_PATH: getPath('videos'),
         NATIVEPHP_RECENT_PATH: getPath('recent'),
+        NATIVEPHP_EXTRAS_PATH: app.isPackaged
+            ? join(app.getAppPath(), 'nativephp', 'extras')
+            : join(app.getAppPath(), '..', '..', 'extras'),
     };
     if (secret && apiPort) {
         variables.NATIVEPHP_API_URL = `http://localhost:${apiPort}/api/`;
