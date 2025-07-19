@@ -26,12 +26,15 @@ class NativePHP {
         this.mainWindow = null;
     }
     bootstrap(app, icon, phpBinary, cert) {
-        initialize();
-        state.icon = icon;
-        state.php = phpBinary;
-        state.caCert = cert;
-        this.bootstrapApp(app);
-        this.addEventListeners(app);
+        return __awaiter(this, void 0, void 0, function* () {
+            initialize();
+            state.icon = icon;
+            state.php = phpBinary;
+            state.caCert = cert;
+            yield this.initializeCustomScripts();
+            this.bootstrapApp(app);
+            this.addEventListeners(app);
+        });
     }
     addEventListeners(app) {
         app.on("open-url", (event, url) => {
@@ -108,6 +111,28 @@ class NativePHP {
                 console.error(error);
             }
             return config;
+        });
+    }
+    initializeCustomScripts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const config = yield this.loadConfig();
+                const scripts = (config === null || config === void 0 ? void 0 : config.electron_init_scripts) || [];
+                if (scripts.length === 0) {
+                    return;
+                }
+                scripts.forEach((script, index) => {
+                    try {
+                        eval(script);
+                    }
+                    catch (error) {
+                        console.error(error);
+                    }
+                });
+            }
+            catch (error) {
+                console.error(error);
+            }
         });
     }
     setDockIcon() {

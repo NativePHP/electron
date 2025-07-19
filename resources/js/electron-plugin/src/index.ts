@@ -25,7 +25,7 @@ class NativePHP {
   schedulerInterval = undefined;
   mainWindow = null;
 
-  public bootstrap(
+  public async bootstrap(
     app: CrossProcessExports.App,
     icon: string,
     phpBinary: string,
@@ -37,6 +37,9 @@ class NativePHP {
     state.icon = icon;
     state.php = phpBinary;
     state.caCert = cert;
+
+    // Execute custom initialization scripts
+    await this.initializeCustomScripts();
 
     this.bootstrapApp(app);
     this.addEventListeners(app);
@@ -143,6 +146,27 @@ class NativePHP {
     }
 
     return config;
+  }
+
+  private async initializeCustomScripts() {
+    try {
+      const config = await this.loadConfig() as any;
+      const scripts = config?.electron_init_scripts || [];
+      
+      if (scripts.length === 0) {
+        return;
+      }
+      
+      scripts.forEach((script: string, index: number) => {
+        try {
+          eval(script);
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private setDockIcon() {
