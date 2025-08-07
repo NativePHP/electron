@@ -7,6 +7,7 @@ import {
   retrieveNativePHPConfig,
   retrievePhpIniSettings,
   runScheduler,
+  killScheduler,
   startAPI,
   startPhpApp,
 } from "./server/index.js";
@@ -22,8 +23,8 @@ const { autoUpdater } = electronUpdater;
 
 class NativePHP {
   processes = [];
-  schedulerInterval = undefined;
   mainWindow = null;
+  schedulerInterval = undefined;
 
   public bootstrap(
     app: CrossProcessExports.App,
@@ -244,12 +245,13 @@ class NativePHP {
   }
 
 
-    private stopScheduler() {
-        if (this.schedulerInterval) {
-            clearInterval(this.schedulerInterval);
-            this.schedulerInterval = null;
-        }
-    }
+  private stopScheduler() {
+      if (this.schedulerInterval) {
+          clearInterval(this.schedulerInterval);
+          this.schedulerInterval = null;
+      }
+      killScheduler();
+  }
 
   private startScheduler() {
     const now = new Date();
@@ -270,6 +272,8 @@ class NativePHP {
   }
 
   private killChildProcesses() {
+    this.stopScheduler();
+
     this.processes
       .filter((p) => p !== undefined)
       .forEach((process) => {
