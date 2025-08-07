@@ -277,7 +277,10 @@ class NativePHP {
     this.processes
       .filter((p) => p !== undefined)
       .forEach((process) => {
+        if (!process || !process.pid) return;
+
         try {
+          process.kill(0); // Test if process exists (throws error if not)
           // @ts-ignore
           killSync(process.pid, 'SIGTERM', true); // Kill tree
           ps.kill(process.pid); // Sometimes does not kill the subprocess of php server
