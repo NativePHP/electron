@@ -213,8 +213,9 @@ class NativePHP {
             .forEach((process) => {
             if (!process || !process.pid)
                 return;
+            if (process.killed && process.exitCode !== null)
+                return;
             try {
-                process.kill(0);
                 killSync(process.pid, 'SIGTERM', true);
                 ps.kill(process.pid);
             }
