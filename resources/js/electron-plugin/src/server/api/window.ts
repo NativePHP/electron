@@ -234,6 +234,8 @@ router.post('/open', (req, res) => {
         autoHideMenuBar,
         webPreferences,
         zoomFactor,
+        preventLeaveDomain,
+        preventLeavePage,
     } = req.body;
 
     if (state.windows[id]) {
@@ -389,6 +391,21 @@ router.post('/open', (req, res) => {
     window.webContents.on('dom-ready', () => {
         window.webContents.setZoomFactor(parseFloat(zoomFactor));
     });
+
+    if (preventLeaveDomain || preventLeavePage) {
+        window.webContents.on('will-navigate', (event, target) => {
+            const origUrl = new URL(url);
+            const targetUrl = new URL(target);
+
+            if (preventLeaveDomain && targetUrl.hostname !== origUrl.hostname) {
+                event.preventDefault();
+            }
+
+            if (preventLeavePage && (targetUrl.origin !== origUrl.origin || targetUrl.pathname !== origUrl.pathname)) {
+                event.preventDefault();
+            }
+        });
+    }
 
     window.webContents.on('did-finish-load', () => {
         window.show();
