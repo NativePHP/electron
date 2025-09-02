@@ -8,6 +8,7 @@ import {promisify} from 'util'
 import {join} from 'path'
 import {app} from 'electron'
 import {execFile, spawn, spawnSync} from 'child_process'
+import {createServer} from 'net'
 import state from "./state.js";
 import getPort, {portNumbers} from 'get-port';
 import {ProcessResult} from "./ProcessResult.js";
@@ -50,9 +51,40 @@ function shouldOptimize(store) {
 }
 
 async function getPhpPort() {
-    return await getPort({
+    // Try get-port first (fast path)
+    const suggestedPort = await getPort({
         host: '127.0.0.1',
         port: portNumbers(8100, 9000)
+    });
+
+    // Validate that we can actually bind to this port
+    if (await canBindToPort(suggestedPort)) {
+        return suggestedPort;
+    }
+
+    // If get-port gave us a bad port, manually search starting from suggestedPort + 1
+    console.warn(`Port ${suggestedPort} is not bindable, manually searching...`);
+
+    for (let port = suggestedPort + 1; port < 9000; port++) {
+        if (await canBindToPort(port)) {
+            return port;
+        }
+    }
+
+    throw new Error('Could not find an available port in range 8100-9000');
+}
+
+function canBindToPort(port: number): Promise<boolean> {
+    return new Promise((resolve) => {
+        const server = createServer();
+
+        server.listen(port, '127.0.0.1', () => {
+            server.close(() => resolve(true));
+        });
+
+        server.on('error', () => {
+            resolve(false);
+        });
     });
 }
 
@@ -311,18 +343,6 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
             name: 'nativephp', // So it doesn't conflict with settings of the app
         });
 
-        // Make sure the storage path is linked - as people can move the app around, we
-        // need to run this every time the app starts
-        if (!runningSecureBuild()) {
-            /*
-              * Simon: Note for later that we should strip out using storage:link
-              * all of the necessary files for the app to function should be a part of the bundle
-              * (whether it's a secured bundle or not), so symlinking feels redundant
-             */
-            console.log('Linking storage path...');
-            callPhp(['artisan', 'storage:link', '--force'], phpOptions, phpIniSettings)
-        }
-
         // Cache the project
         if (shouldOptimize(store)) {
             console.log('Caching view and routes...');
@@ -358,10 +378,6 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
             console.log('You may migrate manually by running: php artisan native:migrate')
         }
 
-        console.log('Starting PHP server...');
-        const phpPort = await getPhpPort();
-
-
         let serverPath: string;
         let cwd: string;
 
@@ -373,6 +389,8 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
             cwd = join(appPath, 'public');
         }
 
+        console.log('Starting PHP server...');
+        const phpPort = await getPhpPort();
         const phpServer = callPhp(['-S', `127.0.0.1:${phpPort}`, serverPath], {
             cwd: cwd,
             env
@@ -383,7 +401,6 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
         // Show urls called
         phpServer.stdout.on('data', (data) => {
             // [Tue Jan 14 19:51:00 2025] 127.0.0.1:52779 [POST] URI: /_native/api/events
-
             if (parseInt(process.env.SHELL_VERBOSITY) > 0) {
                 console.log(data.toString().trim());
             }
