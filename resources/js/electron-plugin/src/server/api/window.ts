@@ -236,6 +236,7 @@ router.post('/open', (req, res) => {
         zoomFactor,
         preventLeaveDomain,
         preventLeavePage,
+        suppressNewWindows,
     } = req.body;
 
     if (state.windows[id]) {
@@ -317,6 +318,12 @@ router.post('/open', (req, res) => {
 
     if (req.body.rememberState === true) {
         windowState?.manage(window);
+    }
+
+    if (suppressNewWindows) {
+        window.webContents.setWindowOpenHandler(() => {
+            return { action: "deny" };
+        });
     }
 
     window.on('blur', () => {
