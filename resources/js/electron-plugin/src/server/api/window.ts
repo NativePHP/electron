@@ -302,8 +302,8 @@ router.post('/open', (req, res) => {
         autoHideMenuBar,
         ...(process.platform === 'linux' ? {icon: state.icon} : {}),
         webPreferences: {
-            ...webPreferences,
-            ...defaultWebPreferences
+            ...defaultWebPreferences,
+            ...webPreferences
         },
         fullscreen,
         fullscreenable,
