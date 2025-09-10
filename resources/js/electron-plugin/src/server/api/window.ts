@@ -73,6 +73,14 @@ router.post('/hide-dev-tools', (req, res) => {
     res.sendStatus(200);
 });
 
+router.post('/set-zoom-factor', (req, res) => {
+    const {id, zoomFactor} = req.body;
+
+    state.windows[id]?.webContents.setZoomFactor(parseFloat(zoomFactor));
+
+    res.sendStatus(200);
+});
+
 router.post('/position', (req, res) => {
     const {id, x, y, animate} = req.body;
 
@@ -203,6 +211,8 @@ router.post('/open', (req, res) => {
         maxWidth,
         maxHeight,
         focusable,
+        skipTaskbar,
+        hiddenInMissionControl,
         hasShadow,
         url,
         resizable,
@@ -223,6 +233,10 @@ router.post('/open', (req, res) => {
         kiosk,
         autoHideMenuBar,
         webPreferences,
+        zoomFactor,
+        preventLeaveDomain,
+        preventLeavePage,
+        suppressNewWindows,
     } = req.body;
 
     if (state.windows[id]) {
@@ -283,6 +297,8 @@ router.post('/open', (req, res) => {
         trafficLightPosition,
         vibrancy,
         focusable,
+        skipTaskbar,
+        hiddenInMissionControl,
         autoHideMenuBar,
         ...(process.platform === 'linux' ? {icon: state.icon} : {}),
         webPreferences: {
@@ -302,6 +318,12 @@ router.post('/open', (req, res) => {
 
     if (req.body.rememberState === true) {
         windowState?.manage(window);
+    }
+
+    if (suppressNewWindows) {
+        window.webContents.setWindowOpenHandler(() => {
+            return { action: "deny" };
+        });
     }
 
     window.on('blur', () => {
@@ -372,6 +394,25 @@ router.post('/open', (req, res) => {
     url = appendWindowIdToUrl(url, id);
 
     window.loadURL(url);
+
+    window.webContents.on('dom-ready', () => {
+        window.webContents.setZoomFactor(parseFloat(zoomFactor));
+    });
+
+    if (preventLeaveDomain || preventLeavePage) {
+        window.webContents.on('will-navigate', (event, target) => {
+            const origUrl = new URL(url);
+            const targetUrl = new URL(target);
+
+            if (preventLeaveDomain && targetUrl.hostname !== origUrl.hostname) {
+                event.preventDefault();
+            }
+
+            if (preventLeavePage && (targetUrl.origin !== origUrl.origin || targetUrl.pathname !== origUrl.pathname)) {
+                event.preventDefault();
+            }
+        });
+    }
 
     window.webContents.on('did-finish-load', () => {
         window.show();
