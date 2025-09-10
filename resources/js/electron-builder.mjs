@@ -138,7 +138,7 @@ export default {
     },
     extraFiles: [
         {
-            from: join(process.env.APP_PATH, 'nativephp', 'extras'),
+            from: join(process.env.APP_PATH, 'extras'),
             to: 'extras',
             filter: [
                 '**/*'

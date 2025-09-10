@@ -295,8 +295,8 @@ function getDefaultEnvironmentVariables(secret?: string, apiPort?: number): Envi
         NATIVEPHP_VIDEOS_PATH: getPath('videos'),
         NATIVEPHP_RECENT_PATH: getPath('recent'),
         NATIVEPHP_EXTRAS_PATH: app.isPackaged
-            ? join(app.getAppPath(), 'nativephp', 'extras')
-            : join(app.getAppPath(), '..', '..', 'extras'),
+            ? join(process.resourcesPath, '..', 'extras')
+            : join(process.env.APP_PATH, 'extras'),
     };
 
     // Only if the server has already started
