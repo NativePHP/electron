@@ -1,19 +1,64 @@
 import fs from "fs";
 import fs_extra from 'fs-extra';
-const { copySync, removeSync, ensureDirSync } = fs_extra;
+const { removeSync, ensureDirSync } = fs_extra;
 import { join } from "path";
 import unzip from "yauzl";
-
+import { execSync } from "child_process";
 
 const isBuilding = Boolean(process.env.NATIVEPHP_BUILDING);
 const phpBinaryPath = process.env.NATIVEPHP_PHP_BINARY_PATH;
 const phpVersion = process.env.NATIVEPHP_PHP_BINARY_VERSION;
 
+function rosettaCheck() {
+    if (process.platform !== "darwin") {
+        return process.arch;
+    }
+    try {
+        // First try uname -m
+        const arch = execSync("uname -m", { encoding: "utf8" }).trim();
+        //console.log("Actual hardware architecture (uname -m):", arch);
+        // If we get x86_64 on macOS, we might be running under Rosetta 2
+        // Let's check if we can detect Apple Silicon through other means
+        if (arch === "x86_64") {
+            try {
+                // Check if we're running under Rosetta 2 by looking at the process
+                const isRosetta = execSync("sysctl -n sysctl.proc_translated", {
+                    encoding: "utf8",
+                }).trim();
+                //console.log("Running under Rosetta 2:", isRosetta);
+
+                if (isRosetta === "1") {
+                    // We're running under Rosetta 2, so the actual hardware is ARM64
+                    return "arm64";
+                }
+            } catch (rosettaError) {
+                console.log(
+                    "Could not detect Rosetta 2 status:",
+                    rosettaError.message,
+                );
+            }
+        }
+        return arch;
+    } catch {
+        console.log(
+            "Could not detect hardware architecture, falling back to process.arch:",
+            process.arch,
+        );
+        return process.arch;
+    }
+}
+const actualArch = rosettaCheck();
 // Differentiates for Serving and Building
-const isArm64 = isBuilding ? process.argv.includes('--arm64') : process.arch.includes('arm64');
+const isArm64 = isBuilding ? process.argv.includes('--arm64') : process.arch.includes('arm64') || actualArch.includes("arm64");
 const isWindows = isBuilding ?  process.argv.includes('--win') : process.platform.includes('win32');
 const isLinux = isBuilding ?  process.argv.includes('--linux') : process.platform.includes('linux');
 const isDarwin = isBuilding ?  process.argv.includes('--mac') : process.platform.includes('darwin');
+
+console.log('Actual architecture rosetta check:', actualArch);
+console.log('Is Arm64:', isArm64);
+console.log('Is Windows:', isWindows);
+console.log('Is Linux:', isLinux);
+console.log('Is Darwin:', isDarwin);
 
 // false because string mapping is done in is{OS} checks
 const platform = {
@@ -35,7 +80,7 @@ if (isLinux) {
 
 if (isDarwin) {
     platform.os = 'mac';
-    platform.arch = 'x86';
+    platform.arch = isArm64 ? "arm64" : "x86";
 }
 
 if (isArm64) {
