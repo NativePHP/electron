@@ -41,6 +41,12 @@ router.post('/closable', (req, res) => {
     (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setClosable(closable);
     res.sendStatus(200);
 });
+router.post('/window-button-visibility', (req, res) => {
+    var _a;
+    const { id, windowButtonVisibility } = req.body;
+    (_a = state.windows[id]) === null || _a === void 0 ? void 0 : _a.setWindowButtonVisibility(windowButtonVisibility);
+    res.sendStatus(200);
+});
 router.post('/show-dev-tools', (req, res) => {
     var _a;
     const { id } = req.body;
@@ -145,7 +151,7 @@ function getWindowData(id) {
     };
 }
 router.post('/open', (req, res) => {
-    let { id, x, y, frame, width, height, minWidth, minHeight, maxWidth, maxHeight, focusable, skipTaskbar, hiddenInMissionControl, hasShadow, url, resizable, movable, minimizable, maximizable, closable, title, alwaysOnTop, titleBarStyle, trafficLightPosition, vibrancy, backgroundColor, transparency, showDevTools, fullscreen, fullscreenable, kiosk, autoHideMenuBar, webPreferences, zoomFactor, preventLeaveDomain, preventLeavePage, suppressNewWindows, } = req.body;
+    let { id, x, y, frame, width, height, minWidth, minHeight, maxWidth, maxHeight, focusable, skipTaskbar, hiddenInMissionControl, hasShadow, url, resizable, movable, minimizable, maximizable, closable, title, alwaysOnTop, titleBarStyle, trafficLightPosition, windowButtonVisibility, vibrancy, backgroundColor, transparency, showDevTools, fullscreen, fullscreenable, kiosk, autoHideMenuBar, webPreferences, zoomFactor, preventLeaveDomain, preventLeavePage, suppressNewWindows, } = req.body;
     if (state.windows[id]) {
         state.windows[id].show();
         state.windows[id].focus();
@@ -201,6 +207,9 @@ router.post('/open', (req, res) => {
         window.webContents.setWindowOpenHandler(() => {
             return { action: "deny" };
         });
+    }
+    if (process.platform === 'darwin') {
+        window.setWindowButtonVisibility(windowButtonVisibility);
     }
     window.on('blur', () => {
         notifyLaravel('events', {
