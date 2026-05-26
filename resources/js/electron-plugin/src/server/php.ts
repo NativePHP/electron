@@ -21,6 +21,13 @@ const bootstrapCache = join(app.getPath('userData'), 'bootstrap', 'cache')
 const argumentEnv = getArgumentEnv();
 const appPath = getAppPath();
 
+// Optional overrides for non-Laravel guest frameworks. Defaults preserve
+// the existing Laravel-targeted behavior in every code path; any framework
+// that ships its own CLI + dev-server router can opt in by setting these.
+const BOOT_BIN = process.env.NATIVEPHP_PHP_BOOT_BIN || 'artisan';
+const SERVER_SCRIPT = process.env.NATIVEPHP_SERVER_SCRIPT || '';
+const SKIP_LARAVEL_SETUP = process.env.NATIVEPHP_SKIP_LARAVEL_SETUP === '1';
+
 mkdirpSync(bootstrapCache);
 mkdirpSync(join(storagePath, 'logs'));
 mkdirpSync(join(storagePath, 'framework', 'cache'));
@@ -96,7 +103,7 @@ async function retrievePhpIniSettings() {
         env
     };
 
-    let command = ['artisan', 'native:php-ini'];
+    let command = [BOOT_BIN, 'native:php-ini'];
 
     if (runningSecureBuild()) {
         command.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
@@ -113,7 +120,7 @@ async function retrieveNativePHPConfig() {
         env
     };
 
-    let command = ['artisan', 'native:config'];
+    let command = [BOOT_BIN, 'native:config'];
 
     if (runningSecureBuild()) {
         command.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
@@ -124,7 +131,7 @@ async function retrieveNativePHPConfig() {
 
 function callPhp(args, options, phpIniSettings = {}) {
 
-    if (args[0] === 'artisan' && runningSecureBuild()) {
+    if (args[0] === BOOT_BIN && runningSecureBuild()) {
         args.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
     }
 
@@ -153,7 +160,7 @@ function callPhp(args, options, phpIniSettings = {}) {
 
 function callPhpSync(args, options, phpIniSettings = {}) {
 
-    if (args[0] === 'artisan' && runningSecureBuild()) {
+    if (args[0] === BOOT_BIN && runningSecureBuild()) {
         args.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
     }
 
@@ -347,8 +354,9 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
             name: 'nativephp', // So it doesn't conflict with settings of the app
         });
 
-        // Cache the project
-        if (shouldOptimize(store)) {
+        // Cache the project — Laravel-specific (artisan optimize). Skip
+        // when the guest framework manages its own caching/optimization.
+        if (!SKIP_LARAVEL_SETUP && shouldOptimize(store)) {
             console.log('Caching view and routes...');
 
             let result = callPhpSync(['artisan', 'optimize'], phpOptions, phpIniSettings);
@@ -360,8 +368,10 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
             }
         }
 
-        // Migrate the database
-        if (shouldMigrateDatabase(store)) {
+        // Migrate the database — Laravel-specific (artisan migrate). Skip
+        // when the guest framework owns its own migration story (e.g. a
+        // non-Laravel app handling SQLite schema on its own).
+        if (!SKIP_LARAVEL_SETUP && shouldMigrateDatabase(store)) {
             console.log('Migrating database...');
 
             if(parseInt(process.env.SHELL_VERBOSITY) > 0) {
@@ -387,6 +397,11 @@ function serveApp(secret, apiPort, phpIniSettings): Promise<ProcessResult> {
 
         if (runningSecureBuild()) {
             serverPath = join(appPath, 'build', '__nativephp_app_bundle');
+        } else if (SERVER_SCRIPT !== '') {
+            // Guest framework supplies its own front-controller / router.
+            console.log('* * * Running from source (custom server script) * * *');
+            serverPath = SERVER_SCRIPT;
+            cwd = process.env.NATIVEPHP_SERVER_CWD || join(appPath, 'public');
         } else {
             console.log('* * * Running from source * * *');
             serverPath = join(appPath, 'vendor', 'laravel', 'framework', 'src', 'Illuminate', 'Foundation', 'resources', 'server.php');

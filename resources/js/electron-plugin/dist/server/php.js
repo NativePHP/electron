@@ -24,6 +24,9 @@ const databaseFile = join(databasePath, 'database.sqlite');
 const bootstrapCache = join(app.getPath('userData'), 'bootstrap', 'cache');
 const argumentEnv = getArgumentEnv();
 const appPath = getAppPath();
+const BOOT_BIN = process.env.NATIVEPHP_PHP_BOOT_BIN || 'artisan';
+const SERVER_SCRIPT = process.env.NATIVEPHP_SERVER_SCRIPT || '';
+const SKIP_LARAVEL_SETUP = process.env.NATIVEPHP_SKIP_LARAVEL_SETUP === '1';
 mkdirpSync(bootstrapCache);
 mkdirpSync(join(storagePath, 'logs'));
 mkdirpSync(join(storagePath, 'framework', 'cache'));
@@ -77,7 +80,7 @@ function retrievePhpIniSettings() {
             cwd: appPath,
             env
         };
-        let command = ['artisan', 'native:php-ini'];
+        let command = [BOOT_BIN, 'native:php-ini'];
         if (runningSecureBuild()) {
             command.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
         }
@@ -91,7 +94,7 @@ function retrieveNativePHPConfig() {
             cwd: appPath,
             env
         };
-        let command = ['artisan', 'native:config'];
+        let command = [BOOT_BIN, 'native:config'];
         if (runningSecureBuild()) {
             command.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
         }
@@ -99,7 +102,7 @@ function retrieveNativePHPConfig() {
     });
 }
 function callPhp(args, options, phpIniSettings = {}) {
-    if (args[0] === 'artisan' && runningSecureBuild()) {
+    if (args[0] === BOOT_BIN && runningSecureBuild()) {
         args.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
     }
     let iniSettings = Object.assign(getDefaultPhpIniSettings(), phpIniSettings);
@@ -115,7 +118,7 @@ function callPhp(args, options, phpIniSettings = {}) {
     });
 }
 function callPhpSync(args, options, phpIniSettings = {}) {
-    if (args[0] === 'artisan' && runningSecureBuild()) {
+    if (args[0] === BOOT_BIN && runningSecureBuild()) {
         args.unshift(join(appPath, 'build', '__nativephp_app_bundle'));
     }
     let iniSettings = Object.assign(getDefaultPhpIniSettings(), phpIniSettings);
@@ -233,7 +236,7 @@ function serveApp(secret, apiPort, phpIniSettings) {
         const store = new Store({
             name: 'nativephp',
         });
-        if (shouldOptimize(store)) {
+        if (!SKIP_LARAVEL_SETUP && shouldOptimize(store)) {
             console.log('Caching view and routes...');
             let result = callPhpSync(['artisan', 'optimize'], phpOptions, phpIniSettings);
             if (result.status !== 0) {
@@ -243,7 +246,7 @@ function serveApp(secret, apiPort, phpIniSettings) {
                 store.set('optimized_version', app.getVersion());
             }
         }
-        if (shouldMigrateDatabase(store)) {
+        if (!SKIP_LARAVEL_SETUP && shouldMigrateDatabase(store)) {
             console.log('Migrating database...');
             if (parseInt(process.env.SHELL_VERBOSITY) > 0) {
                 console.log('Database path:', databaseFile);
@@ -264,6 +267,11 @@ function serveApp(secret, apiPort, phpIniSettings) {
         let cwd;
         if (runningSecureBuild()) {
             serverPath = join(appPath, 'build', '__nativephp_app_bundle');
+        }
+        else if (SERVER_SCRIPT !== '') {
+            console.log('* * * Running from source (custom server script) * * *');
+            serverPath = SERVER_SCRIPT;
+            cwd = process.env.NATIVEPHP_SERVER_CWD || join(appPath, 'public');
         }
         else {
             console.log('* * * Running from source * * *');
