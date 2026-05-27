@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> This repository is archived in favor of [nativephp/desktop](/nativephp/desktop)
+> This repository is archived in favor of [nativephp/desktop](https://github.com/nativephp/desktop)
 
 # Electron "backend" for the NativePHP framework
 
