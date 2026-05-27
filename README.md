@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This repository is archived in favor of [nativephp/desktop](/nativephp/desktop)
+
 # Electron "backend" for the NativePHP framework
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/nativephp/electron.svg?style=flat-square)](https://packagist.org/packages/nativephp/electron)
